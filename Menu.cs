@@ -15,16 +15,24 @@ public abstract class Menu
 
 }
 
+public class CosmeticMenu
+{
+    protected void OnBootCosmetics()
+    {
+        
+    }
+}
+
 internal class StartMenu : Menu
 {
     private static Dictionary<int, Action> _MenuItems = new Dictionary<int, Action>();
 
-    internal StartMenu()
+    internal StartMenu() // constructor
     {
         Setup();
     }
 
-    protected override void Setup()
+    protected override void Setup() // initial setup
     {
         Sys.WSM("Booting");
         Sys.WSMDNL("...");

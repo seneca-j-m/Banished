@@ -4,7 +4,16 @@ using System.ComponentModel.Design;
 using External;
 using Microsoft.Data.Sqlite;
 
-StartMenu sMenu = new StartMenu();
+// CALL FUNCTIONS
+
+// StartMenu sMenu = new StartMenu();
+DataManager DM = new DataManager();
+DM.InitFilesystem();
+DM.InititDB();
+
+
+
+
 
 // static void PrintMenu()
 // {

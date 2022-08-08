@@ -1,5 +1,8 @@
 namespace External;
 
+/// <summary>
+/// Encompassing Write Class for Debug 
+/// </summary>
 public static class Debug
 {
     /// <summary>
@@ -61,6 +64,9 @@ public static class Debug
     }
 }
 
+/// <summary>
+/// Encompassing Write Class for Warn
+/// </summary>
 public static class Warn
 {
     /// <summary>
@@ -122,6 +128,9 @@ public static class Warn
     }
 }
 
+/// <summary>
+/// Encompassing Write Class for Error
+/// </summary>
 public static class Error
 {
     /// <summary>
@@ -183,6 +192,9 @@ public static class Error
     }
 }
 
+/// <summary>
+/// Encompassing Write Class for Sys
+/// </summary>
 public static class Sys
 {
     /// <summary>
