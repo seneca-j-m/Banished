@@ -3,16 +3,47 @@
 using System.ComponentModel.Design;
 using External;
 using Microsoft.Data.Sqlite;
+using System;
+
+namespace External;
+
+internal class Program
+{
+    static void Main(string[] args)
+    {
+        DataManager DM = new DataManager();
+        DM.InitFilesystem();
+        DBManager DB = new DBManager();
+        DB.InitUserDB();
+        DB.InitPlayerDB();
+
+        // verify user
+        VerifyUser(DB);
+
+        Console.ReadKey(true);
+    }
+
+    static void VerifyUser(DBManager DB)
+    {
+        if (!DB.GetUserDBData().Any())
+        {
+            Sys.WSMNL("SYS: NO USER DATA DETECTED!");
+            Sys.WSMNL("GENERATING NEW USER ARCHITECTURE");
+            Sys.WSMDNL("ENTERING SETUP...");
+            Console.Out.Flush();
+            SetupUser();
+        }
+    }
+
+    static void SetupUser()
+    {
+    }
+}
+
 
 // CALL FUNCTIONS
 
 // StartMenu sMenu = new StartMenu();
-DataManager DM = new DataManager();
-DM.InitFilesystem();
-DM.InititDB();
-
-
-
 
 
 // static void PrintMenu()
@@ -54,5 +85,3 @@ DM.InititDB();
 //
 //
 // PrintMenu();
-
-Console.ReadKey(true);
