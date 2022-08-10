@@ -16,27 +16,18 @@ internal class Program
         DBManager DB = new DBManager();
         DB.InitUserDB();
         DB.InitPlayerDB();
+        //CosmeticMenu cMenu = new CosmeticMenu();
 
         // verify user
-        VerifyUser(DB);
+        UserManager UM = new UserManager();
+        if (!UM.VerifyUser(DB))
+        {
+            UM.SetupUser();
+            UM.SaveUser();
+        }
+        
 
         Console.ReadKey(true);
-    }
-
-    static void VerifyUser(DBManager DB)
-    {
-        if (!DB.GetUserDBData().Any())
-        {
-            Sys.WSMNL("SYS: NO USER DATA DETECTED!");
-            Sys.WSMNL("GENERATING NEW USER ARCHITECTURE");
-            Sys.WSMDNL("ENTERING SETUP...");
-            Console.Out.Flush();
-            SetupUser();
-        }
-    }
-
-    static void SetupUser()
-    {
     }
 }
 

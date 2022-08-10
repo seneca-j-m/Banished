@@ -1,13 +1,5 @@
 namespace External;
 
-// public interface Menu
-// {
-//     protected static Dictionary<int, Action> _menuItems;
-//     protected static int sasdsasda;
-//
-//     protected void printMenu(Dictionary<int, Action> menuItems);
-// }
-
 public abstract class Menu
 {
     protected abstract void PrintMenu();
@@ -20,6 +12,15 @@ public class CosmeticMenu
     protected void OnBootCosmetics()
     {
         
+    }
+
+    internal static void writeTitleCosmetics(string titleMessage)
+    {
+        Console.Clear();
+        Sys.WSMNL("<------------------------------------------->");
+        Sys.WSMNL(titleMessage.ToUpper());
+        Sys.WSMNL("<------------------------------------------->");
+        Console.WriteLine("\n\n\n");
     }
 }
 

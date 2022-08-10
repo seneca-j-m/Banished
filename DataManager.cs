@@ -16,16 +16,22 @@ public class DataManager
             // create user directory (dont need to check if it does or doesnt exist)
             Directory.CreateDirectory(GDirectories.userPath);
             Directory.CreateDirectory(GDirectories.playerPath);
+            Directory.CreateDirectory(GDirectories.loggerPath);
+            Directory.CreateDirectory(GDirectories.loggerBPath);
 
             // create user db
             if (!File.Exists(GDirectories.userDBPath))
-            {
                 File.Create(GDirectories.userDBPath);
-            }
-            else if (!File.Exists(GDirectories.playerDBPath))
-            {
+            
+            if (!File.Exists(GDirectories.playerDBPath))
                 File.Create(GDirectories.playerDBPath);
-            }
+
+            if (!File.Exists(GDirectories.loggerFPath))
+                File.Create(GDirectories.loggerFPath);
+
+            if (!File.Exists(GDirectories.loggerBFPath))
+                File.Create(GDirectories.loggerBFPath);
+
             // using (var userFileStream = File.Create(GDirectories.userDBPath)) ;
             // using (var playerFileStream = File.Create(GDirectories.playerPath)) ;
         }
@@ -33,10 +39,6 @@ public class DataManager
         {
             throw new SaveFileCreationFailed(e);
         }
-    }
-
-    internal void VerifyUser()
-    {
     }
 }
 
@@ -143,16 +145,19 @@ public class DBManager
                 $@"
                     INSERT INTO users (firstname, lastname, age) VALUES ({user.firstname}, {user.lastname}, {user.age});
                 ";
-            using (var readr = comm.ExecuteReader());
-
+            using (var readr = comm.ExecuteReader()) ;
         }
     }
 }
 
 public static class GDirectories
 {
-    public static string userPath = @"../../../User/";
-    public static string userDBPath = @"../../../User/user.sqlite";
-    public static string playerPath = @"../../../Player/";
-    public static string playerDBPath = @"../../../Player/player.sqlite";
+    public const string userPath = @"../../../User/";
+    public const string userDBPath = @"../../../User/user.sqlite";
+    public const string playerPath = @"../../../Player/";
+    public const string playerDBPath = @"../../../Player/player.sqlite";
+    public const string loggerPath = @"../../../Logger";
+    public const string loggerFPath = @"../../../Logger/log.log";
+    public const string loggerBPath = @"../../../Logger/";
+    public const string loggerBFPath = @"../../../Logger/log_backup.log";
 }
