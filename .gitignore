@@ -3,3 +3,14 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+
+# custom directories
+/Logger/
+/Logger/Backup/
+/Player/
+/User/
+
+# custom files
+/Logger/*.log
+/Player/*.sqlite
+/User/*.sqlite

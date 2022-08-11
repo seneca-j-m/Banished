@@ -4,7 +4,7 @@ using System.Reflection.Metadata;
 using System.Collections.Generic;
 using Microsoft.Data.Sqlite;
 
-namespace External;
+namespace BanishedMain;
 
 public class DataManager
 {
@@ -66,10 +66,11 @@ public class DBManager
                 comm.CommandText =
                     @"
                     CREATE TABLE IF NOT EXISTS users (
-                        id INTEGER PRIMRARY KEY,
+                        id INTEGER PRIMARY KEY,
                         firstname TEXT NOT NULL,
                         lastname TEXT NOT NULL,
-                        age INTEGER NOT NULL 
+                        age INTEGER NOT NULL,
+                        password TEXT NOT NULL 
                     );
                     ";
                 var readr = comm.ExecuteNonQuery();
@@ -122,7 +123,10 @@ public class DBManager
             {
                 while (readr.Read())
                 {
-                    userDBData.Add(readr.GetString(0));
+                    for (int i = 0; i <= 4; i++)
+                    {
+                        userDBData.Add(readr.GetValue(i).ToString());
+                    }
                 }
             }
         }
@@ -143,7 +147,7 @@ public class DBManager
             var comm = conn.CreateCommand();
             comm.CommandText =
                 $@"
-                    INSERT INTO users (firstname, lastname, age) VALUES ({user.firstname}, {user.lastname}, {user.age});
+                    INSERT INTO users (firstname, lastname, age, password) VALUES ('{user.firstname}', '{user.lastname}', '{user.age}', '{user.password}');
                 ";
             using (var readr = comm.ExecuteReader()) ;
         }
@@ -158,6 +162,6 @@ public static class GDirectories
     public const string playerDBPath = @"../../../Player/player.sqlite";
     public const string loggerPath = @"../../../Logger";
     public const string loggerFPath = @"../../../Logger/log.log";
-    public const string loggerBPath = @"../../../Logger/";
-    public const string loggerBFPath = @"../../../Logger/log_backup.log";
+    public const string loggerBPath = @"../../../Logger/Backup";
+    public const string loggerBFPath = @"../../../Logger/Backup/log_backup.log";
 }

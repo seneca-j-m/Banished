@@ -1,16 +1,15 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using System.ComponentModel.Design;
-using External;
+﻿// using System.ComponentModel.Design;
+// using Banished;
 using Microsoft.Data.Sqlite;
 using System;
 
-namespace External;
+namespace BanishedMain;
 
 internal class Program
 {
     static void Main(string[] args)
     {
+        Logger logg = new Logger();
         DataManager DM = new DataManager();
         DM.InitFilesystem();
         DBManager DB = new DBManager();
@@ -22,8 +21,12 @@ internal class Program
         UserManager UM = new UserManager();
         if (!UM.VerifyUser(DB))
         {
-            UM.SetupUser();
-            UM.SaveUser();
+            User user = UM.SetupUser();
+            UM.SaveUser(DB, user);
+        }
+        else
+        {
+            UM.UserLogin(DB);
         }
         
 

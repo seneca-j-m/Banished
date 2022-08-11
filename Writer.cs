@@ -1,4 +1,4 @@
-namespace External;
+namespace BanishedMain;
 
 /// <summary>
 /// Encompassing Write Class for Debug 

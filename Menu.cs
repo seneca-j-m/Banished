@@ -1,4 +1,4 @@
-namespace External;
+namespace BanishedMain;
 
 public abstract class Menu
 {

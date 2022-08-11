@@ -1,18 +1,21 @@
 using System.Net.Http.Headers;
 
-namespace External;
+namespace BanishedMain;
 
 public class User
 {
     public string firstname { get; }
     public string lastname { get; }
-    public int age { get; }
+    public uint age { get; }
 
-    User(string _firstname, string _lastname, int _age)
+    public string password { get; }
+
+    public User(string _firstname, string _lastname, uint _age, string _password)
     {
         firstname = _firstname;
         lastname = _lastname;
         age = _age;
+        password = _password;
     }
 }
 
@@ -24,16 +27,18 @@ public class UserManager
         {
             Sys.WSMNL("SYS: NO USER DATA DETECTED!");
             Sys.WSMNL("GENERATING NEW USER ARCHITECTURE");
-            Sys.WSMDNL("ENTERING SETUP...");
+            //Sys.WSMDNL("ENTERING SETUP..."); // not sure async is working correctly
+            Sys.WSMNL("ENTERING SETUP...");
             Console.Out.Flush();
             return false;
         }
         else
         {
-            return true;   
+            return true;
         }
     }
-    internal void SetupUser()
+
+    internal User SetupUser()
     {
         CosmeticMenu.writeTitleCosmetics("user creation menu");
         Sys.WSMNL("Enter User Firstname ('firstname'): ");
@@ -46,13 +51,60 @@ public class UserManager
         {
             Error.WEMNL("ERR: INTPUT IS NOT VALID!");
         }
+
+        Sys.WSMNL("Enter User Password ('password')");
+        string userPassword = Console.ReadLine();
+
         Debug.WDMNL("Data Collated!");
         Sys.WSMDNL("Saving...");
-        
+
+        User newUser = new User(userFirstName, userLastName, UserAge, userPassword);
+
+        return newUser;
     }
 
-    internal void SaveUser()
+    internal void SaveUser(DBManager DB, User user)
     {
-        
+        DB.WriteToUserDB(user);
+    }
+
+    internal void UserLogin(DBManager DB)
+    {
+        bool loginValid = false;
+
+        while (!loginValid)
+        {
+            CosmeticMenu.writeTitleCosmetics("USER LOGIN");
+            Sys.WSMNL("FIRSTNAME: ");
+            string userFirstName = Console.ReadLine();
+            Sys.WSMNL("LASTNAME: ");
+            string userLastname = Console.ReadLine();
+            Sys.WSMNL("PASSWORD: ");
+            string userPassword = Console.ReadLine();
+
+            // check data against database
+            List<string> userDbData = DB.GetUserDBData();
+
+            if (userDbData.IndexOf(userFirstName) == -1 || userDbData.IndexOf(userLastname) == -1 ||
+                userDbData.IndexOf(userPassword) == -1)
+            {
+                Warn.WWMNL("ERR: LOGIN INVALID!");
+            }
+            else
+            {
+                Sys.WSMNL("SUCC: LOGIN VALID!");
+                break;
+            }
+        }
+    }
+
+    internal User GetUser(DBManager DB)
+    {
+        List<string> userDBData = DB.GetUserDBData();
+
+        // make user ADJUST FOR NUMEROUS USERS
+        User user = new User(userDBData[0], userDBData[1], uint.Parse(userDBData[2]), userDBData[3]);
+
+        return user;
     }
 }
