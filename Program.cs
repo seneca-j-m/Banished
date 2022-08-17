@@ -19,6 +19,7 @@ internal class Program
 
         // verify user
         UserManager UM = new UserManager();
+        PlayerManager PM = new PlayerManager();
         if (!UM.VerifyUser(DB))
         {
             User user = UM.SetupUser();
@@ -28,7 +29,13 @@ internal class Program
         {
             UM.UserLogin(DB);
         }
-        
+        // now verify player
+        if (!PM.VerifyPlayer(DB))
+        {
+            Player player = PM.SetupPlayer();
+            
+        }
+
 
         Console.ReadKey(true);
     }

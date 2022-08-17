@@ -18,8 +18,12 @@ public class DataManager
             Directory.CreateDirectory(GDirectories.playerPath);
             Directory.CreateDirectory(GDirectories.loggerPath);
             Directory.CreateDirectory(GDirectories.loggerBPath);
+            Directory.CreateDirectory(GDirectories.dataPath);
+            Directory.CreateDirectory(GDirectories.playerRaceData);
+            Directory.CreateDirectory(GDirectories.playerClassData);
+            Directory.CreateDirectory(GDirectories.playerAccoladeData);
 
-            // create user db
+            // files
             if (!File.Exists(GDirectories.userDBPath))
                 File.Create(GDirectories.userDBPath);
             
@@ -31,9 +35,41 @@ public class DataManager
 
             if (!File.Exists(GDirectories.loggerBFPath))
                 File.Create(GDirectories.loggerBFPath);
+            
+            // player construction files
+            
+            // race data
+            if (!File.Exists(GDirectories.playerRaceHumanDataF))
+                File.Create(GDirectories.playerRaceHumanDataF);
 
-            // using (var userFileStream = File.Create(GDirectories.userDBPath)) ;
-            // using (var playerFileStream = File.Create(GDirectories.playerPath)) ;
+            if (!File.Exists(GDirectories.playerRaceElfDataF))
+                File.Create(GDirectories.playerRaceElfDataF);
+
+            if (!File.Exists(GDirectories.playerRaceOrcDataF))
+                File.Create(GDirectories.playerRaceOrcDataF);
+
+            // class data
+            if (!File.Exists(GDirectories.playerClassKnightDataF))
+                File.Create(GDirectories.playerClassKnightDataF);
+
+            if (!File.Exists(GDirectories.playerClassSorcererDataF))
+                File.Create(GDirectories.playerClassSorcererDataF);
+
+            if (!File.Exists(GDirectories.playerClassWarlockDataF))
+                File.Create(GDirectories.playerClassWarlockDataF);
+            
+            // accolade data
+            if (!File.Exists(GDirectories.playerAccoladeWarriorDataF))
+                File.Create(GDirectories.playerAccoladeWarriorDataF);
+
+            if (!File.Exists(GDirectories.playerAccoladeScholarDataF))
+                File.Create(GDirectories.playerAccoladeScholarDataF);
+
+            if (!File.Exists(GDirectories.playerAccoladeAcolyteDataF))
+                File.Create(GDirectories.playerAccoladeAcolyteDataF);
+
+
+
         }
         catch (Exception e)
         {
@@ -96,7 +132,8 @@ public class DBManager
                         id INTEGER PRIMARY KEY,
                         userid INTEGER NOT NULL,
                         playername TEXT NOT NULL,
-                        playerclass TEXT NOT NULL,
+                        playerrace TEXT NOT NULL,
+                        playerclass TEXT NOT NULL
                     )
                     ";
             }
@@ -134,9 +171,31 @@ public class DBManager
         return userDBData;
     }
 
-    internal string GetPlayerDBData()
+    internal List<string> GetPlayerDBData()
     {
-        return "";
+        List<string> playerDBData = new List<string>();
+
+        using (var conn = new SqliteConnection($@"Data Source={GDirectories.userDBPath}"))
+        {
+            conn.Open();
+            var comm = conn.CreateCommand();
+            comm.CommandText =
+                @"
+                    SELECT * FROM players;
+                ";
+            using (var readr = comm.ExecuteReader())
+            {
+                while (readr.Read())
+                {
+                    for (int i = 0; i <= 4; i++)
+                    {
+                        playerDBData.Add(readr.GetValue(i).ToString());
+                    }
+                }
+            }
+        }
+        
+        return playerDBData;
     }
 
     internal void WriteToUserDB(User user)
@@ -156,12 +215,40 @@ public class DBManager
 
 public static class GDirectories
 {
+    // user data and database paths
     public const string userPath = @"../../../User/";
     public const string userDBPath = @"../../../User/user.sqlite";
+    
+    // player data and database paths
     public const string playerPath = @"../../../Player/";
     public const string playerDBPath = @"../../../Player/player.sqlite";
+    
+    // logger paths
     public const string loggerPath = @"../../../Logger";
     public const string loggerFPath = @"../../../Logger/log.log";
     public const string loggerBPath = @"../../../Logger/Backup";
-    public const string loggerBFPath = @"../../../Logger/Backup/log_backup.log";
+    public const string loggerBFPath = @"../../../Logger/Backup/log_backup.log"; // watch this chief
+    
+    // primary data path
+    public const string dataPath = @"../../../Data/";
+    
+    // player construction data directories
+    public const string playerRaceData = @"../../../Data/playerRaceData/";
+    public const string playerClassData = @"../../../Data/playerClassData/";
+    public const string playerAccoladeData = @"../../../Data/playerAccoladeData/";
+        
+    // player race data files
+    public const string playerRaceHumanDataF = @"../../../Data/playerRaceData/human.txt";
+    public const string playerRaceElfDataF = @"../../../Data/playerRaceData/elf.txt";
+    public const string playerRaceOrcDataF = @"../../../Data/playerRaceData/orc.txt";
+
+    // player class data files
+    public const string playerClassKnightDataF = @"../../../Data/playerClassData/knight.txt";
+    public const string playerClassSorcererDataF = @"../../../Data/playerClassData/sorcerer.txt";
+    public const string playerClassWarlockDataF = @"../../../Data/playerClassData/warlock.txt";
+    
+    // player accolad data files
+    public const string playerAccoladeWarriorDataF = @"../../../Data/playerAccoladeData/warrior.txt";
+    public const string playerAccoladeScholarDataF = @"../../../Data/playerAccoladeData/scholar.txt";
+    public const string playerAccoladeAcolyteDataF = @"../../../Data/playerAccoladeData/acolyte.txt";
 }

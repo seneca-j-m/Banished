@@ -32,8 +32,9 @@ public class UserManager
             Console.Out.Flush();
             return false;
         }
-        else
+        else // previous user data exists
         {
+            Sys.WSMNL("USER DATA DETECTED!");
             return true;
         }
     }
