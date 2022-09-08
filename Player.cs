@@ -24,8 +24,8 @@ public class Player
 
 public enum PlayerRaceList
 {
-    HUMAN,
     ELF,
+    HUMAN,
     ORC,
     
 }
@@ -33,18 +33,18 @@ public enum PlayerRaceList
 public enum PlayerClassList
 {
     KNIGHT,
-    CLERIC,
-    PALADIN,
+    SORCERER,
+    WARLOCK
 }
 
 public class PlayerManager
 {
     internal bool VerifyPlayer(DBManager DB)
     {
-        if (!DB.GetUserDBData().Any())
+        if (!DB.GetPlayerDBData().Any())
         {
             Sys.WSMNL("SYS: NO PLAYER DATA DETECTED!");
-            Sys.WSMNL("GENERATING NEW USER ARCHITECTURE");
+            Sys.WSMNL("GENERATING NEW PLAYER ARCHITECTURE");
             //Sys.WSMDNL("ENTERING SETUP..."); // not sure async is working correctly
             Sys.WSMNL("ENTERING SETUP...");
             Console.Out.Flush();
@@ -68,7 +68,7 @@ public class PlayerManager
         switch (playerRace)
         {
             case "?":
-                ClassHelp.classOptions();
+                ClassHelp.ClassOptions();
                 break;
             default:
                 break;
@@ -93,5 +93,30 @@ public class PlayerManager
     internal void SavePlayer()
     {
         
+    }
+
+    internal void PlayerLogin(DBManager DB)
+    {
+        bool loginValid = false;
+
+        while (!loginValid)
+        {
+            CosmeticMenu.writeTitleCosmetics("PLAYER SELECTION");
+            Sys.WSMNL("Verifying current players...");
+            Sys.WSMNL("displaying...");
+
+            Sys.WSMNL("Players:");
+            
+            List<string> playerData = DB.GetPlayerDBData();
+
+            foreach (var player in playerData)
+            {
+                int playerListValue = playerData.Count();
+                for (int i = 0; i < playerListValue; i++)
+                {
+                    Sys.WSMNL($"{playerListValue}. {player}");
+                }
+            }
+        }
     }
 }

@@ -122,8 +122,9 @@ public class DBManager
     {
         try
         {
-            using (var conn = new SqliteConnection($@"Data Source={GDirectories.userDBPath}"))
+            using (var conn = new SqliteConnection($@"Data Source={GDirectories.playerDBPath}"))
             {
+                conn.Open();
                 Debug.WDMNL("Connection Initialsed: playerDB");
                 var comm = conn.CreateCommand();
                 comm.CommandText =
@@ -136,6 +137,7 @@ public class DBManager
                         playerclass TEXT NOT NULL
                     )
                     ";
+                var readr = comm.ExecuteNonQuery();
             }
         }
         catch (Exception e)
@@ -175,7 +177,7 @@ public class DBManager
     {
         List<string> playerDBData = new List<string>();
 
-        using (var conn = new SqliteConnection($@"Data Source={GDirectories.userDBPath}"))
+        using (var conn = new SqliteConnection($@"Data Source={GDirectories.playerDBPath}"))
         {
             conn.Open();
             var comm = conn.CreateCommand();

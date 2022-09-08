@@ -33,7 +33,12 @@ internal class Program
         if (!PM.VerifyPlayer(DB))
         {
             Player player = PM.SetupPlayer();
+            //PM.SavePlayer(DB, player);
             
+        }
+        else
+        {
+            PM.PlayerLogin(DB);
         }
 
 
