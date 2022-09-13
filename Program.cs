@@ -20,27 +20,33 @@ internal class Program
         // verify user
         UserManager UM = new UserManager();
         PlayerManager PM = new PlayerManager();
+        
+        // global instances
+        User user;
+        Player player;
+        
+        
         if (!UM.VerifyUser(DB))
         {
-            User user = UM.SetupUser();
+            user = UM.SetupUser();
             UM.SaveUser(DB, user);
         }
         else
         {
-            UM.UserLogin(DB);
+            user = UM.UserLogin(DB);
         }
         // now verify player
         if (!PM.VerifyPlayer(DB))
         {
-            Player player = PM.SetupPlayer();
-            //PM.SavePlayer(DB, player);
-            
+            player = PM.SetupPlayer(user);
+            PM.SavePlayer(DB, player);
         }
         else
         {
-            PM.PlayerLogin(DB);
+            player = PM.PlayerLogin(DB, user.userid);
         }
 
+        
 
         Console.ReadKey(true);
     }

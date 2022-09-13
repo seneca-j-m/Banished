@@ -4,18 +4,28 @@ namespace BanishedMain;
 
 public class User
 {
+    public int userid { get; set; }
     public string firstname { get; }
     public string lastname { get; }
     public uint age { get; }
 
     public string password { get; }
 
-    public User(string _firstname, string _lastname, uint _age, string _password)
+    public User(int _userid, string _firstname, string _lastname, uint _age, string _password)
     {
+        userid = _userid;
         firstname = _firstname;
         lastname = _lastname;
         age = _age;
         password = _password;
+    }
+
+    public User()
+    {
+        userid = -1;
+        firstname = "";
+        lastname = "";
+        age = 0;
     }
 }
 
@@ -59,7 +69,8 @@ public class UserManager
         Debug.WDMNL("Data Collated!");
         Sys.WSMDNL("Saving...");
 
-        User newUser = new User(userFirstName, userLastName, UserAge, userPassword);
+        // this user will always be 0
+        User newUser = new User(0, userFirstName, userLastName, UserAge, userPassword);
 
         return newUser;
     }
@@ -69,8 +80,10 @@ public class UserManager
         DB.WriteToUserDB(user);
     }
 
-    internal void UserLogin(DBManager DB)
+    internal User UserLogin(DBManager DB)
     {
+        User user = new User();
+        
         bool loginValid = false;
 
         while (!loginValid)
@@ -94,9 +107,12 @@ public class UserManager
             else
             {
                 Sys.WSMNL("SUCC: LOGIN VALID!");
-                break;
+                // make user object
+                user = new User(int.Parse(userDbData[0]), userFirstName, userLastname, uint.Parse(userDbData[3]), userPassword);
+                return user;
             }
         }
+        return user;
     }
 
     internal User GetUser(DBManager DB)
@@ -104,7 +120,7 @@ public class UserManager
         List<string> userDBData = DB.GetUserDBData();
 
         // make user ADJUST FOR NUMEROUS USERS
-        User user = new User(userDBData[0], userDBData[1], uint.Parse(userDBData[2]), userDBData[3]);
+        User user = new User(int.Parse(userDBData[0]),userDBData[0], userDBData[1], uint.Parse(userDBData[2]), userDBData[3]);
 
         return user;
     }

@@ -99,7 +99,7 @@ public class DBManager
                 conn.Open();
                 Debug.WDMNL("Connection Initialised: userDB");
                 var comm = conn.CreateCommand();
-                comm.CommandText =
+                comm.CommandText = // TODO: ADD USER ID SECTION
                     @"
                     CREATE TABLE IF NOT EXISTS users (
                         id INTEGER PRIMARY KEY,
@@ -209,6 +209,20 @@ public class DBManager
             comm.CommandText =
                 $@"
                     INSERT INTO users (firstname, lastname, age, password) VALUES ('{user.firstname}', '{user.lastname}', '{user.age}', '{user.password}');
+                ";
+            using (var readr = comm.ExecuteReader()) ;
+        }
+    }
+    
+    internal void WriteToPlayerDB(Player player)
+    {
+        using (var conn = new SqliteConnection($@"Data Source={GDirectories.playerDBPath}"))
+        {
+            conn.Open();
+            var comm = conn.CreateCommand();
+            comm.CommandText =
+                $@"
+                    INSERT INTO players (userid, playername, playerrace, playerclass) VALUES ('{player.userid}', '{player.playername}', '{player.playerrace}', '{player.playerclass}');
                 ";
             using (var readr = comm.ExecuteReader()) ;
         }
