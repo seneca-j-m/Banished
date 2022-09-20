@@ -8,70 +8,62 @@ public static class ClassHelp
     public static void ClassOptions()
     {
         // print every item in the enum list
-        var classOptions = Enum.GetValues(typeof(PlayerClassList)).Cast<PlayerClassList>();
+        var classOptions = Enum.GetValues(typeof(PlayerClass)).Cast<PlayerClass>();
+        
+        // remove 'empty'
+        List<PlayerClass> classList = classOptions.ToList();
+        int emptyIndex = classList.IndexOf(PlayerClass.EMPTY);
+        classList.RemoveAt(emptyIndex);
 
         CosmeticMenu.writeTitleCosmetics("CLASS HELP:");
         Debug.WDMNL("CLASS OPTIONS: ");
-        uint optionIncrament = 0;
-        foreach (var classOption in classOptions)
+        uint optionIncrament = 1;
+        foreach (var classOption in classList)
         {
             Debug.WDMNL($"{optionIncrament} :'{classOption.ToString()}'");
+            optionIncrament++;
         }
 
         bool quit = false;
 
         while (!quit)
         {
-            Debug.WDMNL("[q to quit] , [? for class info]");
+            Debug.WDMNL("[q to quit]");
             string userClassHelpSelection = Console.ReadLine();
 
-            if (string.Equals(userClassHelpSelection, "q") || string.Equals(userClassHelpSelection, "Q"))
+            switch (userClassHelpSelection)
             {
-                quit = true;
+                case "q": 
+                case "Q":
+                    quit = true;
+                    break;
+                case "1":
+                case "KNIGHT":
+                case "Knight":
+                    KnightHelp();
+                    break;
+                case "2":
+                case "SORCERER":
+                case "Sorcerer":
+                    SorcererHelp();
+                    break;
+                case "3":
+                case "WARLOCK":
+                case "Warlock":
+                    WarlockHelp();
+                    break;
             }
-            else if (string.Equals(userClassHelpSelection, "?"))
-            {
-                // print info for each class
-                Console.Clear();
-                
-                Knight.info();
-                Sorcerer.info();
-                Warlock.info();
-                
-                Console.WriteLine("\n\n");
-
-            ;
-                // // pause for input
-                // Debug.WDMNL("[n for next] , [p for previous] , [q to quit] : ");
-                // bool classQuit = false;
-                //
-                // while (!classQuit)
-                // {
-                //     string userClassMenuSelection = Console.ReadLine();
-                //     if (string.Equals(userClassMenuSelection, "n"))
-                //     {
-                //         // print next class
-                //         
-                //         Debug.WDMNL("[n for next] , [p for previous] , [q to quit] : ");
-                //         userClassMenuSelection = Console.ReadLine();
-                //     }
-                //     else if (string.Equals(userClassMenuSelection, "p"))
-                //     {
-                //         // print previous class
-                //     }
-                //     else if (string.Equals(userClassMenuSelection, "q"))
-                //     {
-                //         classQuit = true;
-                //     }
-                // }
-            }
-            
         }
 
     }
-    
-    public static void classMenuHelp()
+
+    private static void KnightHelp()
     {}
+    private static void SorcererHelp()
+    {}
+    private static void WarlockHelp()
+    {}
+    
 }
 
 public static class RaceHelp
@@ -79,63 +71,120 @@ public static class RaceHelp
     public static void RaceOptions()
     {
         // print every item in the enum list
-        var raceOptions = Enum.GetValues(typeof(PlayerRaceList)).Cast<PlayerRaceList>();
+        var raceOptions = Enum.GetValues(typeof(PlayerRace)).Cast<PlayerRace>();
+        
+        // remove 'empty'
+        List<PlayerRace> raceList = raceOptions.ToList();
+        int emptyIndex = raceList.IndexOf(PlayerRace.EMPTY);
+        raceList.RemoveAt(emptyIndex);
 
         CosmeticMenu.writeTitleCosmetics("RACE HELP:");
         Debug.WDMNL("RACE OPTIONS: ");
-        uint optionIncrament = 0;
-        foreach (var raceOption in raceOptions)
+        uint optionIncrament = 1;
+        foreach (var raceOption in raceList)
         {
             Debug.WDMNL($"{optionIncrament} :'{raceOption.ToString()}'");
+            optionIncrament++;
         }
 
         bool quit = false;
 
         while (!quit)
         {
-            Debug.WDMNL("[q to quit] , [? for class info]");
+            Debug.WDMNL("[q to quit]");
             string userRaceHelpSelection = Console.ReadLine();
 
-            if (string.Equals(userRaceHelpSelection, "q") || string.Equals(userRaceHelpSelection, "Q"))
+            switch (userRaceHelpSelection)
             {
-                quit = true;
-            }
-            else if (string.Equals(userRaceHelpSelection, "?"))
-            {
-                // print info for each race
-                Console.Clear();
-
-
-
-
-                Console.WriteLine("\n\n");
-
-                ;
-                // // pause for input
-                // Debug.WDMNL("[n for next] , [p for previous] , [q to quit] : ");
-                // bool classQuit = false;
-                //
-                // while (!classQuit)
-                // {
-                //     string userClassMenuSelection = Console.ReadLine();
-                //     if (string.Equals(userClassMenuSelection, "n"))
-                //     {
-                //         // print next class
-                //         
-                //         Debug.WDMNL("[n for next] , [p for previous] , [q to quit] : ");
-                //         userClassMenuSelection = Console.ReadLine();
-                //     }
-                //     else if (string.Equals(userClassMenuSelection, "p"))
-                //     {
-                //         // print previous class
-                //     }
-                //     else if (string.Equals(userClassMenuSelection, "q"))
-                //     {
-                //         classQuit = true;
-                //     }
-                // }
+                case "q":
+                case "Q":
+                    quit = true;
+                    break;
+                case "1": // elf
+                case "ELF":
+                case "elf":
+                    ElfHelp();
+                    break;
+                case "2": // human
+                case "HUMAN":
+                case "Human":
+                    HumanHelp();
+                    break;
+                case "3": // orc
+                case "ORC":
+                case "orc":
+                    OrcHelp();
+                    break;
             }
         }
-
     }
+    private static void ElfHelp()
+    {}
+    private static void HumanHelp()
+    {}
+    private static void OrcHelp()
+    {}
+}
+
+public static class AccoladeHelp
+{
+    public static void AccoladeOptions()
+    {
+        // print every item in the enum list
+        var accoladeOptions = Enum.GetValues(typeof(PlayerAccolade)).Cast<PlayerAccolade>();
+        
+        // remove 'empty'
+        List<PlayerAccolade> accoladeList = accoladeOptions.ToList();
+        int emptyIndex = accoladeList.IndexOf(PlayerAccolade.EMPTY);
+        accoladeList.RemoveAt(emptyIndex);
+
+        CosmeticMenu.writeTitleCosmetics("ACCOLADE HELP:");
+        Debug.WDMNL("ACCOLADE OPTIONS: ");
+        uint optionIncrament = 1;
+        foreach (var accoladeOption in accoladeList)
+        {
+            Debug.WDMNL($"{optionIncrament} :'{accoladeOption.ToString()}'");
+            optionIncrament++;
+        }
+
+        bool quit = false;
+
+        while (!quit)
+        {
+            Debug.WDMNL("[q to quit]");
+            string userRaceHelpSelection = Console.ReadLine();
+
+            switch (userRaceHelpSelection)
+            {
+                case "q":
+                case "Q":
+                    quit = true;
+                    break;
+                case "1": // warrior
+                case "WARRIOR":
+                case "ELF":
+                    WarriorHelp();
+                    break;
+                case "2": // scholar
+                case "SCHOLAR":
+                case "Scholar":
+                    ScholarHelp();
+                    break;
+                case "3": // acolyte
+                case "ACOLYTE":
+                case "acolyte":
+                    AcolyteHelp();
+                    break;
+            }
+        }
+    }
+
+    private static void WarriorHelp()
+    {}
+
+    private static void ScholarHelp()
+    {}
+    
+    private static void AcolyteHelp()
+    {}
 }

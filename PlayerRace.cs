@@ -1,21 +1,23 @@
 namespace BanishedMain;
 
-// public class PlayerRace
-// {
-//     public string name;
-//     public int base_health;
-// }
-
 public class Elf
 {
     public const string name = "ELF";
+
+    public const string description =
+        @"
+            
+        ";
 
     public Dictionary<string, string> background;
     public Dictionary<string, string> traits;
 
     public static void info()
     {
-        
+        CosmeticMenu.writeTitleCosmetics($"THE {name}");
+        Debug.WDMNL($"NAME: {name}");
+        Debug.WDMNL($"DESCRIPTION:");
+        Debug.WDMNL(description);
     }
     
 }
@@ -23,16 +25,19 @@ public class Elf
 public class Human 
 {
     
-    public string name = "";
+    public const string name = "HUMAN";
+
+    public const string description =
+        @"
+
+        ";
     
-    public int base_health = 0;
-
-    public Dictionary<string, string> background;
-    public Dictionary<string, string> traits;
-
     public static void info()
     {
-        
+        CosmeticMenu.writeTitleCosmetics($"THE {name}");
+        Debug.WDMNL($"NAME: {name}");
+        Debug.WDMNL($"DESCRIPTION:");
+        Debug.WDMNL(description);
     }
     
     // populate background and traits
@@ -42,7 +47,20 @@ public class Human
 
 public class Orc
 {
-    
+    public const string name = "ORC";
+
+    public const string description =
+        @"
+
+        ";
+
+    public static void info()
+    {
+        CosmeticMenu.writeTitleCosmetics($"THE {name}");
+        Debug.WDMNL($"NAME: {name}");
+        Debug.WDMNL($"DESCRIPTION:");
+        Debug.WDMNL(description);
+    }
 }
 
 

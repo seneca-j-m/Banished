@@ -14,7 +14,7 @@ public class DataManager
         try
         {
             // create user directory (dont need to check if it does or doesnt exist)
-            Directory.CreateDirectory(GDirectories.userPath);
+            //Directory.CreateDirectory(GDirectories.userPath);
             Directory.CreateDirectory(GDirectories.playerPath);
             Directory.CreateDirectory(GDirectories.loggerPath);
             Directory.CreateDirectory(GDirectories.loggerBPath);
@@ -24,8 +24,8 @@ public class DataManager
             Directory.CreateDirectory(GDirectories.playerAccoladeData);
 
             // files
-            if (!File.Exists(GDirectories.userDBPath))
-                File.Create(GDirectories.userDBPath);
+            // if (!File.Exists(GDirectories.userDBPath))
+            //     File.Create(GDirectories.userDBPath);
             
             if (!File.Exists(GDirectories.playerDBPath))
                 File.Create(GDirectories.playerDBPath);
@@ -89,34 +89,34 @@ public class DBManager
     {
         //DBConnection.Close();
     }
-
-    internal void InitUserDB()
-    {
-        try
-        {
-            using (var conn = new SqliteConnection($@"Data Source={GDirectories.userDBPath}"))
-            {
-                conn.Open();
-                Debug.WDMNL("Connection Initialised: userDB");
-                var comm = conn.CreateCommand();
-                comm.CommandText = // TODO: ADD USER ID SECTION
-                    @"
-                    CREATE TABLE IF NOT EXISTS users (
-                        id INTEGER PRIMARY KEY,
-                        firstname TEXT NOT NULL,
-                        lastname TEXT NOT NULL,
-                        age INTEGER NOT NULL,
-                        password TEXT NOT NULL 
-                    );
-                    ";
-                var readr = comm.ExecuteNonQuery();
-            }
-        }
-        catch (Exception e)
-        {
-            throw new DatabaseConnectionFailed(e);
-        }
-    }
+    //
+    // internal void InitUserDB()
+    // {
+    //     try
+    //     {
+    //         using (var conn = new SqliteConnection($@"Data Source={GDirectories.userDBPath}"))
+    //         {
+    //             conn.Open();
+    //             Debug.WDMNL("Connection Initialised: userDB");
+    //             var comm = conn.CreateCommand();
+    //             comm.CommandText = // TODO: ADD USER ID SECTION
+    //                 @"
+    //                 CREATE TABLE IF NOT EXISTS users (
+    //                     id INTEGER PRIMARY KEY,
+    //                     firstname TEXT NOT NULL,
+    //                     lastname TEXT NOT NULL,
+    //                     age INTEGER NOT NULL,
+    //                     password TEXT NOT NULL 
+    //                 );
+    //                 ";
+    //             var readr = comm.ExecuteNonQuery();
+    //         }
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         throw new DatabaseConnectionFailed(e);
+    //     }
+    // }
 
     internal void InitPlayerDB()
     {
@@ -131,10 +131,10 @@ public class DBManager
                     @"
                     CREATE TABLE IF NOT EXISTS players (
                         id INTEGER PRIMARY KEY,
-                        userid INTEGER NOT NULL,
                         playername TEXT NOT NULL,
                         playerrace TEXT NOT NULL,
-                        playerclass TEXT NOT NULL
+                        playerclass TEXT NOT NULL,
+                        playeraccolade TEXT NOT NULL
                     )
                     ";
                 var readr = comm.ExecuteNonQuery();
@@ -146,36 +146,36 @@ public class DBManager
         }
     }
 
-    internal List<string> GetUserDBData()
+    // internal List<string> GetUserDBData()
+    // {
+    //     List<string> userDBData = new List<string>();
+    //
+    //     using (var conn = new SqliteConnection($@"Data Source={GDirectories.userDBPath}"))
+    //     {
+    //         conn.Open();
+    //         var comm = conn.CreateCommand();
+    //         comm.CommandText =
+    //             @"
+    //                 SELECT * FROM users;
+    //             ";
+    //         using (var readr = comm.ExecuteReader())
+    //         {
+    //             while (readr.Read())
+    //             {
+    //                 for (int i = 0; i <= 4; i++)
+    //                 {
+    //                     userDBData.Add(readr.GetValue(i).ToString());
+    //                 }
+    //             }
+    //         }
+    //     }
+    //
+    //     return userDBData;
+    // }
+
+    internal List<Player> GetPlayerDBData()
     {
-        List<string> userDBData = new List<string>();
-
-        using (var conn = new SqliteConnection($@"Data Source={GDirectories.userDBPath}"))
-        {
-            conn.Open();
-            var comm = conn.CreateCommand();
-            comm.CommandText =
-                @"
-                    SELECT * FROM users;
-                ";
-            using (var readr = comm.ExecuteReader())
-            {
-                while (readr.Read())
-                {
-                    for (int i = 0; i <= 4; i++)
-                    {
-                        userDBData.Add(readr.GetValue(i).ToString());
-                    }
-                }
-            }
-        }
-
-        return userDBData;
-    }
-
-    internal List<string> GetPlayerDBData()
-    {
-        List<string> playerDBData = new List<string>();
+        List<Player> playerDBData = new List<Player>();
 
         using (var conn = new SqliteConnection($@"Data Source={GDirectories.playerDBPath}"))
         {
@@ -189,10 +189,14 @@ public class DBManager
             {
                 while (readr.Read())
                 {
-                    for (int i = 0; i <= 4; i++)
-                    {
-                        playerDBData.Add(readr.GetValue(i).ToString());
-                    }
+                    Enum.TryParse(readr.GetValue(2).ToString().ToUpper(), out PlayerRace plRace);
+                    Enum.TryParse(readr.GetValue(3).ToString().ToUpper(), out PlayerClass plClass);
+                    Enum.TryParse(readr.GetValue(4).ToString().ToUpper(), out PlayerAccolade plAccolade);
+                    Player player = new Player(readr.GetValue(1).ToString(), plRace,
+                        plClass, plAccolade);
+                    
+                    playerDBData.Add(player);
+                    
                 }
             }
         }
@@ -200,19 +204,19 @@ public class DBManager
         return playerDBData;
     }
 
-    internal void WriteToUserDB(User user)
-    {
-        using (var conn = new SqliteConnection($@"Data Source={GDirectories.userDBPath}"))
-        {
-            conn.Open();
-            var comm = conn.CreateCommand();
-            comm.CommandText =
-                $@"
-                    INSERT INTO users (firstname, lastname, age, password) VALUES ('{user.firstname}', '{user.lastname}', '{user.age}', '{user.password}');
-                ";
-            using (var readr = comm.ExecuteReader()) ;
-        }
-    }
+    // internal void WriteToUserDB(User user)
+    // {
+    //     using (var conn = new SqliteConnection($@"Data Source={GDirectories.userDBPath}"))
+    //     {
+    //         conn.Open();
+    //         var comm = conn.CreateCommand();
+    //         comm.CommandText =
+    //             $@"
+    //                 INSERT INTO users (firstname, lastname, age, password) VALUES ('{user.firstname}', '{user.lastname}', '{user.age}', '{user.password}');
+    //             ";
+    //         using (var readr = comm.ExecuteReader()) ;
+    //     }
+    // }
     
     internal void WriteToPlayerDB(Player player)
     {
@@ -222,7 +226,7 @@ public class DBManager
             var comm = conn.CreateCommand();
             comm.CommandText =
                 $@"
-                    INSERT INTO players (userid, playername, playerrace, playerclass) VALUES ('{player.userid}', '{player.playername}', '{player.playerrace}', '{player.playerclass}');
+                    INSERT INTO players (playername, playerrace, playerclass, playeraccolade) VALUES ('{player.playername}', '{player.playerrace.ToString()}', '{player.playerclass.ToString()}', '{player.playeraccolade.ToString()}');
                 ";
             using (var readr = comm.ExecuteReader()) ;
         }
@@ -232,8 +236,8 @@ public class DBManager
 public static class GDirectories
 {
     // user data and database paths
-    public const string userPath = @"../../../User/";
-    public const string userDBPath = @"../../../User/user.sqlite";
+    // public const string userPath = @"../../../User/";
+    // public const string userDBPath = @"../../../User/user.sqlite";
     
     // player data and database paths
     public const string playerPath = @"../../../Player/";

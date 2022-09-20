@@ -3,25 +3,74 @@ namespace BanishedMain;
 public class Player
 {
     // database data
-    public int userid { get; }
     public string playername { get; }
-    public string playerrace { get; }
-    public string playerclass { get; }
+    public PlayerRace playerrace { get; }
+    public PlayerClass playerclass { get; }
+    public PlayerAccolade playeraccolade { get; }
 
-    public Player(int _userid, string _playername, string _playerrace, string _playerclass)
+    public int playerHealth;
+    public int playerFaith;
+    public int playerAgility;
+    
+    public int playerMorality;
+    public int playerHonour;
+    public int playerDishonour;
+    public int playerGrace;
+
+    public int playerFunds; // gold
+
+    public Player(string _playername, PlayerRace _playerrace, PlayerClass _playerclass, PlayerAccolade _playeraccolade)
     {
-        userid = _userid;
         playername = _playername;
         playerrace = _playerrace;
         playerclass = _playerclass;
+        playeraccolade = _playeraccolade;
+
+        // TODO: MAKE SPECIFIC FOR EACH CLASS
+        playerMorality = 50; // neutral
+        playerHonour = 100;
+        playerDishonour = 0;
+        playerGrace = 60; // blessed
+
+        playerFunds = 100;
+        
+        // assign critical values
+        switch (playerclass)
+        {
+            case PlayerClass.KNIGHT:
+                playerHealth = Knight.base_health;
+                playerFaith = Knight.base_faith;
+                playerAgility = Knight.base_agility;
+                break;
+            case PlayerClass.SORCERER:
+                playerHealth = Sorcerer.base_health;
+                playerFaith = Sorcerer.base_faith;
+                playerAgility = Sorcerer.base_agility;
+                break;
+            case PlayerClass.WARLOCK:
+                playerHealth = Warlock.base_health;
+                playerFaith = Warlock.base_faith;
+                playerAgility = Warlock.base_agility;
+                break;
+        }
     }
 
     public Player()
     {
-        userid = -1;
-        playername = "";
-        playerrace = "";
-        playerclass = "";
+        playername = String.Empty;
+        playerrace = PlayerRace.EMPTY;
+        playerclass = PlayerClass.EMPTY;
+        playeraccolade = PlayerAccolade.EMPTY;
+        
+        playerHealth = 0;
+        playerFaith = 0;
+        playerAgility = 0;
+
+        playerMorality = 0;
+        playerHonour = 0;
+        playerDishonour = 0;
+        playerGrace = 0;
+
 
     }
 }
@@ -29,19 +78,29 @@ public class Player
 
 // player enums
 
-public enum PlayerRaceList
+public enum PlayerRace
 {
+    EMPTY,
     ELF,
     HUMAN,
     ORC,
     
 }
 
-public enum PlayerClassList
+public enum PlayerClass
 {
+    EMPTY,
     KNIGHT,
     SORCERER,
     WARLOCK
+}
+
+public enum PlayerAccolade
+{
+    EMPTY,
+    WARRIOR,
+    SCHOLAR,
+    ACOLYTE
 }
 
 public class PlayerManager
@@ -64,7 +123,7 @@ public class PlayerManager
         }
     }
 
-    internal Player SetupPlayer(User user)
+    internal Player SetupPlayer()
     {
         CosmeticMenu.writeTitleCosmetics("player creation menu");
         Sys.WSMNL("Enter Player Name ('playername'): ");
@@ -135,15 +194,51 @@ public class PlayerManager
             }
         }
         
+        // ACOLADE // 
+        bool playerAccoladeMenuQuit = false;
+        string playerAccolade = "";
+        
+        while (!playerAccoladeMenuQuit)
+        {
+            Sys.WSMNL("Enter Player Accolade ('playeraccolade') [? for help]: ");
+            playerAccolade = Console.ReadLine();
+
+            switch (playerAccolade)
+            {
+                case "?":
+                    AccoladeHelp.AccoladeOptions();
+                    break;
+                case "WARRIOR":
+                case "warrior":
+                    playerAccoladeMenuQuit = true;
+                    break;
+                case "SCHOLAR":
+                case "scholar":
+                    playerAccoladeMenuQuit = true;
+                    break;
+                case "ACOLYTE":
+                case "acolyte":
+                    playerAccoladeMenuQuit = true;
+                    break;
+                default:
+                    Error.WEMNL("No valid accolade input detected!");
+                    break;
+            }
+        }
+        
         
         
         Sys.WSMNL("Adding default attributes...");
         ///////////////////////////////////////////////////////////
 
         Debug.WDMNL("Data Collated!");
-        Sys.WSMDNL("Saving...");
 
-        Player player = new Player(user.userid, playerName, playerRace, playerClass);
+        // parse data as Enum
+        Enum.TryParse(playerRace.ToUpper(), out PlayerRace plRace);
+        Enum.TryParse(playerClass.ToUpper(), out PlayerClass plClass);
+        Enum.TryParse(playerAccolade.ToUpper(), out PlayerAccolade plAccolade);
+
+        Player player = new Player(playerName, plRace, plClass, plAccolade);
 
 
         return player;
@@ -154,7 +249,7 @@ public class PlayerManager
         DB.WriteToPlayerDB(player);
     }
 
-    internal Player PlayerLogin(DBManager DB, int userid)
+    internal Player PlayerLogin(DBManager DB)
     {
         Player player = new Player();
         
@@ -167,88 +262,123 @@ public class PlayerManager
             Sys.WSMNL("displaying...");
 
             Sys.WSMNL("Players:");
-            
-            List<string> playerData = DB.GetPlayerDBData();
-            List<string> playerDataByUserId = new List<string>();
+            Sys.WSM("\n");
 
-            // remove database entry data
-            for (int i = 0; i < playerData.Count(); i++)
+            List<Player> playerData = DB.GetPlayerDBData();
+
+            int counter = 0;
+
+
+            Sys.WSMNL("Select Player: ");
+
+            foreach (var playerDat in playerData)
             {
-                int listTotal = playerData.Count();
-                int indexToRemove = listTotal / 5; 
-                
-                playerData.RemoveAt(indexToRemove);
-            }
-            
-            foreach (var VARIABLE in playerData)
-            {
-                Console.WriteLine(VARIABLE);
+                Sys.WSMNL($"{counter}. {playerDat.playername}");
             }
 
-            for (int i = 0; i < playerData.Count(); i++)
+            string playerSelection = Console.ReadLine();
+
+            try
             {
-
-                // see if input is parsable
-                int playerItemBoundToUserid;
-                try
+                if (playerData.ElementAt(int.Parse(playerSelection)) != null)
                 {
-                    playerItemBoundToUserid = int.Parse(playerData[i]);
-                    // if the item = the user id, add the 'name' (one index past) to the player data
-                    if (playerItemBoundToUserid == userid) // this is inefficent
-                    {
-                        int playerNameIndex = i + 1; //TODO: FIX THIS ADDING USER ID AS WELL!!
-                        break;
-                        playerDataByUserId.Add(playerData[playerNameIndex]);
-                    }
+                    player = playerData[int.Parse(playerSelection)];
+                    loginValid = true;
                 }
-                catch (Exception e)
-                {} // catch error
-            }
-            
-            bool userSelectionValid = false;
-
-            while (!userSelectionValid)
-            {
-                // print player names for that user
-                uint count = 1;
-                foreach (var playerEntry in playerDataByUserId)
+                else
                 {
-                    Debug.WDMNL($"{count}. {playerEntry}");
-                    count++;
-                }
-            
-                // prompt user
-                Sys.WSMNL("Select Player By Number: ");
-                try
-                {
-                    int userPlayerSelection = int.Parse(Console.ReadLine());
-
-                    // make player from working backwards
-                    // get first easiest data
-                    string userPlayername = playerDataByUserId[userPlayerSelection];
-
-                    int userPlayerUseridLocation = (playerData.IndexOf(userPlayername)) - 1;
-                    int userPlayerUserid = int.Parse((playerData[userPlayerUseridLocation]));
-                    
-                    int userPlayerraceLocation = (playerData.IndexOf(userPlayername) + 1);
-                    string userPlayerrace = playerData[userPlayerraceLocation];
-
-                    int userPlayerclassLocation = (playerData.IndexOf(userPlayername) + 2);
-                    string userPlayerclass = playerData[userPlayerclassLocation];
-                    
-                    // create player
-                    player = new Player(userPlayerUserid, userPlayername, userPlayerrace, userPlayerclass);
-                    
-                    Sys.WSMNL("LOGIN SUCCESFUL!");
-                    
-                    userSelectionValid = true;
-                }
-                catch (Exception e)
-                {
-                    Error.WEMNL("NO VALID INPUT!");
+                    Error.WEMNL("NO VALID PLAYER!");
                 }
             }
+            catch (Exception e)
+            {
+                Error.WEMNL("NO VALID INPUT!");
+            }
+
+
+            // List<string> playerDataByUserId = new List<string>();
+
+            //     // remove database entry data
+            //     for (int i = 0; i < playerData.Count(); i++)
+            //     {
+            //         int listTotal = playerData.Count();
+            //         int indexToRemove = listTotal / 5; 
+            //         
+            //         playerData.RemoveAt(indexToRemove);
+            //     }
+            //     
+            //     foreach (var VARIABLE in playerData)
+            //     {
+            //         Console.WriteLine(VARIABLE);
+            //     }
+            //
+            //     for (int i = 0; i < playerData.Count(); i++)
+            //     {
+            //
+            //         // see if input is parsable
+            //         int playerItemBoundToUserid;
+            //         try
+            //         {
+            //             playerItemBoundToUserid = int.Parse(playerData[i]);
+            //             // if the item = the user id, add the 'name' (one index past) to the player data
+            //             if (playerItemBoundToUserid == userid) // this is inefficent
+            //             {
+            //                 int playerNameIndex = i + 1; //TODO: FIX THIS ADDING USER ID AS WELL!!
+            //                 break;
+            //                 playerDataByUserId.Add(playerData[playerNameIndex]);
+            //             }
+            //         }
+            //         catch (Exception e)
+            //         {} // catch error
+            //     }
+            //     
+            //     bool userSelectionValid = false;
+            //
+            //     while (!userSelectionValid)
+            //     {
+            //         // print player names for that user
+            //         uint count = 1;
+            //         foreach (var playerEntry in playerDataByUserId)
+            //         {
+            //             Debug.WDMNL($"{count}. {playerEntry}");
+            //             count++;
+            //         }
+            //     
+            //         // prompt user
+            //         Sys.WSMNL("Select Player By Number: ");
+            //         try
+            //         {
+            //             int userPlayerSelection = int.Parse(Console.ReadLine());
+            //
+            //             // make player from working backwards
+            //             // get first easiest data
+            //             string userPlayername = playerDataByUserId[userPlayerSelection];
+            //
+            //             int userPlayerUseridLocation = (playerData.IndexOf(userPlayername)) - 1;
+            //             int userPlayerUserid = int.Parse((playerData[userPlayerUseridLocation]));
+            //             
+            //             int userPlayerraceLocation = (playerData.IndexOf(userPlayername) + 1);
+            //             string userPlayerrace = playerData[userPlayerraceLocation];
+            //
+            //             int userPlayerclassLocation = (playerData.IndexOf(userPlayername) + 2);
+            //             string userPlayerclass = playerData[userPlayerclassLocation];
+            //             
+            //             // create player
+            //             player = new Player(userPlayername, userPlayerrace, userPlayerclass);
+            //             
+            //             Sys.WSMNL("LOGIN SUCCESFUL!");
+            //             
+            //             userSelectionValid = true;
+            //         }
+            //         catch (Exception e)
+            //         {
+            //             Error.WEMNL("NO VALID INPUT!");
+            //         }
+            //     }
+            // }
         }
+        
+        Sys.WSMNL("LOGIN SUCCESFUL!");
         return player;
     }
 }

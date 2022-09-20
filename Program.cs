@@ -13,44 +13,88 @@ internal class Program
         DataManager DM = new DataManager();
         DM.InitFilesystem();
         DBManager DB = new DBManager();
-        DB.InitUserDB();
         DB.InitPlayerDB();
         //CosmeticMenu cMenu = new CosmeticMenu();
 
         // verify user
-        UserManager UM = new UserManager();
         PlayerManager PM = new PlayerManager();
         
         // global instances
-        User user;
         Player player;
-        
-        
-        if (!UM.VerifyUser(DB))
-        {
-            user = UM.SetupUser();
-            UM.SaveUser(DB, user);
-        }
-        else
-        {
-            user = UM.UserLogin(DB);
-        }
+
+        Sys.WSMNL("Welcome!");
+        Sys.WSMNL("Lets Begin!");
+
         // now verify player
         if (!PM.VerifyPlayer(DB))
         {
-            player = PM.SetupPlayer(user);
+            player = PM.SetupPlayer();
             PM.SavePlayer(DB, player);
         }
         else
         {
-            player = PM.PlayerLogin(DB, user.userid);
+            Sys.WSMNL("Player data detected!");
         }
-
         
+        player = Menu(DB, PM);
+        
+        // GAME START ////////////////////////////////////////////////////////////////////////////
+        Sys.WSMNL($"WELCOME: {player.playername}");
+        Sys.WSMNL("YOUR ADVENTURE BEGINS...");
+        Sys.WSM("\n");
+        Game game = new Game(player);
+        
+        game.Info();
+        game.Start();
+        game.GAME();
+
+
 
         Console.ReadKey(true);
     }
+    
+    static Player Menu(DBManager DB, PlayerManager PM)
+    {
+        Player player = new Player();
+        
+        bool mainMenuExit = false;
+        
+        while (!mainMenuExit)
+        {
+            CosmeticMenu.writeTitleCosmetics("MAIN MENU");
+            Sys.WSMNL("0. Quit");
+            Sys.WSMNL("1. Load Player");
+            Sys.WSMNL("2. Create Player");
+            
+            try
+            {
+                int mainMenuSelection = int.Parse(Console.ReadLine());
+
+                switch (mainMenuSelection)
+                {
+                    case 0:
+                        Environment.Exit(0);
+                        break;
+                    case 1:
+                        player = PM.PlayerLogin(DB);
+                        mainMenuExit = true;
+                        break;
+                    case 2:
+                        player = PM.SetupPlayer();
+                        mainMenuExit = true;
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                Error.WEMNL("NO VALID INPUT!");
+            }
+        }
+
+        return player;
+    }
 }
+
 
 
 // CALL FUNCTIONS

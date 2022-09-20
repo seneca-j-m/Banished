@@ -7,20 +7,16 @@ namespace BanishedMain;
 
 public class Knight
 {
-    public const string name = "KNIGHT";
-    public const string description = 
+    private const string name = "KNIGHT";
+    private const string description = 
         @"
-        A lowly knight, one serving a kingdom now lost to the sands of time. 
+         
         ";
     
     public const int base_health = 100;
     public const int base_faith = 10;
     public const int base_agility = 40;
-
-    public Dictionary<string, string> background;
-    public Dictionary<string, string> traits;
-
-    public static void info()
+    public static void Info()
     {
         // print stuff
         CosmeticMenu.writeTitleCosmetics("THE KNIGHT");
@@ -29,17 +25,34 @@ public class Knight
         Debug.WDMNL($"DESCRIPTION:");
         Debug.WDMNL(description);
     }
+
+    public static void Beginning()
+    {
+        string beginning = GameManager.readBeginning(PlayerClass.KNIGHT);
+        Debug.WDMNL(beginning);
+        
+        // wait for input
+        Console.ReadLine();
+    }
+
+    public static void K_SCENE_ONE()
+    {
+        Debug.WDMNL("");
+    }
 }
 
 public class Sorcerer
 {
-    public const string name = "SORCERER";
-    public const string description = 
+    private const string name = "SORCERER";
+    private const string description = 
         @"
         
         ";
     
-    public static int base_health = 80;
+    public const int base_health = 80;
+    public const int base_faith = 100;
+    public const int base_agility = 20;
+    
     public static void info()
     {
         // print stuff
@@ -48,6 +61,14 @@ public class Sorcerer
         Debug.WDMNL($"HEALTH: {base_health}");
         Debug.WDMNL($"DESCRIPTION:");
         Debug.WDMNL(description);
+    }
+    public static void Beginning()
+    {
+        string beginning = GameManager.readBeginning(PlayerClass.KNIGHT);
+        Debug.WDMNL(beginning);
+        
+        // wait for input
+        Console.ReadLine();
     }
 }
 
@@ -59,7 +80,9 @@ public class Warlock
         
         ";
     
-    public static int base_health = 75;
+    public const int base_health = 75;
+    public const int base_faith = 80;
+    public const int base_agility = 50;
     public static void info()
     {
         CosmeticMenu.writeTitleCosmetics("THE WARLOCK");
@@ -67,5 +90,13 @@ public class Warlock
         Debug.WDMNL($"HEALTH: {base_health}");
         Debug.WDMNL($"DESCRIPTION:");
         Debug.WDMNL(description);
+    }
+    public static void Beginning()
+    {
+        string beginning = GameManager.readBeginning(PlayerClass.KNIGHT);
+        Debug.WDMNL(beginning);
+
+        // wait for input
+        Console.ReadLine();
     }
 }
