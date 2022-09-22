@@ -23,7 +23,7 @@ public static class Debug
     /// <param name="message">Message to be written.</param>
     public static void WDMNL(string message)
     {
-        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.ForegroundColor = ConsoleColor.Blue;
         Console.WriteLine($"{message.ToUpper()}");
         Console.ResetColor();
     }

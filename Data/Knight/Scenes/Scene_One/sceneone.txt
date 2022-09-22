@@ -1,0 +1,11 @@
+SCENEONE
+
+PROMPTONE
+You right yourself. Behind you is the stone casket you rose from, its lid smashed with the 
+gravity of your awakening. You turn your head to the left, a skeleten lay in the corner of this small stone room and 
+ahead of you lies a heavy stone door, closed. A blue ray of light guides you in this direction. Sword and Sheild in hand, 
+you breathe deep, and fresh air rushes through your lungs. Your destiny awaits...
+PROMPTONEEND
+
+
+SCENEONEEND

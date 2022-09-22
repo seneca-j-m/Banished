@@ -35,11 +35,15 @@ public class Game
     {
         Sys.WSMNL("INFORMATION: ");
         Sys.WSMNL("1. Story Narration is given in BLUE (Debug.WSMNL())");
-        Sys.WSMNL("2. Dialouge is given in YELLOW (Warn.WWMNL())");
+        Sys.WSMNL("2. Prompts are given in YELLOW (Warn.WWMNL())");
         Sys.WSMNL("3. Combat is given in RED (Error.WEMNL())");
+        Sys.WSMNL("4. After each prompt, input ENTER to gain the relevent responses");
+        Sys.WSMNL("5. In responding to the prompt, use only a spelling of a number of the given input you wish to choose");
+        Sys.WSMNL("6. Respond to prompt with 'SAVE' to quit the game and save he scene");
         Sys.WSMNL("\n ENTER TO BEGIN...");
 
         Console.ReadLine(); // wait for user input
+        Console.Clear();
         
         Sys.WSM("\n");
     }
@@ -50,18 +54,18 @@ public class Game
         switch (pl_class)
         {
             case PlayerClass.KNIGHT:
-                Knight.Beginning();
+                KNIGHT_SCENE.Beginning();
                 break;
             case PlayerClass.SORCERER:
-                Sorcerer.Beginning();
+                SORCERER_SCENE.Beginning();
                 break;
             case PlayerClass.WARLOCK:
-                Warlock.Beginning();
+                WARLOCK_SCENE.Beginning();
                 break;
         }
     }
 
-    public void GAME()
+    public void GAME() // works
     {
         SCENE_ONE();
         SCENE_TWO();
@@ -73,11 +77,13 @@ public class Game
         switch (pl_class)
         {
             case PlayerClass.KNIGHT:
-                Knight.K_SCENE_ONE();
+                KNIGHT_SCENE.K_SCENE_ONE();
                 break;
             case PlayerClass.SORCERER: // TODO: IMPLEMENT
+                SORCERER_SCENE.S_SCENE_ONE();
                 break;
             case PlayerClass.WARLOCK:
+                WARLOCK_SCENE.W_SCENE_ONE();
                 break;
         }
     }
@@ -87,3 +93,80 @@ public class Game
     {}
 
 }
+
+public static class KNIGHT_SCENE
+{
+    public static void Beginning()
+    {
+        string beginning = GameManager.readBeginning(PlayerClass.KNIGHT);
+        Debug.WDMNL(beginning);
+        Debug.WDMNL("");
+        Sys.WSMNL("PRESS ENTER TO CONTINUE");
+        
+        // wait for input
+        Console.ReadLine();
+    }
+    public static void K_SCENE_ONE()
+    {
+        // read first prompt
+        string promptOne = GameManager.readPrompt(PlayerClass.KNIGHT, "ONE", "ONE");
+        // Debug.WDMNL(promptOne);
+        // Debug.WDMNL("\n");
+
+        Console.ReadLine();
+        
+        // offer responses
+        string optionOne = GameManager.readOptions(PlayerClass.KNIGHT, "ONE", "ONE");
+        // Debug.WDMNL(optionOne);
+        // Debug.WDMNL("\n");
+
+        string responseOne = GameManager.promptPlayer(promptOne, optionOne); // PROMPT
+        string userResponseActual = GameManager.convertUserResponse(responseOne);
+        
+
+        // get consequences
+        string consequenceOne = GameManager.readConsequences(PlayerClass.KNIGHT, "ONE", userResponseActual);
+        Debug.WDMNL(consequenceOne);
+        Debug.WDMNL("\n");
+
+        Console.ReadLine();
+
+        // read second prompt
+
+    }
+}
+
+public static class SORCERER_SCENE
+{
+    public static void Beginning()
+    {
+        string beginning = GameManager.readBeginning(PlayerClass.KNIGHT);
+        Debug.WDMNL(beginning);
+        Debug.WDMNL("");
+        Sys.WSMNL("PRESS ENTER TO CONTINUE");
+        
+        // wait for input
+        Console.ReadLine();
+    }
+    
+    public static void S_SCENE_ONE()
+    {}
+}
+
+public static class WARLOCK_SCENE
+{
+    public static void Beginning()
+    {
+        string beginning = GameManager.readBeginning(PlayerClass.KNIGHT);
+        Debug.WDMNL(beginning);
+        Debug.WDMNL("");
+        Sys.WSMNL("PRESS ENTER TO CONTINUE");
+
+        // wait for input
+        Console.ReadLine();
+    }
+
+    public static void W_SCENE_ONE()
+    {}
+}
+

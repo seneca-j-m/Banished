@@ -1,0 +1,13 @@
+SCENEONECONSEQUENCES
+
+PROMPTONECONSEQUENCES
+RESPONSEONE
+You approach the skeleton, the body has long since decomposed.
+RESPONSEONEEND
+
+RESPONSETWO
+You try the door, it can be opened with force.
+RESPONSETWOEND
+PROMTONECONSEQUENCESEND
+
+SCENEONECONSEQUENCESEND

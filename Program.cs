@@ -49,7 +49,7 @@ internal class Program
         game.GAME();
 
 
-
+        Console.WriteLine("END");
         Console.ReadKey(true);
     }
     

@@ -23,21 +23,7 @@ public class Knight
         Debug.WDMNL($"NAME: {name}");
         Debug.WDMNL($"HEALTH: {base_health}");
         Debug.WDMNL($"DESCRIPTION:");
-        Debug.WDMNL(description);
-    }
-
-    public static void Beginning()
-    {
-        string beginning = GameManager.readBeginning(PlayerClass.KNIGHT);
-        Debug.WDMNL(beginning);
-        
-        // wait for input
-        Console.ReadLine();
-    }
-
-    public static void K_SCENE_ONE()
-    {
-        Debug.WDMNL("");
+        Debug.WDMNL(description); //TODO: FINISH THIS
     }
 }
 
@@ -62,14 +48,6 @@ public class Sorcerer
         Debug.WDMNL($"DESCRIPTION:");
         Debug.WDMNL(description);
     }
-    public static void Beginning()
-    {
-        string beginning = GameManager.readBeginning(PlayerClass.KNIGHT);
-        Debug.WDMNL(beginning);
-        
-        // wait for input
-        Console.ReadLine();
-    }
 }
 
 public class Warlock
@@ -90,13 +68,5 @@ public class Warlock
         Debug.WDMNL($"HEALTH: {base_health}");
         Debug.WDMNL($"DESCRIPTION:");
         Debug.WDMNL(description);
-    }
-    public static void Beginning()
-    {
-        string beginning = GameManager.readBeginning(PlayerClass.KNIGHT);
-        Debug.WDMNL(beginning);
-
-        // wait for input
-        Console.ReadLine();
     }
 }
