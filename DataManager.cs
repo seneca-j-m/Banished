@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using Microsoft.Data.Sqlite;
+using Microsoft.VisualBasic.FileIO;
 
 
 //TODO: ADD WARNING FUNCTION FOR EMPTY FILES, PROMPT USER TO CREATE
@@ -15,8 +16,10 @@ namespace BanishedMain;
 
 public class DataManager
 {
-    internal void InitFilesystem()
+    internal bool InitFilesystem()
     {
+        List<string> emptyDataFiles = new List<string>();
+
         bool critDataExists = true;
         // verify directories
         try
@@ -107,6 +110,13 @@ public class DataManager
                 if (!File.Exists(filePath))
                 {
                     File.Create(filePath);
+                    critDataExists = false;  // files are empty!
+                }
+
+                if (new FileInfo(filePath).Length == 0)
+                {
+                    Warn.WWMNL($"WARN: {filePath} has no data!");
+                    emptyDataFiles.Add(filePath);
                     critDataExists = false;
                 }
             }
@@ -114,52 +124,113 @@ public class DataManager
             if (!critDataExists)
             {
                 Warn.WWMNL("WARNING: DATA MISSING IN ONE OR MORE CRITICAL FILES!");
+                Warn.WWMNL("Writing template data ");
 
                 // write templates
-
-                // write race info here
-                for (int i = 0; i < 2; i++)
+                foreach (var filePath in emptyDataFiles)
                 {
-                    using (StreamWriter sw = new StreamWriter(dataFilePaths[i]))
+                    using (StreamWriter sw = new StreamWriter(filePath))
                     {
-                        sw.WriteLine("DESCRIPTION"); //TODO: ADJUST TO ACTUAL VALUES
-                        sw.WriteLine();
-                        sw.WriteLine("DESCRIPTIONEND");
+                        if (filePath.Contains("human.txt") || filePath.Contains("elf.txt") || // races
+                            filePath.Contains("orc.txt"))
+                        {
+                            sw.WriteLine("DESCRIPTION");
+                            sw.WriteLine("\n");
+                            sw.WriteLine("DESCRIPTIONEND");
+                        }
+                        else if (filePath.Contains("knight.txt") || filePath.Contains("sorcerer.txt") || // classes
+                                 filePath.Contains("warlock.txt"))
+                        {
+                            sw.WriteLine("DESCRIPTION");
+                            sw.WriteLine("\n");
+                            sw.WriteLine("DESCRIPTIONEND");
+                        }
+                        else if (filePath.Contains("warrior.txt") || filePath.Contains("scholar.txt") ||
+                                 filePath.Contains("acolyte.txt"))
+                        {
+                            sw.WriteLine("DESCRIPTION");
+                            sw.WriteLine("\n");
+                            sw.WriteLine("DESCRIPTIONEND");
+                        }
+                        else if (filePath.Contains("Knight/beginning.txt") ||
+                                 filePath.Contains("Sorcerer/beginning.txt") ||
+                                 filePath.Contains("Warlock/beginning.txt"))
+                        {
+                            sw.WriteLine("BEGINNING");
+                            sw.WriteLine("\n");
+                            sw.WriteLine("BEGINNINGEND");
+                        }
+                        else if (filePath.Contains("sceneone.txt")) // add prompts later
+                        {
+                            sw.WriteLine("SCENEONE");
+                            sw.WriteLine("\n");
+                            sw.WriteLine("SCENEONEEND");
+                        }
+                        else if (filePath.Contains("scenetwo.txt"))
+                        {
+                            sw.WriteLine("SCENETWO");
+                            sw.WriteLine("\n");
+                            sw.WriteLine("SCENETWOEND");
+                        }
+                        else if (filePath.Contains("scenethree.txt"))
+                        {
+                            sw.WriteLine("SCENETHREE");
+                            sw.WriteLine("\n");
+                            sw.WriteLine("SCENETHREEEND");
+                        }
+                        else if (filePath.Contains("sceneoneoptions")) //TODO: FINISH THIS
+                        { }
+                        else if (filePath.Contains("sceneoneconsequences"))
+                        { }
                     }
                 }
 
-                // write class info here
-                for (int i = 3; i < 5; i++)
-                {
-                    using (StreamWriter sw = new StreamWriter(dataFilePaths[i]))
-                    {
-                        sw.WriteLine("DESCRIPTION");
-                        sw.WriteLine();
-                        sw.WriteLine("DESCRIPTIONEND");
-                    }
-                }
+                return false; 
 
-                // write accolade info here
-                for (int i = 6; i < 8; i++)
-                {
-                    using (StreamWriter sw = new StreamWriter(dataFilePaths[i]))
-                    {
-                        sw.WriteLine("DESCRIPTION");
-                        sw.WriteLine();
-                        sw.WriteLine("DESCRIPTIONEND");
-                    }
-                }
 
-                // story data
-                for (int i = 9; i < 11; i++)
-                {
-                    using (StreamWriter sw = new StreamWriter(dataFilePaths[i]))
-                    {
-                        sw.WriteLine("BEGINNING");
-                        sw.WriteLine();
-                        sw.WriteLine("BEGINNINGEND");
-                    }
-                }
+                // // write race info here
+                // for (int i = 0; i < 2; i++)
+                // {
+                //     using (StreamWriter sw = new StreamWriter(dataFilePaths[i]))
+                //     {
+                //         sw.WriteLine("DESCRIPTION"); //TODO: ADJUST TO ACTUAL VALUES
+                //         sw.WriteLine();
+                //         sw.WriteLine("DESCRIPTIONEND");
+                //     }
+                // }
+                //
+                // // write class info here
+                // for (int i = 3; i < 5; i++)
+                // {
+                //     using (StreamWriter sw = new StreamWriter(dataFilePaths[i]))
+                //     {
+                //         sw.WriteLine("DESCRIPTION");
+                //         sw.WriteLine();
+                //         sw.WriteLine("DESCRIPTIONEND");
+                //     }
+                // }
+                //
+                // // write accolade info here
+                // for (int i = 6; i < 8; i++)
+                // {
+                //     using (StreamWriter sw = new StreamWriter(dataFilePaths[i]))
+                //     {
+                //         sw.WriteLine("DESCRIPTION");
+                //         sw.WriteLine();
+                //         sw.WriteLine("DESCRIPTIONEND");
+                //     }
+                // }
+                //
+                // // story data
+                // for (int i = 9; i < 11; i++)
+                // {
+                //     using (StreamWriter sw = new StreamWriter(dataFilePaths[i]))
+                //     {
+                //         sw.WriteLine("BEGINNING");
+                //         sw.WriteLine();
+                //         sw.WriteLine("BEGINNINGEND");
+                //     }
+                // }
                 //
                 // for (int i = 12; i < 14; i++) //TODO: FINISH THIS
                 // {
@@ -228,8 +299,11 @@ public class DataManager
         }
         catch (Exception e)
         {
+            return false;
             throw new SaveFileCreationFailed(e);
         }
+
+        return true; //TODO: EHAT IS THIS
     }
 }
 
@@ -385,6 +459,20 @@ public class DBManager
             using (var readr = comm.ExecuteReader()) ;
         }
     }
+
+    internal void DeleteFromPlayerDB(string playerName)
+    {
+        using (var conn = new SqliteConnection($@"Data Source={GDirectories.playerDBPath}"))
+        {
+            conn.Open();
+            var comm = conn.CreateCommand();
+            comm.CommandText =
+                $@"
+                    DELETE FROM players WHERE playername = '{playerName}';
+                ";
+            using (var readr = comm.ExecuteReader()) ;
+        }
+    }
 }
 
 public static class GDirectories
@@ -501,7 +589,7 @@ public static class GDirectories
         @"../../../Data/Knight/Scenes/Scene_One/sceneoneconsequences.txt";
 
     public const string playerKnightStoryDataSceneTwoConsequencesF =
-        @"../../../Data/Knight/Scenes/Scene_Two/sceneTwoconsequences.txt";
+        @"../../../Data/Knight/Scenes/Scene_Two/scenetwoconsequences.txt";
 
     public const string playerKnightStoryDataSceneThreeConsequencesF =
         @"../../../Data/Knight/Scenes/Scene_Three/scenethreeconsequences.txt";
@@ -510,7 +598,7 @@ public static class GDirectories
         @"../../../Data/Sorcerer/Scenes/Scene_One/sceneoneconsequences.txt";
 
     public const string playerSorcererStoryDataSceneTwoConsequencesF =
-        @"../../../Data/Sorcerer/Scenes/Scene_Two/sceneTwoconsequences.txt";
+        @"../../../Data/Sorcerer/Scenes/Scene_Two/scenetwoconsequences.txt";
 
     public const string playerSorcererStoryDataSceneThreeConsequencesF =
         @"../../../Data/Sorcerer/Scenes/Scene_Three/scenethreeconsequences.txt";
@@ -519,7 +607,7 @@ public static class GDirectories
         @"../../../Data/Warlock/Scenes/Scene_One/sceneoneconsequences.txt";
 
     public const string playerWarlockStoryDataSceneTwoConsequencesF =
-        @"../../../Data/Warlock/Scenes/Scene_Two/sceneTwoconsequences.txt";
+        @"../../../Data/Warlock/Scenes/Scene_Two/scenetwoconsequences.txt";
 
     public const string playerWarlockStoryDataSceneThreeConsequencesF =
         @"../../../Data/Warlock/Scenes/Scene_Three/scenethreeconsequences.txt";

@@ -70,8 +70,6 @@ public class Player
         playerHonour = 0;
         playerDishonour = 0;
         playerGrace = 0;
-
-
     }
 }
 
@@ -126,8 +124,15 @@ public class PlayerManager
     internal Player SetupPlayer()
     {
         CosmeticMenu.writeTitleCosmetics("player creation menu");
-        Sys.WSMNL("Enter Player Name ('playername'): ");
+        Sys.WSMNL("Enter Player Name ('playername') [q/Q for quit]: ");
         string playerName = Console.ReadLine();
+        
+        // just a single check is needed here
+        if (string.Equals(playerName, "q") || string.Equals(playerName, "Q"))
+        {
+            Sys.WSMNL("QUITING...");
+            Environment.Exit(0);
+        }
 
         // RACE // 
         bool playerRaceMenuQuit = false;
@@ -136,7 +141,7 @@ public class PlayerManager
         
         while (!playerRaceMenuQuit)
         {
-            Sys.WSMNL("Enter Player Race ('playerrace') [? for help]: ");
+            Sys.WSMNL("Enter Player Race ('playerrace') [? for help] [q/Q for quit]: ");
             playerRace = Console.ReadLine();
             // verify input 
             switch (playerRace)
@@ -156,11 +161,17 @@ public class PlayerManager
                 case "orc":
                     playerRaceMenuQuit = true;
                     break;
+                case "q":
+                case "Q":
+                    Sys.WSMNL("QUITIING...");
+                    Environment.Exit(0); //TODO: RECTIFY THIS
+                    break;
                 default:
                     Error.WEMNL("No valid race input detected!");
                     break;
             }
         }
+        
         // CLASS // 
         bool playerClassMenuQuit = false;
 
@@ -168,7 +179,7 @@ public class PlayerManager
         
         while (!playerClassMenuQuit)
         {
-            Sys.WSMNL("Enter Player Class ('playerclass') [? for help]: ");
+            Sys.WSMNL("Enter Player Class ('playerclass') [? for help] [q/Q for quit]: ");
             playerClass = Console.ReadLine();
 
             switch (playerClass)
@@ -188,6 +199,11 @@ public class PlayerManager
                 case "warlock":
                     playerClassMenuQuit = true;
                     break;
+                case "q":
+                case "Q":
+                    Sys.WSMNL("QUITIING...");
+                    Environment.Exit(0); //TODO: RECTIFY THIS
+                    break;
                 default:
                     Error.WEMNL("No valid class input detected!");
                     break;
@@ -200,7 +216,7 @@ public class PlayerManager
         
         while (!playerAccoladeMenuQuit)
         {
-            Sys.WSMNL("Enter Player Accolade ('playeraccolade') [? for help]: ");
+            Sys.WSMNL("Enter Player Accolade ('playeraccolade') [? for help] [q/Q for quit]: ");
             playerAccolade = Console.ReadLine();
 
             switch (playerAccolade)
@@ -219,6 +235,11 @@ public class PlayerManager
                 case "ACOLYTE":
                 case "acolyte":
                     playerAccoladeMenuQuit = true;
+                    break;
+                case "q":
+                case "Q":
+                    Sys.WSMNL("QUITIING...");
+                    Environment.Exit(0); //TODO: RECTIFY THIS
                     break;
                 default:
                     Error.WEMNL("No valid accolade input detected!");
@@ -249,6 +270,74 @@ public class PlayerManager
         DB.WriteToPlayerDB(player);
     }
 
+    internal void DeletePlayers(DBManager DB)
+    {
+
+        Player player; // no need to initialise
+
+        bool deleteSelectionValid = false;
+
+        while (!deleteSelectionValid)
+        {
+                    
+            CosmeticMenu.writeTitleCosmetics("PLAYER DELETION");
+            Sys.WSMNL("Verifying current players...");
+            Sys.WSMNL("displaying...");
+            Sys.WSMNL("Select player for deletion [q/Q for quit]: ");
+            Sys.WSM("\n");
+            Sys.WSMNL("Players:");
+            Sys.WSMNL("\n");
+
+            List<Player> playerData = DB.GetPlayerDBData();
+        
+            int counter = 0;
+
+            Sys.WSMNL("Select Player: ");
+
+            foreach (var playerDat in playerData)
+            {
+                Sys.WSMNL($"{counter}. {playerDat.playername}");
+                counter++;
+            }
+        
+            Sys.WSM("> "); //TODO: ADD PROMPTS LIKE THESE EVERYWHERE
+
+            string playerSelection = Console.ReadLine();
+        
+            try
+            {
+                if (string.Equals(playerSelection, "q") || string.Equals(playerSelection, "Q"))
+                {
+                    // return to menu
+                    Sys.WSMNL("QUITING...");
+                    Environment.Exit(0); //TODO: RECTIFY THIS
+                }
+                else if (playerData.ElementAt(int.Parse(playerSelection)) != null)
+                {
+                    player = playerData[int.Parse(playerSelection)];
+                    string playerName = player.playername;
+                    
+                    DB.DeleteFromPlayerDB(playerName); //TODO: ADD CHECK TO MAKE SURE USER WANTS TO
+                    
+                    Sys.WSMNL("Player deleted succesfully!");
+                    
+                    deleteSelectionValid = true;
+                }
+                else
+                {
+                    Error.WEMNL("NO VALID PLAYER!");
+                }
+            }
+            catch (Exception e)
+            {
+                Error.WEMNL("NO VALID INPUT!");
+            }
+        }
+
+        
+        
+    }
+
     internal Player PlayerLogin(DBManager DB)
     {
         Player player = new Player();
@@ -260,27 +349,33 @@ public class PlayerManager
             CosmeticMenu.writeTitleCosmetics("PLAYER SELECTION");
             Sys.WSMNL("Verifying current players...");
             Sys.WSMNL("displaying...");
-
+            Sys.WSMNL("Select Player [q/Q for quit]: ");
+            Sys.WSM("\n");
             Sys.WSMNL("Players:");
             Sys.WSM("\n");
-
+            
+            
             List<Player> playerData = DB.GetPlayerDBData();
 
             int counter = 0;
 
-
-            Sys.WSMNL("Select Player: ");
-
             foreach (var playerDat in playerData)
             {
                 Sys.WSMNL($"{counter}. {playerDat.playername}");
+                counter++;
             }
 
             string playerSelection = Console.ReadLine();
 
             try
             {
-                if (playerData.ElementAt(int.Parse(playerSelection)) != null)
+                if (string.Equals(playerSelection, "q") || string.Equals(playerSelection, "Q"))
+                {
+                    // return to menu
+                    Sys.WSMNL("QUITING...");
+                    Environment.Exit(0); //TODO: RECTIFY THIS
+                }
+                else if (playerData.ElementAt(int.Parse(playerSelection)) != null)
                 {
                     player = playerData[int.Parse(playerSelection)];
                     loginValid = true;

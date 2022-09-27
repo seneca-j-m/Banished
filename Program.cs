@@ -11,7 +11,11 @@ internal class Program
     {
         Logger logg = new Logger();
         DataManager DM = new DataManager();
-        DM.InitFilesystem();
+        if (!DM.InitFilesystem()) // change this 
+        {
+            Warn.WWMNL("WARN: FAILURE IN FILE INTEGRITY");
+            Warn.WWMNL("WARN: SENDING TO STORY MANAGER");
+        }
         DBManager DB = new DBManager();
         DB.InitPlayerDB();
         //CosmeticMenu cMenu = new CosmeticMenu();
@@ -65,6 +69,7 @@ internal class Program
             Sys.WSMNL("0. Quit");
             Sys.WSMNL("1. Load Player");
             Sys.WSMNL("2. Create Player");
+            Sys.WSMNL("3. Delete Player");
             
             try
             {
@@ -73,6 +78,7 @@ internal class Program
                 switch (mainMenuSelection)
                 {
                     case 0:
+                        Sys.WSMNL("QUITTING");
                         Environment.Exit(0);
                         break;
                     case 1:
@@ -81,7 +87,10 @@ internal class Program
                         break;
                     case 2:
                         player = PM.SetupPlayer();
-                        mainMenuExit = true;
+                        PM.SavePlayer(DB, player); // then -> rerun menu
+                        break;
+                    case 3:
+                        PM.DeletePlayers(DB);
                         break;
                 }
             }
@@ -92,6 +101,11 @@ internal class Program
         }
 
         return player;
+    }
+    
+    static void StoryFacilitation()
+    {
+    
     }
 }
 

@@ -173,9 +173,6 @@ public static class GameManager
 
         Console.ReadLine(); // wait for input
         
-        // print options
-        Debug.WDMNL(optionString);
-        Debug.WDMNL("\n");
 
         bool promptMenuExit = false;
 
@@ -183,16 +180,20 @@ public static class GameManager
         
         while (!promptMenuExit)
         {
+            // print options
+            Debug.WDMNL(optionString);
+            Debug.WDMNL("\n");
+            
             userResponse = Console.ReadLine().ToUpper(); // user input
             
-            if (!optionString.Contains(userResponse) || userResponse.Length > 1)
-            {
-                Error.WEMNL("YOU STAY, CONFUSED. THAT IS NOT AN OPTION");
-            }
-            else if (string.Equals(userResponse, "SAVE"))
+            if (string.Equals(userResponse, "SAVE"))
             {
                 Sys.WSMNL("SAVE INVOKED! SAVING...");
                 promptMenuExit = true;
+            }
+            else if (!optionString.Contains(userResponse) || userResponse.Length > 1 || string.IsNullOrEmpty(userResponse))
+            {
+                Error.WEMNL("YOU STAY, CONFUSED. THAT IS NOT AN OPTION");
             }
             else
             {

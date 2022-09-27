@@ -113,8 +113,6 @@ public static class KNIGHT_SCENE
         // Debug.WDMNL(promptOne);
         // Debug.WDMNL("\n");
 
-        Console.ReadLine();
-        
         // offer responses
         string optionOne = GameManager.readOptions(PlayerClass.KNIGHT, "ONE", "ONE");
         // Debug.WDMNL(optionOne);
@@ -129,18 +127,18 @@ public static class KNIGHT_SCENE
         Debug.WDMNL(consequenceOne);
         Debug.WDMNL("\n");
 
-        Console.ReadLine();
+        Console.ReadLine(); // remove this later!!!!!!!!!!!!!!!!!!
 
         // read second prompt
 
     }
 }
 
-public static class SORCERER_SCENE
+public static class SORCERER_SCENE //TODO: FINISH THESE BAD BOYS
 {
     public static void Beginning()
     {
-        string beginning = GameManager.readBeginning(PlayerClass.KNIGHT);
+        string beginning = GameManager.readBeginning(PlayerClass.SORCERER);
         Debug.WDMNL(beginning);
         Debug.WDMNL("");
         Sys.WSMNL("PRESS ENTER TO CONTINUE");
@@ -157,7 +155,7 @@ public static class WARLOCK_SCENE
 {
     public static void Beginning()
     {
-        string beginning = GameManager.readBeginning(PlayerClass.KNIGHT);
+        string beginning = GameManager.readBeginning(PlayerClass.WARLOCK);
         Debug.WDMNL(beginning);
         Debug.WDMNL("");
         Sys.WSMNL("PRESS ENTER TO CONTINUE");
