@@ -2,6 +2,7 @@
 // using Banished;
 using Microsoft.Data.Sqlite;
 using System;
+using System.Xml.Schema;
 
 namespace BanishedMain;
 
@@ -11,13 +12,20 @@ internal class Program
     {
         Logger logg = new Logger();
         DataManager DM = new DataManager();
-        if (!DM.InitFilesystem()) // change this 
-        {
-            Warn.WWMNL("WARN: FAILURE IN FILE INTEGRITY");
-            Warn.WWMNL("WARN: SENDING TO STORY MANAGER");
-        }
         DBManager DB = new DBManager();
-        DB.InitPlayerDB();
+        
+        
+        Title();
+        Introduction(DB);
+        MainMenu();
+        
+
+        // if (!DM.InitFilesystem()) // change this 
+        // {
+        //     Warn.WWMNL("WARN: FAILURE IN FILE INTEGRITY");
+        //     Warn.WWMNL("WARN: SENDING TO STORY MANAGER");
+        // }
+        // DB.InitPlayerDB();
         //CosmeticMenu cMenu = new CosmeticMenu();
 
         // verify user
@@ -106,6 +114,56 @@ internal class Program
     static void StoryFacilitation()
     {
     
+    }
+
+    static void Title()
+    {
+        string titleString = 
+            @"
+         __       __   ______   _______   __        _______         _______   __    __  ______  __        _______   ________  _______          ______  
+        /  |  _  /  | /      \ /       \ /  |      /       \       /       \ /  |  /  |/      |/  |      /       \ /        |/       \        /      \ 
+        $$ | / \ $$ |/$$$$$$  |$$$$$$$  |$$ |      $$$$$$$  |      $$$$$$$  |$$ |  $$ |$$$$$$/ $$ |      $$$$$$$  |$$$$$$$$/ $$$$$$$  |      /$$$$$$  |
+        $$ |/$  \$$ |$$ |  $$ |$$ |__$$ |$$ |      $$ |  $$ |      $$ |__$$ |$$ |  $$ |  $$ |  $$ |      $$ |  $$ |$$ |__    $$ |__$$ |      $$ |  $$/ 
+        $$ /$$$  $$ |$$ |  $$ |$$    $$< $$ |      $$ |  $$ |      $$    $$< $$ |  $$ |  $$ |  $$ |      $$ |  $$ |$$    |   $$    $$<       $$ |      
+        $$ $$/$$ $$ |$$ |  $$ |$$$$$$$  |$$ |      $$ |  $$ |      $$$$$$$  |$$ |  $$ |  $$ |  $$ |      $$ |  $$ |$$$$$/    $$$$$$$  |      $$ |   __ 
+        $$$$/  $$$$ |$$ \__$$ |$$ |  $$ |$$ |_____ $$ |__$$ |      $$ |__$$ |$$ \__$$ | _$$ |_ $$ |_____ $$ |__$$ |$$ |_____ $$ |  $$ |      $$ \__/  |
+        $$$/    $$$ |$$    $$/ $$ |  $$ |$$       |$$    $$/       $$    $$/ $$    $$/ / $$   |$$       |$$    $$/ $$       |$$ |  $$ |      $$    $$/ 
+        $$/      $$/  $$$$$$/  $$/   $$/ $$$$$$$$/ $$$$$$$/        $$$$$$$/   $$$$$$/  $$$$$$/ $$$$$$$$/ $$$$$$$/  $$$$$$$$/ $$/   $$/        $$$$$$/                                                                                                                                                                                                                                                                                                                                                                                                                                    
+            ";
+        
+        Sys.WSMNL(titleString);
+        Sys.WSMNL("\n\n\n");
+    }
+
+    static void Introduction(DBManager DB)
+    {
+        Sys.WSMNL("...");
+        Sys.WSMNL("Welcome User!");
+        Warn.WWMNL("PRESS ENTER TO CONTINUE");
+        Console.ReadLine();
+        Sys.WSMNL("...");
+        Sys.WSMNL("VERIFYING DATA...");
+        
+        
+    }
+
+    static void MainMenu()
+    {
+        string mainMenuString = 
+            @"
+             __       __   ______   ______  __    __        __       __  ________  __    __  __    __ 
+            /  \     /  | /      \ /      |/  \  /  |      /  \     /  |/        |/  \  /  |/  |  /  |
+            $$  \   /$$ |/$$$$$$  |$$$$$$/ $$  \ $$ |      $$  \   /$$ |$$$$$$$$/ $$  \ $$ |$$ |  $$ |
+            $$$  \ /$$$ |$$ |__$$ |  $$ |  $$$  \$$ |      $$$  \ /$$$ |$$ |__    $$$  \$$ |$$ |  $$ |
+            $$$$  /$$$$ |$$    $$ |  $$ |  $$$$  $$ |      $$$$  /$$$$ |$$    |   $$$$  $$ |$$ |  $$ |
+            $$ $$ $$/$$ |$$$$$$$$ |  $$ |  $$ $$ $$ |      $$ $$ $$/$$ |$$$$$/    $$ $$ $$ |$$ |  $$ |
+            $$ |$$$/ $$ |$$ |  $$ | _$$ |_ $$ |$$$$ |      $$ |$$$/ $$ |$$ |_____ $$ |$$$$ |$$ \__$$ |
+            $$ | $/  $$ |$$ |  $$ |/ $$   |$$ | $$$ |      $$ | $/  $$ |$$       |$$ | $$$ |$$    $$/ 
+            $$/      $$/ $$/   $$/ $$$$$$/ $$/   $$/       $$/      $$/ $$$$$$$$/ $$/   $$/  $$$$$$/  
+            ";
+        
+        Sys.WSMNL(mainMenuString);
+        Sys.WSMNL("\n\n\n");
     }
 }
 

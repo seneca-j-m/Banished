@@ -30,7 +30,26 @@ public class StoryManager
             foreach (var playerClass in _playerClasses)
             {
                 Sys.WSMNL($"{counter}. {playerClass}");
-            }   
+            }
+
+            string userClassSelection = Console.ReadLine();
+
+            try
+            {
+                Enum.TryParse(userClassSelection, out PlayerClass pl_class);
+                if (_playerClasses.IndexOf(pl_class) == -1)
+                {
+                    Error.WEMNL("NO VALID INPUT");
+                }
+                else
+                {
+                    
+                }
+            }
+            catch (Exception e)
+            {
+                Error.WEMNL("BAD INPUT!");
+            }
         }
     }
     

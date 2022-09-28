@@ -179,6 +179,14 @@ public class DataManager
                             sw.WriteLine("SCENETHREEEND");
                         }
                         else if (filePath.Contains("sceneoneoptions")) //TODO: FINISH THIS
+                        {
+                            sw.WriteLine("SCENEONEOPTIONS"); // add prompts later
+                            sw.WriteLine("\n");
+                            sw.WriteLine("SCENEONEOPTIONSEND");
+                        }
+                        else if (filePath.Contains("scenetwooptions")) // probably not efficent
+                        { }
+                        else if (filePath.Contains("scenethreeoptions"))
                         { }
                         else if (filePath.Contains("sceneoneconsequences"))
                         { }
