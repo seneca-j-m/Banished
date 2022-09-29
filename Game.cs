@@ -7,9 +7,9 @@ public class Game
     private Player player { get; set; }
     
     // divison into seperate variables for readability
-    private PlayerClass pl_class;
-    private PlayerRace pl_Race;
-    private PlayerAccolade pl_accolade;
+    private DefaultPlayerClass pl_class;
+    private DefaultPlayerRace pl_Race;
+    private DefaultPlayerAccolade pl_accolade;
 
     private string playerName;
     private int playerHealth;
@@ -53,13 +53,13 @@ public class Game
         // start based on selections made
         switch (pl_class)
         {
-            case PlayerClass.KNIGHT:
+            case DefaultPlayerClass.KNIGHT:
                 KNIGHT_SCENE.Beginning();
                 break;
-            case PlayerClass.SORCERER:
+            case DefaultPlayerClass.SORCERER:
                 SORCERER_SCENE.Beginning();
                 break;
-            case PlayerClass.WARLOCK:
+            case DefaultPlayerClass.WARLOCK:
                 WARLOCK_SCENE.Beginning();
                 break;
         }
@@ -76,13 +76,13 @@ public class Game
     {
         switch (pl_class)
         {
-            case PlayerClass.KNIGHT:
+            case DefaultPlayerClass.KNIGHT:
                 KNIGHT_SCENE.K_SCENE_ONE();
                 break;
-            case PlayerClass.SORCERER: // TODO: IMPLEMENT
+            case DefaultPlayerClass.SORCERER: // TODO: IMPLEMENT
                 SORCERER_SCENE.S_SCENE_ONE();
                 break;
-            case PlayerClass.WARLOCK:
+            case DefaultPlayerClass.WARLOCK:
                 WARLOCK_SCENE.W_SCENE_ONE();
                 break;
         }
@@ -98,7 +98,7 @@ public static class KNIGHT_SCENE
 {
     public static void Beginning()
     {
-        string beginning = GameManager.readBeginning(PlayerClass.KNIGHT);
+        string beginning = GameManager.readBeginning(DefaultPlayerClass.KNIGHT);
         Debug.WDMNL(beginning);
         Debug.WDMNL("");
         Sys.WSMNL("PRESS ENTER TO CONTINUE");
@@ -109,12 +109,12 @@ public static class KNIGHT_SCENE
     public static void K_SCENE_ONE()
     {
         // read first prompt
-        string promptOne = GameManager.readPrompt(PlayerClass.KNIGHT, "ONE", "ONE");
+        string promptOne = GameManager.readPrompt(DefaultPlayerClass.KNIGHT, "ONE", "ONE");
         // Debug.WDMNL(promptOne);
         // Debug.WDMNL("\n");
 
         // offer responses
-        string optionOne = GameManager.readOptions(PlayerClass.KNIGHT, "ONE", "ONE");
+        string optionOne = GameManager.readOptions(DefaultPlayerClass.KNIGHT, "ONE", "ONE");
         // Debug.WDMNL(optionOne);
         // Debug.WDMNL("\n");
 
@@ -123,7 +123,7 @@ public static class KNIGHT_SCENE
         
 
         // get consequences
-        string consequenceOne = GameManager.readConsequences(PlayerClass.KNIGHT, "ONE", userResponseActual);
+        string consequenceOne = GameManager.readConsequences(DefaultPlayerClass.KNIGHT, "ONE", userResponseActual);
         Debug.WDMNL(consequenceOne);
         Debug.WDMNL("\n");
 
@@ -138,7 +138,7 @@ public static class SORCERER_SCENE //TODO: FINISH THESE BAD BOYS
 {
     public static void Beginning()
     {
-        string beginning = GameManager.readBeginning(PlayerClass.SORCERER);
+        string beginning = GameManager.readBeginning(DefaultPlayerClass.SORCERER);
         Debug.WDMNL(beginning);
         Debug.WDMNL("");
         Sys.WSMNL("PRESS ENTER TO CONTINUE");
@@ -155,7 +155,7 @@ public static class WARLOCK_SCENE
 {
     public static void Beginning()
     {
-        string beginning = GameManager.readBeginning(PlayerClass.WARLOCK);
+        string beginning = GameManager.readBeginning(DefaultPlayerClass.WARLOCK);
         Debug.WDMNL(beginning);
         Debug.WDMNL("");
         Sys.WSMNL("PRESS ENTER TO CONTINUE");

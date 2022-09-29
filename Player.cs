@@ -4,9 +4,9 @@ public class Player
 {
     // database data
     public string playername { get; }
-    public PlayerRace playerrace { get; }
-    public PlayerClass playerclass { get; }
-    public PlayerAccolade playeraccolade { get; }
+    public DefaultPlayerRace playerrace { get; }
+    public DefaultPlayerClass playerclass { get; }
+    public DefaultPlayerAccolade playeraccolade { get; }
 
     public int playerHealth;
     public int playerFaith;
@@ -19,7 +19,7 @@ public class Player
 
     public int playerFunds; // gold
 
-    public Player(string _playername, PlayerRace _playerrace, PlayerClass _playerclass, PlayerAccolade _playeraccolade)
+    public Player(string _playername, DefaultPlayerRace _playerrace, DefaultPlayerClass _playerclass, DefaultPlayerAccolade _playeraccolade)
     {
         playername = _playername;
         playerrace = _playerrace;
@@ -37,17 +37,17 @@ public class Player
         // assign critical values
         switch (playerclass)
         {
-            case PlayerClass.KNIGHT:
+            case DefaultPlayerClass.KNIGHT:
                 playerHealth = Knight.base_health;
                 playerFaith = Knight.base_faith;
                 playerAgility = Knight.base_agility;
                 break;
-            case PlayerClass.SORCERER:
+            case DefaultPlayerClass.SORCERER:
                 playerHealth = Sorcerer.base_health;
                 playerFaith = Sorcerer.base_faith;
                 playerAgility = Sorcerer.base_agility;
                 break;
-            case PlayerClass.WARLOCK:
+            case DefaultPlayerClass.WARLOCK:
                 playerHealth = Warlock.base_health;
                 playerFaith = Warlock.base_faith;
                 playerAgility = Warlock.base_agility;
@@ -58,9 +58,9 @@ public class Player
     public Player()
     {
         playername = String.Empty;
-        playerrace = PlayerRace.EMPTY;
-        playerclass = PlayerClass.EMPTY;
-        playeraccolade = PlayerAccolade.EMPTY;
+        playerrace = DefaultPlayerRace.EMPTY;
+        playerclass = DefaultPlayerClass.EMPTY;
+        playeraccolade = DefaultPlayerAccolade.EMPTY;
         
         playerHealth = 0;
         playerFaith = 0;
@@ -76,7 +76,7 @@ public class Player
 
 // player enums
 
-public enum PlayerRace
+public enum DefaultPlayerRace
 {
     EMPTY,
     ELF,
@@ -85,7 +85,7 @@ public enum PlayerRace
     
 }
 
-public enum PlayerClass
+public enum DefaultPlayerClass
 {
     EMPTY,
     KNIGHT,
@@ -93,13 +93,22 @@ public enum PlayerClass
     WARLOCK
 }
 
-public enum PlayerAccolade
+public enum DefaultPlayerAccolade
 {
     EMPTY,
     WARRIOR,
     SCHOLAR,
     ACOLYTE
 }
+
+public enum PlayerRace
+{}
+
+public enum PlayerClass
+{}
+
+public enum PlayerAccolade
+{}
 
 public class PlayerManager
 {
@@ -255,9 +264,9 @@ public class PlayerManager
         Debug.WDMNL("Data Collated!");
 
         // parse data as Enum
-        Enum.TryParse(playerRace.ToUpper(), out PlayerRace plRace);
-        Enum.TryParse(playerClass.ToUpper(), out PlayerClass plClass);
-        Enum.TryParse(playerAccolade.ToUpper(), out PlayerAccolade plAccolade);
+        Enum.TryParse(playerRace.ToUpper(), out DefaultPlayerRace plRace);
+        Enum.TryParse(playerClass.ToUpper(), out DefaultPlayerClass plClass);
+        Enum.TryParse(playerAccolade.ToUpper(), out DefaultPlayerAccolade plAccolade);
 
         Player player = new Player(playerName, plRace, plClass, plAccolade);
 

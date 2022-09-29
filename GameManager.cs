@@ -5,24 +5,24 @@ namespace BanishedMain;
 
 public static class GameManager
 {
-    public static string readBeginning(PlayerClass pl_class)
+    public static string readBeginning(DefaultPlayerClass pl_class)
     {
         string[] fileContent = new String[]{""};
         
         switch (pl_class)
         {
-            case PlayerClass.KNIGHT:
+            case DefaultPlayerClass.KNIGHT:
                 fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataBeginningF);
                 break;
-            case PlayerClass.SORCERER:
+            case DefaultPlayerClass.SORCERER:
                 fileContent = File.ReadAllLines(GDirectories.playerSorcererStoryDataBeginningF);
                 break;
-            case PlayerClass.WARLOCK:
+            case DefaultPlayerClass.WARLOCK:
                 fileContent = File.ReadAllLines(GDirectories.playerWarlockStoryDataBeginningF);
                 break;
         }
         
-        //string[] fileContent = File.ReadAllLines(GDirectories.playerClassKnightDataF);
+        //string[] fileContent = File.ReadAllLines(GDirectories.DefaultPlayerClassKnightDataF);
 
         // LINQ query
         var beginningContent = fileContent.SkipWhile(s => s != "BEGINNING").Skip(1).TakeWhile(s => s != "BEGINNINGEND");
@@ -33,19 +33,19 @@ public static class GameManager
     }
 
     // TODO: FINISH THIS
-    public static string readDescription(PlayerClass pl_class)
+    public static string readDescription(DefaultPlayerClass pl_class)
     {
         string[] fileContent = new string[] { "" };
         
         switch (pl_class)
         {
-            case PlayerClass.KNIGHT:
+            case DefaultPlayerClass.KNIGHT:
                 fileContent = File.ReadAllLines(GDirectories.playerClassKnightDataF);
                 break;
-            case PlayerClass.SORCERER:
+            case DefaultPlayerClass.SORCERER:
                 fileContent = File.ReadAllLines(GDirectories.playerClassSorcererDataF);
                 break;
-            case PlayerClass.WARLOCK:
+            case DefaultPlayerClass.WARLOCK:
                 fileContent = File.ReadAllLines(GDirectories.playerClassWarlockDataF);
                 break;
         }
@@ -57,13 +57,13 @@ public static class GameManager
         return descriptionString;
     }
 
-    public static string readPrompt(PlayerClass pl_class, string sceneNumber, string promptNumber) // TODO: FINISH, ADD CHECK FOR SCENE
+    public static string readPrompt(DefaultPlayerClass pl_class, string sceneNumber, string promptNumber) // TODO: FINISH, ADD CHECK FOR SCENE
     {
         string[] fileContent = new string[] { "" };
 
         switch (pl_class)
         {
-            case PlayerClass.KNIGHT:
+            case DefaultPlayerClass.KNIGHT:
                 if (string.Equals(sceneNumber, "ONE"))
                 {
                     fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneOneF);
@@ -77,10 +77,10 @@ public static class GameManager
                     fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneThreeF);
                 }
                 break;
-            case PlayerClass.SORCERER:
+            case DefaultPlayerClass.SORCERER:
                 fileContent = File.ReadAllLines(GDirectories.playerSorcererStoryDataSceneOneOptionsF);
                 break;
-            case PlayerClass.WARLOCK:
+            case DefaultPlayerClass.WARLOCK:
                 fileContent = File.ReadAllLines(GDirectories.playerWarlockStoryDataSceneOneOptionsF);
                 break;
         }
@@ -93,13 +93,13 @@ public static class GameManager
         return promptString;
     }
 
-    public static string readOptions(PlayerClass pl_class, string sceneNumber, string promptNumber)
+    public static string readOptions(DefaultPlayerClass pl_class, string sceneNumber, string promptNumber)
     {
         string[] fileContent = new string[] { "" };
 
         switch (pl_class)
         {
-            case PlayerClass.KNIGHT:
+            case DefaultPlayerClass.KNIGHT:
                 if (string.Equals(sceneNumber, "ONE"))
                 {
                     fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneOneOptionsF);
@@ -113,10 +113,10 @@ public static class GameManager
                     fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneThreeOptionsF);
                 }
                 break;
-            case PlayerClass.SORCERER:
+            case DefaultPlayerClass.SORCERER:
                 fileContent = File.ReadAllLines(GDirectories.playerSorcererStoryDataSceneOneOptionsF);
                 break;
-            case PlayerClass.WARLOCK:
+            case DefaultPlayerClass.WARLOCK:
                 fileContent = File.ReadAllLines(GDirectories.playerWarlockStoryDataSceneOneOptionsF);
                 break;
         }
@@ -129,14 +129,14 @@ public static class GameManager
         return optionsString;
     }
 
-    public static string readConsequences(PlayerClass pl_class, string sceneNumber, string responseNumber)
+    public static string readConsequences(DefaultPlayerClass pl_class, string sceneNumber, string responseNumber)
     {
         
         string[] fileContent = new string[] { "" };
 
         switch (pl_class)
         {
-            case PlayerClass.KNIGHT:
+            case DefaultPlayerClass.KNIGHT:
                 if (string.Equals(sceneNumber, "ONE"))
                 {
                     fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneOneConsequencesF);
@@ -150,10 +150,10 @@ public static class GameManager
                     fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneThreeConsequencesF);
                 }
                 break;
-            case PlayerClass.SORCERER:
+            case DefaultPlayerClass.SORCERER:
                 fileContent = File.ReadAllLines(GDirectories.playerSorcererStoryDataSceneOneConsequencesF);
                 break;
-            case PlayerClass.WARLOCK:
+            case DefaultPlayerClass.WARLOCK:
                 fileContent = File.ReadAllLines(GDirectories.playerWarlockStoryDataSceneOneConsequencesF);
                 break;
         }

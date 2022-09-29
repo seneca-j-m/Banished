@@ -8,11 +8,11 @@ public static class ClassHelp
     public static void ClassOptions()
     {
         // print every item in the enum list
-        var classOptions = Enum.GetValues(typeof(PlayerClass)).Cast<PlayerClass>();
+        var classOptions = Enum.GetValues(typeof(DefaultPlayerClass)).Cast<DefaultPlayerClass>();
         
         // remove 'empty'
-        List<PlayerClass> classList = classOptions.ToList();
-        int emptyIndex = classList.IndexOf(PlayerClass.EMPTY);
+        List<DefaultPlayerClass> classList = classOptions.ToList();
+        int emptyIndex = classList.IndexOf(DefaultPlayerClass.EMPTY);
         classList.RemoveAt(emptyIndex);
 
         CosmeticMenu.writeTitleCosmetics("CLASS HELP:");
@@ -66,16 +66,16 @@ public static class ClassHelp
     
 }
 
-public static class RaceHelp
+public static class RaceHelp // TODO: PROCESS DEFAULTS
 {
     public static void RaceOptions()
     {
         // print every item in the enum list
-        var raceOptions = Enum.GetValues(typeof(PlayerRace)).Cast<PlayerRace>();
+        var raceOptions = Enum.GetValues(typeof(DefaultPlayerRace)).Cast<DefaultPlayerRace>();
         
         // remove 'empty'
-        List<PlayerRace> raceList = raceOptions.ToList();
-        int emptyIndex = raceList.IndexOf(PlayerRace.EMPTY);
+        List<DefaultPlayerRace> raceList = raceOptions.ToList();
+        int emptyIndex = raceList.IndexOf(DefaultPlayerRace.EMPTY);
         raceList.RemoveAt(emptyIndex);
 
         CosmeticMenu.writeTitleCosmetics("RACE HELP:");
@@ -131,11 +131,11 @@ public static class AccoladeHelp
     public static void AccoladeOptions()
     {
         // print every item in the enum list
-        var accoladeOptions = Enum.GetValues(typeof(PlayerAccolade)).Cast<PlayerAccolade>();
+        var accoladeOptions = Enum.GetValues(typeof(DefaultPlayerAccolade)).Cast<DefaultPlayerAccolade>();
         
         // remove 'empty'
-        List<PlayerAccolade> accoladeList = accoladeOptions.ToList();
-        int emptyIndex = accoladeList.IndexOf(PlayerAccolade.EMPTY);
+        List<DefaultPlayerAccolade> accoladeList = accoladeOptions.ToList();
+        int emptyIndex = accoladeList.IndexOf(DefaultPlayerAccolade.EMPTY);
         accoladeList.RemoveAt(emptyIndex);
 
         CosmeticMenu.writeTitleCosmetics("ACCOLADE HELP:");
