@@ -11,11 +11,14 @@ internal class Program
 {
     static void Main(string[] args)
     {
-        Logger logg = new Logger();
         DataManager DM = new DataManager();
         DBManager DB = new DBManager();
         PlayerManager PM = new PlayerManager();
         StoryManager SM = new StoryManager();
+
+        DM.InitFilesystem();
+        
+        Logger logg = new Logger();
         
         Title();
         Introduction(DM, DB, PM, SM);
@@ -189,7 +192,6 @@ internal class Program
             }
         }
         // verify files next
-        DM.InitFilesystem();
         if (!DM.verifyCriticalFiles())
         {
             Error.WEMNL("VERFIYNG INTEGRITY COMPLETED!");
@@ -232,13 +234,12 @@ internal class Program
                                     break;
                             }
                         }
-                        
-                        
-                        SM.CreateBeginning();
+                        SM.CreateBeginning(); // TODO: WATCH
                         playerFileInputValid = true;
                         break;
                     case "N":
                     case "n": // just for clarity
+                        DM.CreateDefaultFiles();
                         playerFileInputValid = true; 
                         break;
                     default:

@@ -9,11 +9,11 @@ public class Logger
         uint logReferenceNumber = 0;
 
         // get log data from previous file
-        using (StreamReader read = File.OpenText(GDirectories.loggerFPath))
+        using (StreamReader sr = new StreamReader(GDirectories.loggerFPath))
         {
             if (new FileInfo(GDirectories.loggerFPath).Length != 0)
             {
-                string logVersionLine = read.ReadLine();
+                string logVersionLine = sr.ReadLine();
                 string[] logVersionLineArr = logVersionLine.Split(':');
                 uint logVersion = uint.Parse(logVersionLineArr[1]);
                 logReferenceNumber = (logVersion += 1);

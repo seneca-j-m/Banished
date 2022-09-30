@@ -97,11 +97,9 @@ public class DataManager
             {
                 if (!File.Exists(filePath))
                 {
-                    File.Create(filePath);
                     critDataExists = false; // files are empty!
                 }
-
-                if (new FileInfo(filePath).Length == 0)
+                else if (new FileInfo(filePath).Length == 0)
                 {
                     emptyDataFiles.Add(filePath);
                     critDataExists = false;
@@ -109,6 +107,27 @@ public class DataManager
             }
 
             return emptyDataFiles.Any();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    internal bool CreateDefaultFiles()
+    {
+        try
+        {
+            foreach (var filePath in GDirectories.GDdataFilePaths)
+            {
+                if (!File.Exists(filePath))
+                {
+                    File.Create(filePath);
+                }
+            }
+
+            return false;
         }
         catch (Exception e)
         {

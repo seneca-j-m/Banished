@@ -17,8 +17,10 @@ public class StoryManager
         _defaultPlayerAccolades = Enum.GetValues(typeof(DefaultPlayerAccolade)).Cast<DefaultPlayerAccolade>().ToList();
     }
 
-    public void CreateClasses(bool useDefaults = false)
+    public List<PlayerClass> CreateClasses(bool useDefaults = false)
     {
+        List<PlayerClass> userMadeClasses = new List<PlayerClass>();
+        
         CosmeticMenu.writeTitleCosmetics("CLASS CREATOR");
         if (useDefaults)
         {
@@ -55,24 +57,29 @@ public class StoryManager
                     }
                     else
                     {
-                        classCountInputValid = true;   
+                        classCountInputValid = true;
                     }
                 }
                 catch (Exception e)
                 {
                     Error.WEMNL("NO VALID INPUT");
                 }
-
             }
+
             for (int i = 0; i < userClassCountFinal; i++)
             {
+                Sys.WSM(">>> ");
+                Console.ReadLine();
+
                 Sys.WSMNL("Specify name of class: ");
                 Sys.WSM("> ");
                 string userClassName = Console.ReadLine().ToUpper();
-                        
+
                 Sys.WSMNL("\n");
-                bool defaultsUsed = false;
+                bool defaultHealthUsed = false;
                 bool userValidHealthInput = false;
+                int userClassHealthMultiplyerFinal = 0;
+
                 while (!userValidHealthInput)
                 {
                     Sys.WSMNL("Specify health multiplyer [default 100]");
@@ -81,7 +88,7 @@ public class StoryManager
 
                     try
                     {
-                        int userClassHealthMultiplyerFinal = int.Parse(userClassHealthMultiplyer);
+                        userClassHealthMultiplyerFinal = int.Parse(userClassHealthMultiplyer);
 
                         if (userClassHealthMultiplyerFinal < 0)
                         {
@@ -93,7 +100,7 @@ public class StoryManager
                         }
                         else if (string.IsNullOrEmpty(userClassHealthMultiplyer))
                         {
-                            defaultsUsed = true;
+                            defaultHealthUsed = true;
                         }
                         else
                         {
@@ -106,12 +113,131 @@ public class StoryManager
                     }
                 }
 
+                Sys.WSM(">>> ");
+                Console.ReadLine();
 
+                bool userValidFaithInput = false;
+                bool defaultFaithUsed = false;
+                int userClassFaithMultiplyerFinal = 0;
 
+                while (!userValidFaithInput)
+                {
+                    Sys.WSMNL("Specify faith multiplyer [default 40] ");
+                    Sys.WSM("> ");
+
+                    string userClassFaithMultiplyer = Console.ReadLine();
+
+                    try
+                    {
+                        userClassFaithMultiplyerFinal = int.Parse(userClassFaithMultiplyer);
+
+                        if (userClassFaithMultiplyerFinal < 0)
+                        {
+                            Error.WEMNL("VALUE MUST BE GREATOR THAN 0");
+                        }
+                        else if (userClassFaithMultiplyerFinal > 100)
+                        {
+                            Error.WEMNL("VALUE MUST BE BELOW 100");
+                        }
+                        else if (string.IsNullOrEmpty(userClassFaithMultiplyer))
+                        {
+                            defaultFaithUsed = true;
+                        }
+                        else
+                        {
+                            userValidFaithInput = true;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Error.WEMNL("NO VALID INPUT!");
+                    }
+                }
+
+                Sys.WSM(">>> ");
+                Console.ReadLine();
+
+                bool userValidAgilityInput = false;
+                bool defaultAgilityUsed = false;
+                int userClassAgilityMultiplyerFinal = 0;
+
+                while (!userValidAgilityInput)
+                {
+                    Sys.WSMNL("Specify agility multiplayer [default4 40]");
+                    Sys.WSM("> ");
+
+                    string userClassAgilityMultiplyer = Console.ReadLine();
+
+                    try
+                    {
+                        userClassAgilityMultiplyerFinal = int.Parse(userClassAgilityMultiplyer);
+
+                        if (userClassAgilityMultiplyerFinal < 0)
+                        {
+                            Error.WEMNL("VALUE MUST BE GREATOR THAN 0");
+                        }
+                        else if (userClassAgilityMultiplyerFinal > 100)
+                        {
+                            Error.WEMNL("VALUE MUST BE BELOW 100");
+                        }
+                        else if (string.IsNullOrEmpty(userClassAgilityMultiplyer))
+                        {
+                            defaultAgilityUsed = true;
+                        }
+                        else
+                        {
+                            userValidAgilityInput = true;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Error.WEMNL("NO VALID INPUT!");
+                    }
+                }
+
+                Sys.WSM(">>> ");
+                Console.ReadLine();
+
+                Sys.WSMNL("Data Collated!");
+
+                Sys.WSMNL("Formulate class description [ENTER when done]: ");
+                Sys.WSMNL(">");
+
+                string userClassDescription = Console.ReadLine();
+
+                // observe default values
+                if (defaultHealthUsed)
+                    userClassHealthMultiplyerFinal = 100;
+                if (defaultFaithUsed)
+                    userClassFaithMultiplyerFinal = 40;
+                if (defaultAgilityUsed)
+                    userClassAgilityMultiplyerFinal = 40;
+
+                //TODO: INVENTORY
+                
+                // make class
+                PlayerClass newPlayerClass = new PlayerClass(userClassName, userClassHealthMultiplyerFinal,
+                    userClassFaithMultiplyerFinal, userClassAgilityMultiplyerFinal, userClassDescription);
+                
+                userMadeClasses.Add(newPlayerClass);
             }
-
-
+            
+            Sys.WSMNL(">>>");
+            Sys.WSMNL("Class Creation Succesful!");
+            Sys.WSMNL("Created Classes: ");
+            int counter = 1;
+            foreach (var userMadeClass in userMadeClasses)
+            {
+                Sys.WSMNL($"{counter}. {userMadeClass.className}");
+                Sys.WSMNL($"HEALTH: {userMadeClass.classHealth}");
+                Sys.WSMNL($"FAITH: {userMadeClass.classFaith}");
+                Sys.WSMNL($"AGILITY: {userMadeClass.classAgility}");
+                Sys.WSMNL($"DESCRIPTION: ");
+                Sys.WSMNL(userMadeClass.classDescription);
+            }
         }
+        
+        return userMadeClasses;
     }
 
     public void CreateBeginning()
@@ -119,7 +245,7 @@ public class StoryManager
         CosmeticMenu.writeTitleCosmetics("BEGINNING CREATOR");
 
         bool classSelectionValid = false;
-        
+
         while (!classSelectionValid)
         {
             Sys.WSMNL("SELECT CLASS: ");
@@ -142,7 +268,6 @@ public class StoryManager
                 }
                 else
                 {
-                    
                 }
             }
             catch (Exception e)
@@ -151,31 +276,40 @@ public class StoryManager
             }
         }
     }
-    
+
     public static void CreateRaceDescription()
-    { }
-    
+    {
+    }
+
     public static void CreateClassDescription()
-    { }
-    
+    {
+    }
+
     public static void CreateAccoladeDescription()
-    { }
-    
+    {
+    }
+
     public static void CreateScene()
-    { }
-    
+    {
+    }
+
     public static void CreatePrompt()
-    { }
-    
+    {
+    }
+
     public static void PurgeAll()
-    { }
+    {
+    }
 
     public static void OverhaulRace()
-    { }
-    
+    {
+    }
+
     public static void OverhaulClass()
-    { }
-    
+    {
+    }
+
     public static void OverhaulAccolade()
-    { }
+    {
+    }
 }

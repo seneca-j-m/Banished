@@ -101,14 +101,25 @@ public enum DefaultPlayerAccolade
     ACOLYTE
 }
 
-public enum PlayerRace
-{}
+public struct PlayerClass
+{
+    public string className { get; }
+    public int classHealth { get; }
+    public int classFaith { get; }
+    public int classAgility { get; }
+    public string classDescription { get; }
+    
 
-public enum PlayerClass
-{}
+    public PlayerClass(string _className, int _classHealth, int _classFaith, int _classAgility, string _classDescription)
+    {
+        className = _className;
+        classHealth = _classHealth;
+        classFaith = _classFaith;
+        classAgility = _classAgility;
+        classDescription = _classDescription;
+    }
 
-public enum PlayerAccolade
-{}
+}
 
 public class PlayerManager
 {
@@ -116,11 +127,6 @@ public class PlayerManager
     {
         if (!DB.GetPlayerDBData().Any())
         {
-            Sys.WSMNL("SYS: NO PLAYER DATA DETECTED!");
-            Sys.WSMNL("GENERATING NEW PLAYER ARCHITECTURE");
-            //Sys.WSMDNL("ENTERING SETUP..."); // not sure async is working correctly
-            Sys.WSMNL("ENTERING SETUP...");
-            Console.Out.Flush();
             return false;
         }
         else // previous user data exists
