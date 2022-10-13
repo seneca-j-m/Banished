@@ -8,6 +8,8 @@ public class StoryManager
     private readonly List<DefaultPlayerClass> _defaultPlayerClasses;
     private readonly List<DefaultPlayerAccolade> _defaultPlayerAccolades;
 
+    private List<PlayerClass> userMadeClasses = new List<PlayerClass>();
+
 
     public StoryManager()
     {
@@ -19,8 +21,6 @@ public class StoryManager
 
     public List<PlayerClass> CreateClasses(bool useDefaults = false)
     {
-        List<PlayerClass> userMadeClasses = new List<PlayerClass>();
-        
         CosmeticMenu.writeTitleCosmetics("CLASS CREATOR");
         if (useDefaults)
         {
@@ -74,15 +74,16 @@ public class StoryManager
                 Sys.WSMNL("Specify name of class: ");
                 Sys.WSM("> ");
                 string userClassName = Console.ReadLine().ToUpper();
-
-                Sys.WSMNL("\n");
+                
+                Sys.WSM(">>> ");
+                
                 bool defaultHealthUsed = false;
                 bool userValidHealthInput = false;
                 int userClassHealthMultiplyerFinal = 0;
 
                 while (!userValidHealthInput)
                 {
-                    Sys.WSMNL("Specify health multiplyer [default 100]");
+                    Sys.WSMNL("Specify health multiplyer [default 100] [D for default]");
                     Sys.WSM("> ");
                     string userClassHealthMultiplyer = Console.ReadLine();
 
@@ -98,7 +99,7 @@ public class StoryManager
                         {
                             Error.WEMNL("VALUE MUST BE BELOW 100");
                         }
-                        else if (string.IsNullOrEmpty(userClassHealthMultiplyer))
+                        else if (string.Equals(userClassHealthMultiplyer, "D") || string.Equals(userClassHealthMultiplyer, "d"))
                         {
                             defaultHealthUsed = true;
                         }
@@ -122,7 +123,7 @@ public class StoryManager
 
                 while (!userValidFaithInput)
                 {
-                    Sys.WSMNL("Specify faith multiplyer [default 40] ");
+                    Sys.WSMNL("Specify faith multiplyer [default 40] [D for default]");
                     Sys.WSM("> ");
 
                     string userClassFaithMultiplyer = Console.ReadLine();
@@ -139,7 +140,7 @@ public class StoryManager
                         {
                             Error.WEMNL("VALUE MUST BE BELOW 100");
                         }
-                        else if (string.IsNullOrEmpty(userClassFaithMultiplyer))
+                        else if (string.Equals(userClassFaithMultiplyer, "D") || string.Equals(userClassFaithMultiplyer, "d"))
                         {
                             defaultFaithUsed = true;
                         }
@@ -163,7 +164,7 @@ public class StoryManager
 
                 while (!userValidAgilityInput)
                 {
-                    Sys.WSMNL("Specify agility multiplayer [default4 40]");
+                    Sys.WSMNL("Specify agility multiplayer [default4 40] [D for default]");
                     Sys.WSM("> ");
 
                     string userClassAgilityMultiplyer = Console.ReadLine();
@@ -180,7 +181,7 @@ public class StoryManager
                         {
                             Error.WEMNL("VALUE MUST BE BELOW 100");
                         }
-                        else if (string.IsNullOrEmpty(userClassAgilityMultiplyer))
+                        else if (string.Equals(userClassAgilityMultiplyer, "D") || string.Equals(userClassAgilityMultiplyer, "d"))
                         {
                             defaultAgilityUsed = true;
                         }
@@ -234,6 +235,7 @@ public class StoryManager
                 Sys.WSMNL($"AGILITY: {userMadeClass.classAgility}");
                 Sys.WSMNL($"DESCRIPTION: ");
                 Sys.WSMNL(userMadeClass.classDescription);
+                counter++;
             }
         }
         
@@ -252,29 +254,363 @@ public class StoryManager
             Sys.WSM("\n");
 
             int counter = 1;
-            foreach (var playerClass in _defaultPlayerClasses)
-            {
-                Sys.WSMNL($"{counter}. {playerClass}");
+            
+            // check which classes are used
+            if (GGlobals.defaultClassesUsed)
+            {            
+
+                foreach (var playerClass in _defaultPlayerClasses)
+                {
+                    Sys.WSMNL($"{counter}. {playerClass}");
+                }
+
+                string userClassSelection = Console.ReadLine();
+
+                try
+                {
+                    Enum.TryParse(userClassSelection, out DefaultPlayerClass pl_class);
+                    if (_defaultPlayerClasses.IndexOf(pl_class) == -1)
+                    {
+                        Error.WEMNL("NO VALID INPUT");
+                    }
+                    else
+                    {
+                    }
+                }
+                catch (Exception e)
+                {
+                    Error.WEMNL("BAD INPUT!");
+                }
             }
-
-            string userClassSelection = Console.ReadLine();
-
-            try
+            else
             {
-                Enum.TryParse(userClassSelection, out DefaultPlayerClass pl_class);
-                if (_defaultPlayerClasses.IndexOf(pl_class) == -1)
+                foreach (var playerClass in userMadeClasses)
+                {
+                    Sys.WSMNL($"{counter}. {playerClass}");
+                }
+
+                string userClassSelection = Console.ReadLine();
+
+                try
+                {
+                    Enum.TryParse(userClassSelection, out PlayerClass pl_class);
+                    if (userMadeClasses.IndexOf(pl_class) == -1)
+                    {
+                        Error.WEMNL("NO VALID INPUT");
+                    }
+                    else
+                    {
+                    }
+                }
+                catch (Exception e)
+                {
+                    Error.WEMNL("BAD INPUT!");
+                }
+            }
+        }
+    }
+
+    public bool VerifyStory()
+    {
+        if (!Directory.Exists(GDirectories.dataPath))
+        {
+            return false;
+        }
+        else
+        {
+            foreach (var filePath in GDirectories.GDdataFilePaths)
+            {
+                if (!Directory.Exists(filePath) || !File.Exists(filePath))
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public void RestoreDefault(DataManager DM)
+    {
+        DM.PurgeDataDir();
+        DM.CreateDefaultFiles();
+        DM.WriteDefaultData();
+    }
+
+    public static List<PlayerRace> CreateRaces(bool useDefaults = false)
+    {
+        List<PlayerRace> userMadeRaces = new List<PlayerRace>();
+
+        CosmeticMenu.writeTitleCosmetics("RACE CREATOR");
+        if (useDefaults)
+        {
+            Sys.WSMNL("...");
+            Sys.WSMNL("Using default races...");
+            Sys.WSM("> ");
+            Console.ReadLine();
+        }
+        else
+        {
+            // create new classes
+            Sys.WSMNL("Welcome to race creator!");
+
+            int userRaceCountFinal = 0;
+            bool raceCountInputValid = false;
+            while (!raceCountInputValid)
+            {
+                Sys.WSMNL("Specify the number of races to be included: ");
+                Sys.WSM("> ");
+
+                string userClassCount = Console.ReadLine();
+
+                try
+                {
+                    userRaceCountFinal = int.Parse(userClassCount);
+
+                    if (userRaceCountFinal == 0)
+                    {
+                        Error.WEMNL("MUST BE AT LEAST ONE RACE");
+                    }
+                    else if (userRaceCountFinal > 10)
+                    {
+                        Error.WEMNL("TOO MANY RACES!");
+                    }
+                    else
+                    {
+                        raceCountInputValid = true;
+                    }
+                }
+                catch (Exception e)
                 {
                     Error.WEMNL("NO VALID INPUT");
                 }
+            }
+
+
+            for (int i = 0; i < userRaceCountFinal; i++)
+            {
+                Sys.WSM(">>> ");
+                Console.ReadLine();
+
+                Sys.WSMNL("Specify name of race: ");
+                Sys.WSM("> ");
+                string userRaceName = Console.ReadLine().ToUpper();
+
+                Sys.WSMNL("\n");
+
+                bool userRaceProficiencySelectionInputValid = false;
+                bool defaultRaceProficencyUsed = false;
+                while (!userRaceProficiencySelectionInputValid)
+                {
+                    Sys.WSMNL("Create new proficenceis [Y/N]: ");
+                    
+                    string userRaceProficencySelectionInput = Console.ReadLine();
+                    
+                    switch (userRaceProficencySelectionInput)
+                    {
+                        case "Y":
+                        case "y":
+                            StoryManager.CreateRaceProficiencies();
+                            userRaceProficiencySelectionInputValid = true;
+                            break;
+                        case "N":
+                        case "n":
+                            StoryManager.CreateRaceProficiencies(true);
+                            defaultRaceProficencyUsed = true;
+                            userRaceProficiencySelectionInputValid = true;
+                            break;
+                        default:
+                            Error.WEMNL("NO VALID INPUT!");
+                            break;
+                    }
+                }
+                
+                Sys.WSMNL(">>> ");
+                Console.ReadLine();
+
+                bool userRaceReputationInputValid = false;
+                bool defaultRaceReputationUsed = false;
+                while (!userRaceReputationInputValid)
+                {
+                    Sys.WSMNL("Create new reputation [Y/N]: ");
+                    
+                    string userRaceProficencySelectionInput = Console.ReadLine();
+                    
+                    switch (userRaceProficencySelectionInput)
+                    {
+                        case "Y":
+                        case "y":
+                            StoryManager.CreateRaceProficiencies();
+                            userRaceProficiencySelectionInputValid = true;
+                            break;
+                        case "N":
+                        case "n":
+                            StoryManager.CreateRaceProficiencies(true);
+                            defaultRaceProficencyUsed = true;
+                            userRaceProficiencySelectionInputValid = true;
+                            break;
+                        default:
+                            Error.WEMNL("NO VALID INPUT!");
+                            break;
+                    }
+                }
+
+
+
+
+                Sys.WSMNL("Formulate race description [ENTER when done]: ");
+                Sys.WSMNL(">");
+
+                string userRaceDescription = Console.ReadLine();
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                // while (!userValidHealthInput)
+                // {
+                //     Sys.WSMNL("Specify health multiplyer [default 100] [D for default]");
+                //     Sys.WSM("> ");
+                //     string userClassHealthMultiplyer = Console.ReadLine();
+                //
+                //     try
+                //     {
+                //         userClassHealthMultiplyerFinal = int.Parse(userClassHealthMultiplyer);
+                //
+                //         if (userClassHealthMultiplyerFinal < 0)
+                //         {
+                //             Error.WEMNL("VALUE MUST BE GREATOR THAN 0");
+                //         }
+                //         else if (userClassHealthMultiplyerFinal > 100)
+                //         {
+                //             Error.WEMNL("VALUE MUST BE BELOW 100");
+                //         }
+                //         else if (string.Equals(userClassHealthMultiplyer, "D") ||
+                //                  string.Equals(userClassHealthMultiplyer, "d"))
+                //         {
+                //             defaultHealthUsed = true;
+                //         }
+                //         else
+                //         {
+                //             userValidHealthInput = true;
+                //         }
+                //     }
+                //     catch (Exception e)
+                //     {
+                //         Error.WEMNL("NO VALID INPUT!");
+                //     }
+                // }
+                PlayerRace newPlayerRace = new PlayerRace();
+                if (defaultRaceProficencyUsed)
+                {
+                    var userRaceProficencies = Enum.GetValues(typeof(DefaultRaceProficiency)).Cast<DefaultRaceProficiency>().ToList();
+                    newPlayerRace = new PlayerRace(userRaceName, userRaceDescription, userRaceProficencies);
+                }
                 else
                 {
+                    var userRaceProficencies = Enum.GetValues(typeof(RaceProficiency)).Cast<RaceProficiency>().ToList();
+                    newPlayerRace = new PlayerRace(userRaceName, userRaceDescription, userRaceProficencies);
                 }
-            }
-            catch (Exception e)
-            {
-                Error.WEMNL("BAD INPUT!");
+                userMadeRaces.Add(newPlayerRace);
             }
         }
+        return userMadeRaces;
+    }
+
+    public static List<RaceProficiency> CreateRaceProficiencies(bool useDefaults = false)
+    {
+        List<RaceProficiency> userRaceProficiencies = new List<RaceProficiency>();
+        
+        if (useDefaults)
+        {
+            Sys.WSMNL("...");
+            Sys.WSMNL("Using default proficiencies...");
+            Sys.WSM("> ");
+            Console.ReadLine();
+        }
+        else
+        {
+            // create new classes
+            Sys.WSMNL("Welcome to proficency creator!");
+
+            int userProficiencyCountFinal = 0;
+            bool proficienctCountInputValid = false;
+            while (!proficienctCountInputValid)
+            {
+                Sys.WSMNL("Specify the number of proficencies to be included: ");
+                Sys.WSM("> ");
+
+                string userClassCount = Console.ReadLine();
+
+                try
+                {
+                    userProficiencyCountFinal = int.Parse(userClassCount);
+
+                    if (userProficiencyCountFinal == 0)
+                    {
+                        Error.WEMNL("MUST BE AT LEAST ONE PROFICIENCY");
+                    }
+                    else if (userProficiencyCountFinal > 10)
+                    {
+                        Error.WEMNL("TOO MANY PROFICIENCIES!");
+                    }
+                    else
+                    {
+                        proficienctCountInputValid = true;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Error.WEMNL("NO VALID INPUT");
+                }
+            }
+
+            for (int i = 0; i < userProficiencyCountFinal; i++)
+            {
+                Sys.WSM(">>> ");
+                Console.ReadLine();
+
+                Sys.WSMNL("Specify name of proficency: ");
+                Sys.WSM("> ");
+                string userRaceProficiencyName = Console.ReadLine().ToUpper();
+
+                Sys.WSMNL("\n");
+
+                Sys.WSMNL("Specify description of proficency: ");
+                string userRaceProficiencyDescription = Console.ReadLine();
+
+                //TODO: DO THIS LATER
+                // Sys.WSMNL("Specify attribute modifers [0 to skip] ");
+                //
+                //
+                // bool userRaceProficiencyAtrributeModifcationInputValid = false;
+                // while (!userRaceProficiencyAtrributeModifcationInputValid)
+                // {
+                //     Sys.WSMNL("Create new proficenceis [Y/N]: ");
+                //
+                //     string userRaceProficencySelectionInput = Console.ReadLine();
+                //
+                //     switch (userRaceProficencySelectionInput)
+                //     {
+                //         case "Y":
+                //         case "y":
+                //             StoryManager.CreateRaceProficiencies();
+                //             userRaceProficiencyAtrributeModifcationInputValid = true;
+                //             break;
+                //         case "N":
+                //         case "n":
+                //             StoryManager.CreateRaceProficiencies(true);
+                //             userRaceProficiencyAtrributeModifcationInputValid = true;
+                //             break;
+                //         default:
+                //             Error.WEMNL("NO VALID INPUT!");
+                //             break;
+                //     }
+                // }
+
+                RaceProficiency newRaceProficiency =
+                    new RaceProficiency(userRaceProficiencyName, userRaceProficiencyDescription);
+            }
+        }
+
+        return userRaceProficiencies;
     }
 
     public static void CreateRaceDescription()

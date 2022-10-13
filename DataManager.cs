@@ -15,7 +15,7 @@ namespace BanishedMain;
 
 public class DataManager
 {
-    internal bool InitFilesystem()
+    internal void InitFilesystem()
     {
         // verify directories
         try
@@ -31,34 +31,11 @@ public class DataManager
             Directory.CreateDirectory(GDirectories.loggerPath);
             Directory.CreateDirectory(GDirectories.loggerBPath);
 
-            // race path
-            Directory.CreateDirectory(GDirectories.playerRaceData);
-            Directory.CreateDirectory(GDirectories.playerClassData);
-            Directory.CreateDirectory(GDirectories.playerAccoladeData);
-
-            // class story path
-            Directory.CreateDirectory(GDirectories.playerKnightStoryDataPath);
-            Directory.CreateDirectory(GDirectories.playerSorcererStoryDataPath);
-            Directory.CreateDirectory(GDirectories.playerWarlockStoryDataPath);
-
-            // knight scene paths
-            Directory.CreateDirectory(GDirectories.playerKnightScenePath);
-            Directory.CreateDirectory(GDirectories.playerKnightSceneOnePath);
-            Directory.CreateDirectory(GDirectories.playerKnightSceneTwoPath);
-            Directory.CreateDirectory(GDirectories.playerKnightSceneThreePath);
-
-            // sorcerer scene paths
-            Directory.CreateDirectory(GDirectories.playerSorcererScenePath);
-            Directory.CreateDirectory(GDirectories.playerSorcererSceneOnePath);
-            Directory.CreateDirectory(GDirectories.playerSorcererSceneTwoPath);
-            Directory.CreateDirectory(GDirectories.playerSorcererSceneThreePath);
-
-            // warlock scene paths
-            Directory.CreateDirectory(GDirectories.playerWarlockScenePath);
-            Directory.CreateDirectory(GDirectories.playerWarlockSceneOnePath);
-            Directory.CreateDirectory(GDirectories.playerWarlockSceneTwoPath);
-            Directory.CreateDirectory(GDirectories.playerWarlockSceneThreePath);
-
+            // custom paths
+            Directory.CreateDirectory(GDirectories.playerCustomDataPath);
+            Directory.CreateDirectory(GDirectories.playerCustomRacePath);
+            Directory.CreateDirectory(GDirectories.playerCustomClassPath);
+            Directory.CreateDirectory(GDirectories.playerCustomAccoladePath);
 
             // files
             // if (!File.Exists(GDirectories.userDBPath))
@@ -72,11 +49,6 @@ public class DataManager
 
             if (!File.Exists(GDirectories.loggerBFPath))
                 File.Create(GDirectories.loggerBFPath);
-
-            // player construction files
-
-
-            return true; //TODO: EHAT IS THIS
         }
         catch (Exception e)
         {
@@ -117,6 +89,69 @@ public class DataManager
 
     internal bool CreateDefaultFiles()
     {
+        // create basic layout
+        Directory.CreateDirectory(GDirectories.playerRaceData);
+        Directory.CreateDirectory(GDirectories.playerClassData);
+        Directory.CreateDirectory(GDirectories.playerAccoladeData);
+        
+        // create individual race paths
+        Directory.CreateDirectory(GDirectories.playerRaceElfData);
+        Directory.CreateDirectory(GDirectories.playerRaceHumanData);
+        Directory.CreateDirectory(GDirectories.playerRaceOrcData);
+        
+        // create individual class paths
+        Directory.CreateDirectory(GDirectories.playerClassKnightData);
+        Directory.CreateDirectory(GDirectories.playerClassSorcererData);
+        Directory.CreateDirectory(GDirectories.playerClassWarlockData);
+        
+        // create individual accolade paths
+        Directory.CreateDirectory(GDirectories.playerAccoladeWarriorData);
+        Directory.CreateDirectory(GDirectories.playerAccoladeScholarData);
+        Directory.CreateDirectory(GDirectories.playerAccoladeAcolyteData);
+        
+        // create race description directories
+        Directory.CreateDirectory(GDirectories.playerRaceElfDescData);
+        Directory.CreateDirectory(GDirectories.playerRaceHumanDescData);
+        Directory.CreateDirectory(GDirectories.playerRaceOrcDescData);
+
+        // create class description directories
+        Directory.CreateDirectory(GDirectories.playerClassKnightDescData);
+        Directory.CreateDirectory(GDirectories.playerClassSorcererDescData);
+        Directory.CreateDirectory(GDirectories.playerClassWarlockDescData);
+        
+        // create accolade description directories
+        Directory.CreateDirectory(GDirectories.playerAccoladeWarriorDescData);
+        Directory.CreateDirectory(GDirectories.playerAccoladeScholarDescData);
+        Directory.CreateDirectory(GDirectories.playerAccoladeAcolyteDescData);
+        
+        // create class beginning directories
+        Directory.CreateDirectory(GDirectories.playerClassKnightBegData);
+        Directory.CreateDirectory(GDirectories.playerClassSorcererBegData);
+        Directory.CreateDirectory(GDirectories.playerClassWarlockBegData);
+        
+        // class story path
+        Directory.CreateDirectory(GDirectories.playerKnightStoryDataPath);
+        Directory.CreateDirectory(GDirectories.playerSorcererStoryDataPath);
+        Directory.CreateDirectory(GDirectories.playerWarlockStoryDataPath);
+
+        // knight scene paths
+        Directory.CreateDirectory(GDirectories.playerKnightScenePath);
+        Directory.CreateDirectory(GDirectories.playerKnightSceneOnePath);
+        Directory.CreateDirectory(GDirectories.playerKnightSceneTwoPath);
+        Directory.CreateDirectory(GDirectories.playerKnightSceneThreePath);
+
+        // sorcerer scene paths
+        Directory.CreateDirectory(GDirectories.playerSorcererScenePath);
+        Directory.CreateDirectory(GDirectories.playerSorcererSceneOnePath);
+        Directory.CreateDirectory(GDirectories.playerSorcererSceneTwoPath);
+        Directory.CreateDirectory(GDirectories.playerSorcererSceneThreePath);
+
+        // warlock scene paths
+        Directory.CreateDirectory(GDirectories.playerWarlockScenePath);
+        Directory.CreateDirectory(GDirectories.playerWarlockSceneOnePath);
+        Directory.CreateDirectory(GDirectories.playerWarlockSceneTwoPath);
+        Directory.CreateDirectory(GDirectories.playerWarlockSceneThreePath);
+
         try
         {
             foreach (var filePath in GDirectories.GDdataFilePaths)
@@ -135,11 +170,8 @@ public class DataManager
         }
     }
 
-    internal void writeTemplateData() //TODO: FIX
+    internal void WriteDefaultData() //TODO: FIX
     {
-        Warn.WWMNL("WARNING: DATA MISSING IN ONE OR MORE CRITICAL FILES!");
-        Warn.WWMNL("STORY INCOMPLETE!");
-
         // purge all contetns
         foreach (var filepath in GDirectories.GDdataFilePaths)
         {
@@ -216,6 +248,21 @@ public class DataManager
             }
         }
     }
+
+    internal void PurgeDataDir()
+    {
+        DirectoryInfo di = new DirectoryInfo(GDirectories.dataPath);
+
+        foreach (var file in di.GetFiles())
+        {
+            file.Delete();
+        }
+
+        foreach (var dir in di.GetDirectories())
+        {
+            dir.Delete(true);
+        }
+    }
 }
 
 public static class GDirectories
@@ -238,128 +285,170 @@ public static class GDirectories
     public const string dataPath = @"../../../Data/";
 
     // player construction data directories
-    public const string playerRaceData = @"../../../Data/playerRaceData/";
-    public const string playerClassData = @"../../../Data/playerClassData/";
-    public const string playerAccoladeData = @"../../../Data/playerAccoladeData/";
+    public const string playerRaceData = @"../../../Data/Race/";
+    public const string playerClassData = @"../../../Data/Class/";
+    public const string playerAccoladeData = @"../../../Data/Accolade/";
 
+    public const string playerRaceElfData = @"../../../Data/Race/Elf/";
+    public const string playerRaceHumanData = @"../../../Data/Race/Human/";
+    public const string playerRaceOrcData = @"../../../Data/Race/Orc/";
+    
+    public const string playerClassKnightData = @"../../../Data/Class/Knight/";
+    public const string playerClassSorcererData = @"../../../Data/Class/Sorcerer/";
+    public const string playerClassWarlockData = @"../../../Data/Class/Warlock/";
+
+    public const string playerAccoladeWarriorData = @"../../../Data/Accolade/Warrior/";
+    public const string playerAccoladeScholarData = @"../../../Data/Accolade/Scholar/";
+    public const string playerAccoladeAcolyteData = @"../../../Data/Accolade/Acolyte/";
+    
+    // DESCRIPTIONS
+    public const string playerRaceElfDescData = @"../../../Data/Race/Elf/Description/";
+    public const string playerRaceHumanDescData = @"../../../Data/Race/Human/Description/";
+    public const string playerRaceOrcDescData = @"../../../Data/Race/Orc/Description/";
+
+    public const string playerClassKnightDescData = @"../../../Data/Class/Knight/Description/";
+    public const string playerClassSorcererDescData = @"../../../Data/Class/Sorcerer/Description/";
+    public const string playerClassWarlockDescData = @"../../../Data/Class/Warlock/Description/";
+
+    public const string playerAccoladeWarriorDescData = @"../../../Data/Accolade/Warrior/Description/";
+    public const string playerAccoladeScholarDescData = @"../../../Data/Accolade/Scholar/Description/";
+    public const string playerAccoladeAcolyteDescData = @"../../../Data/Accolade/Acolyte/Description/";
+    
     // player race data files
-    public const string playerRaceHumanDataF = @"../../../Data/playerRaceData/human.txt";
-    public const string playerRaceElfDataF = @"../../../Data/playerRaceData/elf.txt";
-    public const string playerRaceOrcDataF = @"../../../Data/playerRaceData/orc.txt";
+    public const string playerRaceHumanDataF = @"../../../Data/Race/Human/Description/human.txt";
+    public const string playerRaceElfDataF = @"../../../Data/Race/Elf/Description/elf.txt";
+    public const string playerRaceOrcDataF = @"../../../Data/Race/Orc/Description/orc.txt";
 
     // player class data files
-    public const string playerClassKnightDataF = @"../../../Data/playerClassData/knight.txt";
-    public const string playerClassSorcererDataF = @"../../../Data/playerClassData/sorcerer.txt";
-    public const string playerClassWarlockDataF = @"../../../Data/playerClassData/warlock.txt";
+    public const string playerClassKnightDataF = @"../../../Data/Class/Knight/Description/knight.txt";
+    public const string playerClassSorcererDataF = @"../../../Data/Class/Sorcerer/Description/sorcerer.txt";
+    public const string playerClassWarlockDataF = @"../../../Data/Class/Warlock/Description/warlock.txt";
 
     // player accolade data files
-    public const string playerAccoladeWarriorDataF = @"../../../Data/playerAccoladeData/warrior.txt";
-    public const string playerAccoladeScholarDataF = @"../../../Data/playerAccoladeData/scholar.txt";
-    public const string playerAccoladeAcolyteDataF = @"../../../Data/playerAccoladeData/acolyte.txt";
+    public const string playerAccoladeWarriorDataF = @"../../../Data/Accolade/Warrior/Description/warrior.txt";
+    public const string playerAccoladeScholarDataF = @"../../../Data/Accolade/Scholar/Description/scholar.txt";
+    public const string playerAccoladeAcolyteDataF = @"../../../Data/Accolade/Acolyte/Decription/acolyte.txt";
+
+    // BEGINNINGS
+    public const string playerClassKnightBegData = @"../../../Data/Class/Knight/Beginning/";
+    public const string playerClassSorcererBegData = @"../../../Data/Class/Sorcerer/Beginning/";
+    public const string playerClassWarlockBegData = @"../../../Data/Class/Warlock/Beginning/";
+    
+    public const string playerKnightStoryDataBeginningF = @"../../../Data/Class/Knight/Begunning/beginning.txt";
+    public const string playerSorcererStoryDataBeginningF = @"../../../Data/Class/Sorcerer/Beginning/beginning.txt";
+    public const string playerWarlockStoryDataBeginningF = @"../../../Data/Class/Warlock/Beginning/beginning.txt";
 
     // player class STORY data path
-    public const string playerKnightStoryDataPath = @"../../../Data/Knight";
-    public const string playerSorcererStoryDataPath = @"../../../Data/Sorcerer";
-    public const string playerWarlockStoryDataPath = @"../../../Data/Warlock";
+    public const string playerKnightStoryDataPath = @"../../../Data/Story/Knight";
+    public const string playerSorcererStoryDataPath = @"../../../Data/Story/Sorcerer";
+    public const string playerWarlockStoryDataPath = @"../../../Data/Story/Warlock";
 
-    // public class STORY data files
-    public const string playerKnightStoryDataBeginningF = @"../../../Data/Knight/beginning.txt";
-    public const string playerSorcererStoryDataBeginningF = @"../../../Data/Sorcerer/beginning.txt";
-    public const string playerWarlockStoryDataBeginningF = @"../../../Data/Warlock/beginning.txt";
 
+    /// <summary>
+    /// /////////////////////////////TODO: RESTRUCTURE FILE SYSTEM
+    /// </summary>
     // scene paths
-    public const string playerKnightScenePath = @"../../../Data/Knight/Scenes/";
-    public const string playerSorcererScenePath = @"../../../Data/Sorcerer/Scenes";
-    public const string playerWarlockScenePath = @"../../../Data/Warlock/Scenes/";
+    public const string playerKnightScenePath = @"../../../Data/Story/Knight/Scenes/";
+    public const string playerSorcererScenePath = @"../../../Data/Story/Sorcerer/Scenes";
+    public const string playerWarlockScenePath = @"../../../Data/Story/Warlock/Scenes/";
 
     // inidivdual scene folder
-    public const string playerKnightSceneOnePath = @"../../../Data/Knight/Scenes/Scene_One/";
-    public const string playerKnightSceneTwoPath = @"../../../Data/Knight/Scenes/Scene_Two/";
-    public const string playerKnightSceneThreePath = @"../../../Data/Knight/Scenes/Scene_Three/";
+    public const string playerKnightSceneOnePath = @"../../../Data/Story/Knight/Scenes/Scene_One/";
+    public const string playerKnightSceneTwoPath = @"../../../Data/Story/Knight/Scenes/Scene_Two/";
+    public const string playerKnightSceneThreePath = @"../../../Data/Story/Knight/Scenes/Scene_Three/";
 
-    public const string playerSorcererSceneOnePath = @"../../../Data/Sorcerer/Scenes/Scene_One/";
-    public const string playerSorcererSceneTwoPath = @"../../../Data/Sorcerer/Scenes/Scene_Two/";
-    public const string playerSorcererSceneThreePath = @"../../../Data/Sorcerer/Scenes/Scene_Three/";
+    public const string playerSorcererSceneOnePath = @"../../../Data/Story/Sorcerer/Scenes/Scene_One/";
+    public const string playerSorcererSceneTwoPath = @"../../../Data/Story/Sorcerer/Scenes/Scene_Two/";
+    public const string playerSorcererSceneThreePath = @"../../../Data/Story/Sorcerer/Scenes/Scene_Three/";
 
-    public const string playerWarlockSceneOnePath = @"../../../Data/Warlock/Scenes/Scene_One/";
-    public const string playerWarlockSceneTwoPath = @"../../../Data/Warlock/Scenes/Scene_Two/";
-    public const string playerWarlockSceneThreePath = @"../../../Data/Warlock/Scenes/Scene_Three/";
+    public const string playerWarlockSceneOnePath = @"../../../Data/Story/Warlock/Scenes/Scene_One/";
+    public const string playerWarlockSceneTwoPath = @"../../../Data/Story/Warlock/Scenes/Scene_Two/";
+    public const string playerWarlockSceneThreePath = @"../../../Data/Story/Warlock/Scenes/Scene_Three/";
 
     // individual scene files
-    public const string playerKnightStoryDataSceneOneF = @"../../../Data/Knight/Scenes/Scene_One/sceneone.txt";
-    public const string playerKnightStoryDataSceneTwoF = @"../../../Data/Knight/Scenes/Scene_Two/scenetwo.txt";
+    public const string playerKnightStoryDataSceneOneF = @"../../../Data/Story/Knight/Scenes/Scene_One/sceneone.txt";
+    public const string playerKnightStoryDataSceneTwoF = @"../../../Data/Story/Knight/Scenes/Scene_Two/scenetwo.txt";
 
     public const string playerKnightStoryDataSceneThreeF =
-        @"../../../Data/Knight/Scenes/Scene_Three/scenethree.txt";
+        @"../../../Data/Story/Knight/Scenes/Scene_Three/scenethree.txt";
 
-    public const string playerSorcererStoryDataSceneOneF = @"../../../Data/Sorcerer/Scenes/Scene_One/sceneone.txt";
+    public const string playerSorcererStoryDataSceneOneF = @"../../../Data/Story/Sorcerer/Scenes/Scene_One/sceneone.txt";
     public const string playerSorcererStoryDataSceneTwoF = @"../../../Data/Sorcerer/Scenes/Scene_Two/scenetwo.txt";
 
     public const string playerSorcererStoryDataSceneThreeF =
         @"../../../Data/Sorcerer/Scenes/Scene_Two/scenethree.txt";
 
 
-    public const string playerWarlockStoryDataSceneOneF = @"../../../Data/Warlock/Scenes/Scene_One/sceneone.txt";
-    public const string playerWarlockStoryDataSceneTwoF = @"../../../Data/Warlock/Scenes/Scene_Two/scenetwo.txt";
+    public const string playerWarlockStoryDataSceneOneF = @"../../../Data/Story/Warlock/Scenes/Scene_One/sceneone.txt";
+    public const string playerWarlockStoryDataSceneTwoF = @"../../../Data/Story/Warlock/Scenes/Scene_Two/scenetwo.txt";
 
     public const string playerWarlockStoryDataSceneThreeF =
-        @"../../../Data/Warlock/Scenes/Scene_Three/scenethree.txt";
+        @"../../../Data/Story/Warlock/Scenes/Scene_Three/scenethree.txt";
 
     // individual option files
     public const string playerKnightStoryDataSceneOneOptionsF =
-        @"../../../Data/Knight/Scenes/Scene_One/sceneoneoptions.txt";
+        @"../../../Data/Story/Knight/Scenes/Scene_One/sceneoneoptions.txt";
 
     public const string playerKnightStoryDataSceneTwoOptionsF =
-        @"../../../Data/Knight/Scenes/Scene_Two/scenetwooptions.txt";
+        @"../../../Data/Story/Knight/Scenes/Scene_Two/scenetwooptions.txt";
 
     public const string playerKnightStoryDataSceneThreeOptionsF =
-        @"../../../Data/Knight/Scenes/Scene_Three/sceneThreeoptions.txt";
+        @"../../../Data/Story/Knight/Scenes/Scene_Three/sceneThreeoptions.txt";
 
     public const string playerSorcererStoryDataSceneOneOptionsF =
-        @"../../../Data/Sorcerer/Scenes/Scene_One/sceneoneoptions.txt";
+        @"../../../Data/Story/Sorcerer/Scenes/Scene_One/sceneoneoptions.txt";
 
     public const string playerSorcererStoryDataSceneTwoOptionsF =
-        @"../../../Data/Sorcerer/Scenes/Scene_Two/scenetwooptions.txt";
+        @"../../../Data/Story/Sorcerer/Scenes/Scene_Two/scenetwooptions.txt";
 
     public const string playerSorcererStoryDataSceneThreeOptionsF =
-        @"../../../Data/Sorcerer/Scenes/Scene_Three/sceneThreeoptions.txt";
+        @"../../../Data/Story/Sorcerer/Scenes/Scene_Three/sceneThreeoptions.txt";
 
     public const string playerWarlockStoryDataSceneOneOptionsF =
-        @"../../../Data/Warlock/Scenes/Scene_One/sceneoneoptions.txt";
+        @"../../../Data/Story/Warlock/Scenes/Scene_One/sceneoneoptions.txt";
 
     public const string playerWarlockStoryDataSceneTwoOptionsF =
-        @"../../../Data/Warlock/Scenes/Scene_Two/scenetwooptions.txt";
+        @"../../../Data/Story/Warlock/Scenes/Scene_Two/scenetwooptions.txt";
 
     public const string playerWarlockStoryDataSceneThreeOptionsF =
-        @"../../../Data/Warlock/Scenes/Scene_Three/sceneThreeoptions.txt";
+        @"../../../Data/Story/Warlock/Scenes/Scene_Three/sceneThreeoptions.txt";
 
     // individual consequence files
     public const string playerKnightStoryDataSceneOneConsequencesF =
-        @"../../../Data/Knight/Scenes/Scene_One/sceneoneconsequences.txt";
+        @"../../../Data/Story/Knight/Scenes/Scene_One/sceneoneconsequences.txt";
 
     public const string playerKnightStoryDataSceneTwoConsequencesF =
-        @"../../../Data/Knight/Scenes/Scene_Two/scenetwoconsequences.txt";
+        @"../../../Data/Story/Knight/Scenes/Scene_Two/scenetwoconsequences.txt";
 
     public const string playerKnightStoryDataSceneThreeConsequencesF =
-        @"../../../Data/Knight/Scenes/Scene_Three/scenethreeconsequences.txt";
+        @"../../../Data/Story/Knight/Scenes/Scene_Three/scenethreeconsequences.txt";
 
     public const string playerSorcererStoryDataSceneOneConsequencesF =
-        @"../../../Data/Sorcerer/Scenes/Scene_One/sceneoneconsequences.txt";
+        @"../../../Data/Story/Sorcerer/Scenes/Scene_One/sceneoneconsequences.txt";
 
     public const string playerSorcererStoryDataSceneTwoConsequencesF =
-        @"../../../Data/Sorcerer/Scenes/Scene_Two/scenetwoconsequences.txt";
+        @"../../../Data/Story/Sorcerer/Scenes/Scene_Two/scenetwoconsequences.txt";
 
     public const string playerSorcererStoryDataSceneThreeConsequencesF =
-        @"../../../Data/Sorcerer/Scenes/Scene_Three/scenethreeconsequences.txt";
+        @"../../../Data/Story/Sorcerer/Scenes/Scene_Three/scenethreeconsequences.txt";
 
     public const string playerWarlockStoryDataSceneOneConsequencesF =
-        @"../../../Data/Warlock/Scenes/Scene_One/sceneoneconsequences.txt";
+        @"../../../Data/Story/Warlock/Scenes/Scene_One/sceneoneconsequences.txt";
 
     public const string playerWarlockStoryDataSceneTwoConsequencesF =
-        @"../../../Data/Warlock/Scenes/Scene_Two/scenetwoconsequences.txt";
+        @"../../../Data/Story/Warlock/Scenes/Scene_Two/scenetwoconsequences.txt";
 
     public const string playerWarlockStoryDataSceneThreeConsequencesF =
-        @"../../../Data/Warlock/Scenes/Scene_Three/scenethreeconsequences.txt";
+        @"../../../Data/Story/Warlock/Scenes/Scene_Three/scenethreeconsequences.txt";
+    
+    // CUSTOM FILE DIRECTORY
+    public const string playerCustomDataPath = @"../../../Data/Custom";
+    public const string playerCustomRacePath = @"../../../Data/Custom/Race";
+    public const string playerCustomClassPath = @"../../../Data/Custom/Class";
+    public const string playerCustomAccoladePath = @"../../../Data/Custom/Accolade";
+    public const string playerCustomStoryPath = @"../../../Data/Custom/Story";
+    
+    
 
 
     public static readonly string[] GDdataFilePaths = new string[]
@@ -390,4 +479,11 @@ public static class GDirectories
         GDirectories.playerWarlockStoryDataSceneTwoConsequencesF,
         GDirectories.playerWarlockStoryDataSceneThreeConsequencesF
     };
+}
+
+public static class GGlobals
+{
+    public static Player NewPlayer;
+    public static Player LoadPlayer;
+    public static bool defaultClassesUsed = true;
 }

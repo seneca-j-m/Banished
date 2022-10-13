@@ -50,7 +50,6 @@ public class DBManager
             using (var conn = new SqliteConnection($@"Data Source={GDirectories.playerDBPath}"))
             {
                 conn.Open();
-                Debug.WDMNL("Connection Initialsed: playerDB");
                 var comm = conn.CreateCommand();
                 comm.CommandText =
                     @"
@@ -127,21 +126,7 @@ public class DBManager
 
         return playerDBData;
     }
-
-    // internal void WriteToUserDB(User user)
-    // {
-    //     using (var conn = new SqliteConnection($@"Data Source={GDirectories.userDBPath}"))
-    //     {
-    //         conn.Open();
-    //         var comm = conn.CreateCommand();
-    //         comm.CommandText =
-    //             $@"
-    //                 INSERT INTO users (firstname, lastname, age, password) VALUES ('{user.firstname}', '{user.lastname}', '{user.age}', '{user.password}');
-    //             ";
-    //         using (var readr = comm.ExecuteReader()) ;
-    //     }
-    // }
-
+    
     internal void WriteToPlayerDB(Player player)
     {
         using (var conn = new SqliteConnection($@"Data Source={GDirectories.playerDBPath}"))
@@ -165,6 +150,20 @@ public class DBManager
             comm.CommandText =
                 $@"
                     DELETE FROM players WHERE playername = '{playerName}';
+                ";
+            using (var readr = comm.ExecuteReader()) ;
+        }
+    }
+
+    internal void PurgePlayerDB()
+    {
+        using (var conn = new SqliteConnection($@"Data Source={GDirectories.playerDBPath}"))
+        {
+            conn.Open();
+            var comm = conn.CreateCommand();
+            comm.CommandText =
+                $@"
+                    DELETE FROM players;
                 ";
             using (var readr = comm.ExecuteReader()) ;
         }
