@@ -1,4 +1,5 @@
 using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 
 namespace BanishedMain;
 
@@ -8,7 +9,10 @@ public class StoryManager
     private readonly List<DefaultPlayerClass> _defaultPlayerClasses;
     private readonly List<DefaultPlayerAccolade> _defaultPlayerAccolades;
 
+    private List<PlayerRace> userMadeRaces = new List<PlayerRace>();
     private List<PlayerClass> userMadeClasses = new List<PlayerClass>();
+    private List<PlayerAccolade> userMadeAccolades = new List<PlayerAccolade>();
+    private static List<RaceProficiency> userMadeRaceProficiencies = new List<RaceProficiency>();
 
 
     public StoryManager()
@@ -221,6 +225,11 @@ public class StoryManager
                     userClassFaithMultiplyerFinal, userClassAgilityMultiplyerFinal, userClassDescription);
                 
                 userMadeClasses.Add(newPlayerClass);
+                            
+                // SAVE ALL DATA
+                DataManager.SaveCustomClass(newPlayerClass);
+                
+                DataManager.WriteNewClassDescription(newPlayerClass.classDescription, null, newPlayerClass.className);
             }
             
             Sys.WSMNL(">>>");
@@ -237,12 +246,13 @@ public class StoryManager
                 Sys.WSMNL(userMadeClass.classDescription);
                 counter++;
             }
+
         }
         
         return userMadeClasses;
     }
-
-    public void CreateBeginning()
+    
+    public void CreateBeginning(DataManager DM)
     {
         CosmeticMenu.writeTitleCosmetics("BEGINNING CREATOR");
 
@@ -257,7 +267,7 @@ public class StoryManager
             
             // check which classes are used
             if (GGlobals.defaultClassesUsed)
-            {            
+            {
 
                 foreach (var playerClass in _defaultPlayerClasses)
                 {
@@ -273,8 +283,16 @@ public class StoryManager
                     {
                         Error.WEMNL("NO VALID INPUT");
                     }
-                    else
+                    else // class is valid
                     {
+                        DM.OverwriteDefaultBeginnings(pl_class.ToString());
+                        
+                        Sys.WSMNL($"ENTER NEW BEGINNING FOR {pl_class.ToString()}");
+                        Sys.WSM("> ");
+                        
+                        string newBeginning = Console.ReadLine();
+                        
+                        DM.WriteNewBeginnings(newBeginning, pl_class.ToString());
                     }
                 }
                 catch (Exception e)
@@ -282,7 +300,7 @@ public class StoryManager
                     Error.WEMNL("BAD INPUT!");
                 }
             }
-            else
+            else // FOR CUSTOM CLASSES
             {
                 foreach (var playerClass in userMadeClasses)
                 {
@@ -298,8 +316,16 @@ public class StoryManager
                     {
                         Error.WEMNL("NO VALID INPUT");
                     }
-                    else
+                    else // class is valid
                     {
+                        DM.CreateCustomBeginnings(pl_class.className);
+                        
+                        Sys.WSMNL($"ENTER NEW BEGINNING FOR {pl_class.ToString()}");
+                        Sys.WSM("> ");
+
+                        string newBeginning = Console.ReadLine();
+                        
+                        DM.WriteNewBeginnings(newBeginning, null, pl_class.ToString());
                     }
                 }
                 catch (Exception e)
@@ -337,10 +363,79 @@ public class StoryManager
         DM.WriteDefaultData();
     }
 
-    public static List<PlayerRace> CreateRaces(bool useDefaults = false)
+    public List<PlayerAccolade> CreateAccolades(bool useDefaults = false)
     {
-        List<PlayerRace> userMadeRaces = new List<PlayerRace>();
+        CosmeticMenu.writeTitleCosmetics("ACCOLADE CREATOR");
+        if (useDefaults)
+        {
+            Sys.WSMNL("...");
+            Sys.WSMNL("Using default accolades...");
+            Sys.WSM("> ");
+            Console.ReadLine();
+        }
+        else
+        {
+            Sys.WSMNL("Welcome to accolade creator!");
+            
+            int userAccoladeCountFinal = 0;
+            bool AccoladeCountInputValid = false;
+            while (!AccoladeCountInputValid)
+            {
+                Sys.WSMNL("Specify the number of Accolades to be included: ");
+                Sys.WSM("> ");
 
+                string userAccoladeCount = Console.ReadLine();
+
+                try
+                {
+                    userAccoladeCountFinal = int.Parse(userAccoladeCount);
+
+                    if (userAccoladeCountFinal == 0)
+                    {
+                        Error.WEMNL("MUST BE AT LEAST ONE ACCOLADE");
+                    }
+                    else if (userAccoladeCountFinal > 10)
+                    {
+                        Error.WEMNL("TOO MANY ACCOLADES!");
+                    }
+                    else
+                    {
+                        AccoladeCountInputValid = true;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Error.WEMNL("NO VALID INPUT");
+                }
+            }
+
+
+            for (int i = 0; i < userAccoladeCountFinal; i++)
+            {
+                Sys.WSM(">>> ");
+                Console.ReadLine();
+
+                Sys.WSMNL("Specify name of accolade: ");
+                Sys.WSM("> ");
+                string userAccoladeName = Console.ReadLine().ToUpper();
+
+                Sys.WSMNL("\n");
+                
+                Sys.WSMNL("Formulate accolade description ENTER WHEN DONE: ");
+                Sys.WSM("> ");
+
+                string userAccoladeDescription = Console.ReadLine().ToUpper();
+                
+                PlayerAccolade newPlayerAccolade = new PlayerAccolade(userAccoladeName, userAccoladeDescription);
+                userMadeAccolades.Add(newPlayerAccolade);
+            }
+        }
+
+        return userMadeAccolades;
+    }
+    
+    public List<PlayerRace> CreateRaces(bool useDefaults = false)
+    {
         CosmeticMenu.writeTitleCosmetics("RACE CREATOR");
         if (useDefaults)
         {
@@ -516,8 +611,6 @@ public class StoryManager
 
     public static List<RaceProficiency> CreateRaceProficiencies(bool useDefaults = false)
     {
-        List<RaceProficiency> userRaceProficiencies = new List<RaceProficiency>();
-        
         if (useDefaults)
         {
             Sys.WSMNL("...");
@@ -610,7 +703,7 @@ public class StoryManager
             }
         }
 
-        return userRaceProficiencies;
+        return userMadeRaceProficiencies;
     }
 
     public static void CreateRaceDescription()
@@ -627,6 +720,34 @@ public class StoryManager
 
     public static void CreateScene()
     {
+
+        CosmeticMenu.writeTitleCosmetics("SCENE CREATOR");
+        
+        Sys.WSM(">>> ");
+        Console.ReadLine();
+
+        bool userOverhaulScenesInputValid = false;
+
+        while (!userOverhaulScenesInputValid)
+        {
+            Sys.WSMNL("Overhaul scenes [Y/N]? ");
+            string userOverhaulScenesInput = Console.ReadLine();
+
+            switch (userOverhaulScenesInput)
+            {
+                case "Y":
+                case "y":
+                    
+                    break;
+                case "N":
+                case "n":
+                    Sys.WSMNL("Existing scene files will not be wiped!");
+                    break;
+                default:
+                    Error.WEMNL("NO VALID INPUT");
+                    break;
+            }
+        }
     }
 
     public static void CreatePrompt()
@@ -647,5 +768,16 @@ public class StoryManager
 
     public static void OverhaulAccolade()
     {
+    }
+
+    public static void CREATESTORY(StoryManager SM, DataManager DM)
+    {
+        // scaffold
+        SM.CreateRaces();
+        SM.CreateClasses();
+        SM.CreateAccolades();
+        
+        // story meat
+        SM.CreateBeginning(DM);
     }
 }

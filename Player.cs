@@ -155,3 +155,21 @@ public struct PlayerRace
     }
 }
 
+public struct PlayerAccolade
+{
+    public string accoladeName { get; }
+    public string accoladeDescription { get; }
+
+    public PlayerAccolade(string _accoladeName, string _accoladeDescription)
+    {
+        accoladeName = _accoladeName;
+        accoladeDescription = _accoladeDescription;
+    }
+
+    public PlayerAccolade()
+    {
+        accoladeName = "";
+        accoladeDescription = "";
+    }
+}
+

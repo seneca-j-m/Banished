@@ -5,44 +5,6 @@ namespace BanishedMain;
 
 public class DBManager
 {
-    //protected SqliteConnection DBConnection = new SqliteConnection(GDirectories.userDBPath);
-    internal DBManager()
-    {
-    }
-
-    ~DBManager() // just in caseys
-    {
-        //DBConnection.Close();
-    }
-    //
-    // internal void InitUserDB()
-    // {
-    //     try
-    //     {
-    //         using (var conn = new SqliteConnection($@"Data Source={GDirectories.userDBPath}"))
-    //         {
-    //             conn.Open();
-    //             Debug.WDMNL("Connection Initialised: userDB");
-    //             var comm = conn.CreateCommand();
-    //             comm.CommandText = // TODO: ADD USER ID SECTION
-    //                 @"
-    //                 CREATE TABLE IF NOT EXISTS users (
-    //                     id INTEGER PRIMARY KEY,
-    //                     firstname TEXT NOT NULL,
-    //                     lastname TEXT NOT NULL,
-    //                     age INTEGER NOT NULL,
-    //                     password TEXT NOT NULL 
-    //                 );
-    //                 ";
-    //             var readr = comm.ExecuteNonQuery();
-    //         }
-    //     }
-    //     catch (Exception e)
-    //     {
-    //         throw new DatabaseConnectionFailed(e);
-    //     }
-    // }
-
     internal void InitPlayerDB()
     {
         try

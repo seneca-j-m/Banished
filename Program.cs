@@ -2,6 +2,7 @@
 // using Banished;
 using Microsoft.Data.Sqlite;
 using System;
+using System.Data;
 using System.Text.RegularExpressions;
 using System.Xml.Schema;
 
@@ -333,8 +334,7 @@ internal class Program
                             {
                                 case "Y":
                                 case "y":
-                                    // stack story creation functions
-                                    //SM.CreateClasses();
+                                    StoryManager.CREATESTORY(SM, DM);
                                     userStoryMenuCreateStoryInputValid = true;
                                     break;
                                 case "N":
@@ -359,13 +359,13 @@ internal class Program
                     //TODO:
                     break;
                 case "3":
-                    SM.CreateClasses();
+                    SM.CreateRaces();
                     break;
                 case "4":
-                    //TODO:
+                    SM.CreateClasses();
                     break;
                 case "5":
-                    //TODO:
+                    SM.CreateAccolades();
                     break;
                 case "6":
                     //TODO:
@@ -385,9 +385,7 @@ internal class Program
                     while (!userStoryMenuRestoreStoryInputValid)
                     {
                         Warn.WWMNL("WARN: THIS SILL PURGE STORY DATA AND RESTORE DEFAULTS. CONTINUE [Y/N]");
-                        
-                        Sys.WSMNL("CREATE NEW STORY [Y/N]: ");
-                        Sys.WSM("> ");
+                        Warn.WWM("> ");
                             
                         string userStoryMenuRestoreStoryInput = Console.ReadLine();
                         switch (userStoryMenuRestoreStoryInput)
@@ -491,6 +489,9 @@ internal class Program
         // verify files next
         if (!DM.verifyCriticalFiles())
         {
+            GGlobals.defaultStoryExists = false;
+            GGlobals.customStoryExists = false;
+            
             Error.WEMNL("VERFIYNG INTEGRITY COMPLETED!");
             Error.WEMNL("STORY CREATION REQUIRED");
 
@@ -559,7 +560,7 @@ internal class Program
                                     break;
                             }
                         }
-                        SM.CreateBeginning(); // TODO: WATCH
+                        SM.CreateBeginning(DM); // TODO: WATCH
                         playerFileInputValid = true;
                         break;
                     case "N":
