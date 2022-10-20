@@ -1,6 +1,4 @@
-﻿// using System.ComponentModel.Design;
-// using Banished;
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 using System;
 using System.Data;
 using System.Text.RegularExpressions;
@@ -487,7 +485,7 @@ internal class Program
             }
         }
         // verify files next
-        if (!DM.verifyCriticalFiles())
+        if (!DM.verifyCriticalFiles()[0] && !DM.verifyCriticalFiles()[1])
         {
             GGlobals.defaultStoryExists = false;
             GGlobals.customStoryExists = false;
@@ -508,60 +506,63 @@ internal class Program
                 {
                     case "Y":
                     case "y":
-                        bool createClassInputValid = false;
-
-                        while (!createClassInputValid)
-                        {
-                            Sys.WSMNL("Create new classes? [Y/N]");
-
-                            string classOptionInput = Console.ReadLine();
-                            switch (classOptionInput)
-                            {
-                                case "Y":
-                                case"y":
-
-                                    bool playerCreateClassContinueInputValid = false;
-
-                                    while (!playerCreateClassContinueInputValid)
-                                    {
-                                        Warn.WWMNL("WARNING: THIS WILL WIPE ALL DEFAULT DATA! CONTINUE [Y/N]");
-
-                                        string playerCreateClassContinueInput = Console.ReadLine();
-
-                                        switch (playerCreateClassContinueInput)
-                                        {
-                                            case "Y":
-                                            case "y":
-                                                DM.PurgeDataDir();
-                                                SM.CreateClasses(); ///TODO: FINISH
-                                                playerCreateClassContinueInputValid = true;
-                                                break;
-                                            case "N":
-                                            case "n":
-                                                Error.WEMNL("ABORTED!");
-                                                createClassInputValid = true;
-                                                playerCreateClassContinueInputValid = true;
-                                                break;
-                                            default:
-                                                Error.WEMNL("NO VALID INPUT");
-                                                break;
-                                        }
-                                    }
-                                    createClassInputValid = true;
-                                    break;
-                                case "N":
-                                case "n":
-                                    SM.CreateClasses(true);
-                                    
-                                    createClassInputValid = true;
-                                    break;
-                                default:
-                                    Error.WEMNL("NO VALID INPUT!");
-                                    break;
-                            }
-                        }
-                        SM.CreateBeginning(DM); // TODO: WATCH
-                        playerFileInputValid = true;
+                        // bool createClassInputValid = false;
+                        //
+                        // while (!createClassInputValid)
+                        // {
+                        //     Sys.WSMNL("Create new classes? [Y/N]");
+                        //     
+                        //     string classOptionInput = Console.ReadLine();
+                        //     switch (classOptionInput)
+                        //     {
+                        //         case "Y":
+                        //         case"y":
+                        //     
+                        //             bool playerCreateClassContinueInputValid = false;
+                        //     
+                        //             while (!playerCreateClassContinueInputValid)
+                        //             {
+                        //                 Warn.WWMNL("WARNING: THIS WILL WIPE ALL DEFAULT DATA! CONTINUE [Y/N]");
+                        //     
+                        //                 string playerCreateClassContinueInput = Console.ReadLine();
+                        //     
+                        //                 switch (playerCreateClassContinueInput)
+                        //                 {
+                        //                     case "Y":
+                        //                     case "y":
+                        //                         DM.PurgeDataDir();
+                        //                         SM.CreateClasses(); ///TODO: FINISH
+                        //                         playerCreateClassContinueInputValid = true;
+                        //                         break;
+                        //                     case "N":
+                        //                     case "n":
+                        //                         Error.WEMNL("ABORTED!");
+                        //                         createClassInputValid = true;
+                        //                         playerCreateClassContinueInputValid = true;
+                        //                         break;
+                        //                     default:
+                        //                         Error.WEMNL("NO VALID INPUT");
+                        //                         break;
+                        //                 }
+                        //             }
+                        //             createClassInputValid = true;
+                        //             break;
+                        //         case "N":
+                        //         case "n":
+                        //             SM.CreateClasses(true);
+                        //             
+                        //             createClassInputValid = true;
+                        //             break;
+                        //         default:
+                        //             Error.WEMNL("NO VALID INPUT!");
+                        //             break;
+                        //     }
+                        // }
+                        // SM.CreateBeginning(DM); // TODO: WATCH
+                        // playerFileInputValid = true;
+                        // break;
+                        DM.PurgeDataDir();
+                        StoryManager.CREATESTORY(SM, DM);
                         break;
                     case "N":
                     case "n": // just for clarity
@@ -575,52 +576,17 @@ internal class Program
             }
             
         }
+        else if (DM.verifyCriticalFiles()[0] && !DM.verifyCriticalFiles()[1])
+        {
+            Sys.WSMNL("STORY VERIFICATION SUCCESSFUL!! DEFAULT DATA EXISTS!");
+        }
+        else if (!DM.verifyCriticalFiles()[0] && DM.verifyCriticalFiles()[1])
+        {
+            Sys.WSMNL("STORY VERIFICATION SUCCESSFUL!! CUSTOM DATA EXISTS!");
+        }
+        else
+        {
+            Sys.WSMNL("STORY VERIFICATION SUCCESSFUL!! CUSTOM AND DEFAULT DATA EXISTS!");
+        }
     }
 }
-
-
-
-// CALL FUNCTIONS
-
-// StartMenu sMenu = new StartMenu();
-
-
-// static void PrintMenu()
-// {
-//     Console.WriteLine("Hello, World!");
-//     Console.WriteLine("Reading Data...");
-//     Console.WriteLine("0. Quit");
-//     Console.WriteLine("1. Start");
-//
-//     bool menuActive = true;
-//     while (menuActive)
-//     {
-//         string? input = Console.ReadLine();
-//         if (input is null)
-//         {
-//            Console.WriteLine("INPUT IS NULL");
-//         }
-//         switch (input.ToString())
-//         {
-//             case "0":
-//                 Environment.Exit(0);
-//                 menuActive = false;
-//                 break;
-//             case "1":
-//                 menuActive = false;
-//                 break;
-//             case "D":
-//             case "d":
-//                 DebugMenu DMenu = new DebugMenu();
-//                 break;
-//             default:
-//                 break;
-//         }
-//     }
-// }
-
-
-//
-//
-//
-// PrintMenu();

@@ -19,8 +19,11 @@ public class StoryManager
     {
         // populate lists
         _defaultPlayerRaces = Enum.GetValues(typeof(DefaultPlayerRace)).Cast<DefaultPlayerRace>().ToList();
+        _defaultPlayerRaces.Remove(0);
         _defaultPlayerClasses = Enum.GetValues(typeof(DefaultPlayerClass)).Cast<DefaultPlayerClass>().ToList();
+        _defaultPlayerClasses.Remove(0);
         _defaultPlayerAccolades = Enum.GetValues(typeof(DefaultPlayerAccolade)).Cast<DefaultPlayerAccolade>().ToList();
+        _defaultPlayerAccolades.Remove(0);
     }
 
     public List<PlayerClass> CreateClasses(bool useDefaults = false)
@@ -246,9 +249,7 @@ public class StoryManager
                 Sys.WSMNL(userMadeClass.classDescription);
                 counter++;
             }
-
         }
-        
         return userMadeClasses;
     }
     
@@ -273,10 +274,13 @@ public class StoryManager
                 {
                     Sys.WSMNL($"{counter}. {playerClass}");
                 }
-
+                Console.WriteLine();
+                Console.WriteLine();
+                Sys.WSM("> ");
+                
                 string userClassSelection = Console.ReadLine();
 
-                try
+                try /////////////////////////////////
                 {
                     Enum.TryParse(userClassSelection, out DefaultPlayerClass pl_class);
                     if (_defaultPlayerClasses.IndexOf(pl_class) == -1)
@@ -302,31 +306,29 @@ public class StoryManager
             }
             else // FOR CUSTOM CLASSES
             {
+                counter = 0;
                 foreach (var playerClass in userMadeClasses)
                 {
-                    Sys.WSMNL($"{counter}. {playerClass}");
+                    Sys.WSMNL($"{counter}. {playerClass.className.ToLower()}");
+                    counter++;
                 }
 
                 string userClassSelection = Console.ReadLine();
 
                 try
                 {
-                    Enum.TryParse(userClassSelection, out PlayerClass pl_class);
-                    if (userMadeClasses.IndexOf(pl_class) == -1)
-                    {
-                        Error.WEMNL("NO VALID INPUT");
-                    }
-                    else // class is valid
-                    {
-                        DM.CreateCustomBeginnings(pl_class.className);
-                        
-                        Sys.WSMNL($"ENTER NEW BEGINNING FOR {pl_class.ToString()}");
-                        Sys.WSM("> ");
+                    int userClassSelectionIndex = int.Parse(userClassSelection);
 
-                        string newBeginning = Console.ReadLine();
-                        
-                        DM.WriteNewBeginnings(newBeginning, null, pl_class.ToString());
-                    }
+                    PlayerClass selectedClass = userMadeClasses[userClassSelectionIndex];
+                    
+                    Sys.WSMNL($"WRTIE NEW BEGINNING FOR {selectedClass.className.ToLower()}");
+                    Sys.WSMNL("> ");
+
+                    string newClassBeginning = Console.ReadLine();
+                    
+                    DataManager.WriteCustomBeginning(selectedClass.className.ToLower(), newClassBeginning);
+                    
+                    classSelectionValid = true;
                 }
                 catch (Exception e)
                 {
@@ -428,6 +430,10 @@ public class StoryManager
                 
                 PlayerAccolade newPlayerAccolade = new PlayerAccolade(userAccoladeName, userAccoladeDescription);
                 userMadeAccolades.Add(newPlayerAccolade);
+                
+                DataManager.SaveCustomAccolade(newPlayerAccolade);
+                
+                DataManager.WriteNewAccoladeDescription(newPlayerAccolade.accoladeDescription, null, newPlayerAccolade.accoladeName);
             }
         }
 
@@ -523,35 +529,33 @@ public class StoryManager
                 Sys.WSMNL(">>> ");
                 Console.ReadLine();
 
-                bool userRaceReputationInputValid = false;
-                bool defaultRaceReputationUsed = false;
-                while (!userRaceReputationInputValid)
-                {
-                    Sys.WSMNL("Create new reputation [Y/N]: ");
-                    
-                    string userRaceProficencySelectionInput = Console.ReadLine();
-                    
-                    switch (userRaceProficencySelectionInput)
-                    {
-                        case "Y":
-                        case "y":
-                            StoryManager.CreateRaceProficiencies();
-                            userRaceProficiencySelectionInputValid = true;
-                            break;
-                        case "N":
-                        case "n":
-                            StoryManager.CreateRaceProficiencies(true);
-                            defaultRaceProficencyUsed = true;
-                            userRaceProficiencySelectionInputValid = true;
-                            break;
-                        default:
-                            Error.WEMNL("NO VALID INPUT!");
-                            break;
-                    }
-                }
-
-
-
+                // bool userRaceReputationInputValid = false;
+                // bool defaultRaceReputationUsed = false;
+                // while (!userRaceReputationInputValid)
+                // {
+                //     Sys.WSMNL("Create new reputation [Y/N]: ");
+                //     
+                //     string userRaceProficencySelectionInput = Console.ReadLine();
+                //     
+                //     switch (userRaceProficencySelectionInput)
+                //     {
+                //         case "Y":
+                //         case "y":
+                //             StoryManager.CreateRaceProficiencies();
+                //             userRaceProficiencySelectionInputValid = true;
+                //             break;
+                //         case "N":
+                //         case "n":
+                //             StoryManager.CreateRaceProficiencies(true);
+                //             defaultRaceProficencyUsed = true;
+                //             userRaceProficiencySelectionInputValid = true;
+                //             break;
+                //         default:
+                //             Error.WEMNL("NO VALID INPUT!");
+                //             break;
+                //     }
+                // }
+                
 
                 Sys.WSMNL("Formulate race description [ENTER when done]: ");
                 Sys.WSMNL(">");
@@ -604,7 +608,26 @@ public class StoryManager
                     newPlayerRace = new PlayerRace(userRaceName, userRaceDescription, userRaceProficencies);
                 }
                 userMadeRaces.Add(newPlayerRace);
+                
+                DataManager.SaveCustomRace(newPlayerRace);
+                
+                DataManager.WriteNewRaceDescription(newPlayerRace.raceDescription, null, newPlayerRace.raceName);
             }
+            
+            Sys.WSMNL(">>>");
+            Console.ReadLine();
+            
+            Sys.WSMNL("Race Creation Succesful!");
+            Sys.WSMNL("Created Races: ");
+            int counter = 1;
+            foreach (var userMadeRace in userMadeRaces)
+            {
+                Sys.WSMNL($"{counter}. {userMadeRace.raceName}");
+                Sys.WSMNL($"DESCRIPTION: ");
+                Sys.WSMNL(userMadeRace.raceDescription);
+                counter++;
+            }
+            
         }
         return userMadeRaces;
     }
@@ -615,8 +638,8 @@ public class StoryManager
         {
             Sys.WSMNL("...");
             Sys.WSMNL("Using default proficiencies...");
-            Sys.WSM("> ");
-            Console.ReadLine();
+            // Sys.WSM(">>> ");
+            // Console.ReadLine();
         }
         else
         {
@@ -750,28 +773,10 @@ public class StoryManager
         }
     }
 
-    public static void CreatePrompt()
-    {
-    }
-
-    public static void PurgeAll()
-    {
-    }
-
-    public static void OverhaulRace()
-    {
-    }
-
-    public static void OverhaulClass()
-    {
-    }
-
-    public static void OverhaulAccolade()
-    {
-    }
-
     public static void CREATESTORY(StoryManager SM, DataManager DM)
     {
+        GGlobals.defaultClassesUsed = false;
+        
         // scaffold
         SM.CreateRaces();
         SM.CreateClasses();
@@ -779,5 +784,9 @@ public class StoryManager
         
         // story meat
         SM.CreateBeginning(DM);
+        
+        
+        // story creation has succeeded!
+        DataManager.EtchStoryValidation();
     }
 }

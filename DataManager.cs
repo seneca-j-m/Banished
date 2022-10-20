@@ -37,21 +37,27 @@ public class DataManager
             Directory.CreateDirectory(GDirectories.playerCustomRacePath);
             Directory.CreateDirectory(GDirectories.playerCustomClassPath);
             Directory.CreateDirectory(GDirectories.playerCustomAccoladePath);
-            
+
             // custom data paths
             Directory.CreateDirectory(GDirectories.playerCustomPersDataPath);
             Directory.CreateDirectory(GDirectories.playerCustomPersClassDataPath);
             Directory.CreateDirectory(GDirectories.playerCustomPersRaceDataPath);
             Directory.CreateDirectory(GDirectories.playerCustomPersAccoladeDataPath);
 
+            // create validation paths
+            Directory.CreateDirectory(GDirectories.playerCustomStoryValidationPath);
+
             if (!File.Exists(GDirectories.playerDBPath))
-                File.Create(GDirectories.playerDBPath);
+                File.Create(GDirectories.playerDBPath).Dispose();
 
             if (!File.Exists(GDirectories.loggerFPath))
-                File.Create(GDirectories.loggerFPath);
+                File.Create(GDirectories.loggerFPath).Dispose();
 
             if (!File.Exists(GDirectories.loggerBFPath))
-                File.Create(GDirectories.loggerBFPath);
+                File.Create(GDirectories.loggerBFPath).Dispose();
+
+            if (!File.Exists(GDirectories.playerCustomStoryValidationFile))
+                File.Create(GDirectories.playerCustomStoryValidationFile).Dispose();
         }
         catch (Exception e)
         {
@@ -59,35 +65,62 @@ public class DataManager
         }
     }
 
-    internal bool verifyCriticalFiles() // TODO: CHECK FOR CUSTOM STORY
+    internal bool[] verifyCriticalFiles() // TODO: CHECK FOR CUSTOM STORY
     {
-        List<string> emptyDataFiles = new List<string>();
+        bool defaultFileIntegrityValid = false;
+        bool customFileIntegrityValid = false;
 
-        bool critDataExists = true;
+        bool[] validationArr = new bool[2];
+        
         // race data //TODO: FINISH THIS TIDY
 
         try
         {
+            // check default dir
             foreach (var filePath in GDirectories.GDdataFilePaths)
             {
                 if (!File.Exists(filePath))
                 {
-                    critDataExists = false; // files are empty!
+                    defaultFileIntegrityValid = false;
+                    validationArr[0] = false;
                 }
                 else if (new FileInfo(filePath).Length == 0)
                 {
-                    emptyDataFiles.Add(filePath);
-                    critDataExists = false;
+                    defaultFileIntegrityValid = false;
+                    validationArr[0] = false;
+                }
+                else
+                {
+                    defaultFileIntegrityValid = true;
+                    validationArr[0] = true;
                 }
             }
 
-            return emptyDataFiles.Any();
+            // check validation file
+            if (new FileInfo(GDirectories.playerCustomStoryValidationFile).Length == 0)
+            {
+                customFileIntegrityValid = false;
+                validationArr[1] = false;
+            }
+            else
+            {
+                customFileIntegrityValid = true;
+                validationArr[1] = true;
+            }
+
+            if (!defaultFileIntegrityValid && !customFileIntegrityValid)
+            {
+                validationArr[0] = false;
+                validationArr[1] = false;
+            }
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
             throw;
         }
+
+        return validationArr;
     }
 
     internal void CreateDefaultFiles()
@@ -96,32 +129,32 @@ public class DataManager
         Directory.CreateDirectory(GDirectories.playerRaceData);
         Directory.CreateDirectory(GDirectories.playerClassData);
         Directory.CreateDirectory(GDirectories.playerAccoladeData);
-        
+
         // create individual race paths
         Directory.CreateDirectory(GDirectories.playerRaceElfData);
         Directory.CreateDirectory(GDirectories.playerRaceHumanData);
         Directory.CreateDirectory(GDirectories.playerRaceOrcData);
-        
+
         // create individual class paths
         Directory.CreateDirectory(GDirectories.playerClassKnightData);
         Directory.CreateDirectory(GDirectories.playerClassSorcererData);
         Directory.CreateDirectory(GDirectories.playerClassWarlockData);
-        
+
         // create individual accolade paths
         Directory.CreateDirectory(GDirectories.playerAccoladeWarriorData);
         Directory.CreateDirectory(GDirectories.playerAccoladeScholarData);
         Directory.CreateDirectory(GDirectories.playerAccoladeAcolyteData);
-        
+
         // create race description directories
         Directory.CreateDirectory(GDirectories.playerRaceElfDescData);
         Directory.CreateDirectory(GDirectories.playerRaceHumanDescData);
         Directory.CreateDirectory(GDirectories.playerRaceOrcDescData);
-        
+
         // create class description directories
         Directory.CreateDirectory(GDirectories.playerClassKnightDescData);
         Directory.CreateDirectory(GDirectories.playerClassSorcererDescData);
         Directory.CreateDirectory(GDirectories.playerClassWarlockDescData);
-        
+
         // create accolade description directories
         Directory.CreateDirectory(GDirectories.playerAccoladeWarriorDescData);
         Directory.CreateDirectory(GDirectories.playerAccoladeScholarDescData);
@@ -131,24 +164,24 @@ public class DataManager
         Directory.CreateDirectory(GDirectories.playerClassKnightBegData);
         Directory.CreateDirectory(GDirectories.playerClassSorcererBegData);
         Directory.CreateDirectory(GDirectories.playerClassWarlockBegData);
-        
+
         // class story path
         Directory.CreateDirectory(GDirectories.playerKnightStoryDataPath);
         Directory.CreateDirectory(GDirectories.playerSorcererStoryDataPath);
         Directory.CreateDirectory(GDirectories.playerWarlockStoryDataPath);
-        
+
         // knight scene paths
         Directory.CreateDirectory(GDirectories.playerKnightScenePath);
         Directory.CreateDirectory(GDirectories.playerKnightSceneOnePath);
         Directory.CreateDirectory(GDirectories.playerKnightSceneTwoPath);
         Directory.CreateDirectory(GDirectories.playerKnightSceneThreePath);
-        
+
         // sorcerer scene paths
         Directory.CreateDirectory(GDirectories.playerSorcererScenePath);
         Directory.CreateDirectory(GDirectories.playerSorcererSceneOnePath);
         Directory.CreateDirectory(GDirectories.playerSorcererSceneTwoPath);
         Directory.CreateDirectory(GDirectories.playerSorcererSceneThreePath);
-        
+
         // warlock scene paths
         Directory.CreateDirectory(GDirectories.playerWarlockScenePath);
         Directory.CreateDirectory(GDirectories.playerWarlockSceneOnePath);
@@ -161,7 +194,7 @@ public class DataManager
             {
                 if (!File.Exists(filePath))
                 {
-                    File.Create(filePath);
+                    File.Create(filePath).Dispose();
                 }
             }
         }
@@ -171,7 +204,7 @@ public class DataManager
         }
     }
 
-    internal void CreateCustomBeginnings(string customClassName)
+    internal static void WriteCustomBeginning(string customClassName, string beginningText)
     {
         string customClassBegPath = Path.Join(GDirectories.playerCustomClassPath, @$"{customClassName}/Beginning/");
         string customClassBegPathF = Path.Join(customClassBegPath, "beginning.txt");
@@ -179,45 +212,56 @@ public class DataManager
 
         if (!File.Exists(customClassBegPathF)) // check if file is already there if so, wipe
         {
-            File.Create(customClassBegPathF);   
+            File.Create(customClassBegPathF).Dispose();
         }
         else
         {
             File.WriteAllText(customClassBegPathF, String.Empty);
+            using (StreamWriter sw = new StreamWriter(customClassBegPathF))
+            {
+                sw.WriteLine(beginningText);
+            }
         }
     }
 
     internal void OverwriteDefaultBeginnings(string defaultClassName)
     {
-        string defaultClassBegPathF = Path.Join(GDirectories.playerClassData, @$"{defaultClassName}/Beginning/beginning.txt");
-        
+        string defaultClassBegPathF =
+            Path.Join(GDirectories.playerClassData, @$"{defaultClassName}/Beginning/beginning.txt");
+
         File.WriteAllText(defaultClassBegPathF, string.Empty);
     }
 
-    internal void WriteNewBeginnings(string beginningText, string defaultClassName = null, string customClassName = null)
+    internal void WriteNewBeginnings(string beginningText, string defaultClassName = null,
+        string customClassName = null)
     {
         if (defaultClassName == null)
         {
-            string customClassBegPathF = Path.Join(GDirectories.playerCustomClassPath, @$"{customClassName}/Beginning/beginning.txt");
+            string customClassBegPathF = Path.Join(GDirectories.playerCustomClassPath,
+                @$"{customClassName}/Beginning/beginning.txt");
             File.WriteAllText(customClassBegPathF, beginningText);
         }
         else if (customClassName == null)
         {
-            string defaultClassBegPathF = Path.Join(GDirectories.playerClassData, @$"{defaultClassName}/Beginning/beginning.txt");
+            string defaultClassBegPathF =
+                Path.Join(GDirectories.playerClassData, @$"{defaultClassName}/Beginning/beginning.txt");
             File.WriteAllText(defaultClassBegPathF, beginningText);
         }
     }
 
-    internal static void WriteNewClassDescription(string descriptionText, string defaultClassName = null, string customClassName = null)
+    internal static void WriteNewClassDescription(string descriptionText, string defaultClassName = null,
+        string customClassName = null)
     {
         if (defaultClassName == null)
         {
-            string customClassBegPathF = Path.Join(GDirectories.playerCustomClassPath, @$"{customClassName}/Description/{customClassName}.txt");
+            string customClassBegPathF = Path.Join(GDirectories.playerCustomClassPath,
+                @$"{customClassName.ToLower()}/Description/{customClassName.ToLower()}.txt");
             File.WriteAllText(customClassBegPathF, descriptionText);
         }
         else if (customClassName == null)
         {
-            string defaultClassBegPathF = Path.Join(GDirectories.playerClassData, @$"{defaultClassName}/Description/{defaultClassName}.txt");
+            string defaultClassBegPathF = Path.Join(GDirectories.playerClassData,
+                @$"{defaultClassName.ToLower()}/Description/{defaultClassName.ToLower()}.txt");
             File.WriteAllText(defaultClassBegPathF, descriptionText);
         }
     }
@@ -227,13 +271,15 @@ public class DataManager
     {
         if (defaultRaceName == null)
         {
-            string customClassBegPathF = Path.Join(GDirectories.playerCustomClassPath, @$"{customRaceName}/Description/{customRaceName}.txt");
-            File.WriteAllText(customClassBegPathF, descriptionText);
+            string customRaceBegPathF = Path.Join(GDirectories.playerCustomRacePath,
+                @$"{customRaceName.ToLower()}/Description/{customRaceName.ToLower()}.txt");
+            File.WriteAllText(customRaceBegPathF, descriptionText);
         }
         else if (customRaceName == null)
         {
-            string defaultClassBegPathF = Path.Join(GDirectories.playerClassData, @$"{defaultRaceName}/Description/{defaultRaceName}.txt");
-            File.WriteAllText(defaultClassBegPathF, descriptionText);
+            string defaultRaceBegPathF = Path.Join(GDirectories.playerRaceData,
+                @$"{defaultRaceName.ToLower()}/Description/{defaultRaceName.ToLower()}.txt");
+            File.WriteAllText(defaultRaceBegPathF, descriptionText);
         }
     }
 
@@ -242,12 +288,14 @@ public class DataManager
     {
         if (defaultAccoladeName == null)
         {
-            string customClassBegPathF = Path.Join(GDirectories.playerCustomClassPath, @$"{customAccoladeName}/Description/{customAccoladeName}.txt");
+            string customClassBegPathF = Path.Join(GDirectories.playerCustomAccoladePath,
+                @$"{customAccoladeName.ToLower()}/Description/{customAccoladeName}.txt");
             File.WriteAllText(customClassBegPathF, descriptionText);
         }
         else if (customAccoladeName == null)
         {
-            string defaultClassBegPathF = Path.Join(GDirectories.playerClassData, @$"{defaultAccoladeName}/Description/{defaultAccoladeName}.txt");
+            string defaultClassBegPathF = Path.Join(GDirectories.playerAccoladeData,
+                @$"{defaultAccoladeName.ToLower()}/Description/{defaultAccoladeName}.txt");
             File.WriteAllText(defaultClassBegPathF, descriptionText);
         }
     }
@@ -255,34 +303,35 @@ public class DataManager
     internal static void SaveCustomClass(PlayerClass pl_class)
     {
         // create class directory structure
-        string customClassPath = Path.Join(GDirectories.playerCustomClassPath, pl_class.className);
+        string customClassPath = Path.Join(GDirectories.playerCustomClassPath, pl_class.className.ToLower());
         string customClassDescriptionPath = Path.Join(customClassPath, @"Description/");
         string customClassBeginningPath = Path.Join(customClassPath, @"Beginning/");
 
-        string customClassDescriptionF = Path.Join(customClassDescriptionPath, @$"{pl_class.className}.txt");
+        string customClassDescriptionF = Path.Join(customClassDescriptionPath, @$"{pl_class.className.ToLower()}.txt");
         string customClassBeginningF = Path.Join(customClassBeginningPath, $@"beginning.txt");
-        
+
         Directory.CreateDirectory(GDirectories.playerCustomClassPath);
         Directory.CreateDirectory(customClassDescriptionPath);
         Directory.CreateDirectory(customClassBeginningPath);
 
         if (!File.Exists(customClassDescriptionF))
         {
-            File.Create(customClassDescriptionPath);
+            File.Create(customClassDescriptionF).Dispose();
         }
 
         if (!File.Exists(customClassBeginningF))
         {
-            File.Create(customClassBeginningF);
+            File.Create(customClassBeginningF).Dispose();
         }
-        
+
         // create saving mechanism
-        string customClassDataFilePath = Path.Join(GDirectories.playerCustomPersClassDataPath, $@"{pl_class.ToString()}/");
-        string customClassDataFileF = Path.Join(customClassDataFilePath, $@"{pl_class.ToString()}_data.txt");
+        string customClassDataFilePath =
+            Path.Join(GDirectories.playerCustomPersClassDataPath, $@"{pl_class.className.ToLower()}/");
+        string customClassDataFileF = Path.Join(customClassDataFilePath, $@"{pl_class.className.ToLower()}_data.txt");
 
         Directory.CreateDirectory(customClassDataFilePath);
-        
-        File.Create(customClassDataFileF);
+
+        File.Create(customClassDataFileF).Dispose();
 
         using (StreamWriter sw = new StreamWriter(customClassDataFileF))
         {
@@ -290,27 +339,127 @@ public class DataManager
             sw.WriteLine($"HEALTH: {pl_class.classHealth}");
             sw.WriteLine($"FAITH: {pl_class.classFaith}");
             sw.WriteLine($"AGILITY: {pl_class.classAgility}");
-            sw.WriteLine($"DESCRIPTION: {pl_class.classDescription}");
+            //sw.WriteLine($"");
+        }
+
+        // save description
+        using (StreamWriter sw = new StreamWriter(customClassDescriptionF))
+        {
+            sw.WriteLine($"DESCRIPTION:{pl_class.classDescription}");
         }
     }
 
     internal static void SaveCustomRace(PlayerRace pl_race)
     {
+        // create class directory structure
+        string customRacePath = Path.Join(GDirectories.playerCustomRacePath, pl_race.raceName.ToLower());
+        string customRaceDescriptionPath = Path.Join(customRacePath, @"Description/");
+        string customRaceBeginningPath = Path.Join(customRacePath, @"Beginning/");
+
+        string customRaceDescriptionF = Path.Join(customRaceDescriptionPath, @$"{pl_race.raceName.ToLower()}.txt");
+        string customRaceBeginningF = Path.Join(customRaceBeginningPath, $@"beginning.txt");
+
+        Directory.CreateDirectory(GDirectories.playerCustomRacePath);
+        Directory.CreateDirectory(customRaceDescriptionPath);
+        Directory.CreateDirectory(customRaceBeginningPath);
+
+        if (!File.Exists(customRaceDescriptionF))
+        {
+            File.Create(customRaceDescriptionF).Dispose();
+        }
+
+        if (!File.Exists(customRaceBeginningF))
+        {
+            File.Create(customRaceBeginningF).Dispose();
+        }
+
+        string customRaceDataFilePath = Path.Join(GDirectories.playerCustomPersRaceDataPath, $@"{pl_race.raceName}");
+        string customRaceDataFileF = Path.Join(customRaceDataFilePath, $@"{pl_race.raceName}_data.txt");
+
+        Directory.CreateDirectory(customRaceDataFilePath);
+
+        File.Create(customRaceDataFileF).Dispose();
+
+        using (StreamWriter sw = new StreamWriter(customRaceDataFileF))
+        {
+            sw.WriteLine($"NAME: {pl_race.raceName}");
+            sw.WriteLine($"DESCRIPTION: {pl_race.raceDescription}");
+
+            if (!pl_race.raceProficencies.Any())
+            {
+                int counter = 0;
+                foreach (var VARIABLE in pl_race.draceProficencies)
+                {
+                    sw.WriteLine($"PROFICIENCY COUNT: {pl_race.draceProficencies.Count().ToString()}");
+                    sw.WriteLine($"PROFICIENCY {counter}: {pl_race.draceProficencies[counter].ToString()}");
+                    counter++;
+                }
+            }
+        }
     }
 
     internal static void SaveCustomAccolade(PlayerAccolade pl_accolade)
     {
-    }
-    
+        // create class directory structure
+        string customAccoladePath =
+            Path.Join(GDirectories.playerCustomAccoladePath, pl_accolade.accoladeName.ToLower());
+        string customAccoladeDescriptionPath = Path.Join(customAccoladePath, @"Description/");
+        string customAccoladeBeginningPath = Path.Join(customAccoladePath, @"Beginning/");
 
-        internal void WriteDefaultData() //TODO: FIX
+        string customAccoladeDescriptionF =
+            Path.Join(customAccoladeDescriptionPath, @$"{pl_accolade.accoladeName.ToLower()}.txt");
+        string customAccoladeBeginningF = Path.Join(customAccoladePath, $@"beginning.txt");
+
+        Directory.CreateDirectory(GDirectories.playerCustomRacePath);
+        Directory.CreateDirectory(customAccoladeDescriptionPath);
+        Directory.CreateDirectory(customAccoladeBeginningPath);
+
+        if (!File.Exists(customAccoladeDescriptionF))
+        {
+            File.Create(customAccoladeDescriptionF).Dispose();
+        }
+
+        if (!File.Exists(customAccoladeBeginningF))
+        {
+            File.Create(customAccoladeBeginningF).Dispose();
+        }
+
+        string customAccoladeDataFilePath =
+            Path.Join(GDirectories.playerCustomPersAccoladeDataPath, $@"{pl_accolade.accoladeName}");
+        string customAccoladeDataFileF = Path.Join(customAccoladeDataFilePath, $@"{pl_accolade.accoladeName}_data.txt");
+
+        Directory.CreateDirectory(customAccoladeDataFilePath);
+
+        File.Create(customAccoladeDataFileF).Dispose();
+
+        using (StreamWriter sw = new StreamWriter(customAccoladeDataFileF))
+        {
+            sw.WriteLine($"NAME: {pl_accolade.accoladeName}");
+            sw.WriteLine($"DESCRIPTION: {pl_accolade.accoladeDescription}");
+        }
+    }
+
+    internal static void EtchStoryValidation()
+    {
+        Directory.CreateDirectory(GDirectories.playerCustomStoryValidationPath);
+        File.Create(GDirectories.playerCustomStoryValidationFile).Dispose();
+
+        string validationFile = GDirectories.playerCustomStoryValidationFile;
+        // File.Create(validationFile).Dispose();
+        using (StreamWriter sw = new StreamWriter(validationFile))
+        {
+            sw.WriteLine("0");
+        }
+    }
+
+    internal void WriteDefaultData() //TODO: FIX
     {
         // purge all contetns
         foreach (var filepath in GDirectories.GDdataFilePaths)
         {
             File.WriteAllText(filepath, string.Empty);
         }
-        
+
         // write templates
         foreach (var filePath in GDirectories.GDdataFilePaths)
         {
@@ -399,7 +548,6 @@ public class DataManager
 
     internal void WipeSceneFiles()
     {
-        
     }
 }
 
@@ -430,7 +578,7 @@ public static class GDirectories
     public const string playerRaceElfData = @"../../../Data/Race/Elf/";
     public const string playerRaceHumanData = @"../../../Data/Race/Human/";
     public const string playerRaceOrcData = @"../../../Data/Race/Orc/";
-    
+
     public const string playerClassKnightData = @"../../../Data/Class/Knight/";
     public const string playerClassSorcererData = @"../../../Data/Class/Sorcerer/";
     public const string playerClassWarlockData = @"../../../Data/Class/Warlock/";
@@ -438,7 +586,7 @@ public static class GDirectories
     public const string playerAccoladeWarriorData = @"../../../Data/Accolade/Warrior/";
     public const string playerAccoladeScholarData = @"../../../Data/Accolade/Scholar/";
     public const string playerAccoladeAcolyteData = @"../../../Data/Accolade/Acolyte/";
-    
+
     // DESCRIPTIONS
     public const string playerRaceElfDescData = @"../../../Data/Race/Elf/Description/";
     public const string playerRaceHumanDescData = @"../../../Data/Race/Human/Description/";
@@ -451,7 +599,7 @@ public static class GDirectories
     public const string playerAccoladeWarriorDescData = @"../../../Data/Accolade/Warrior/Description/";
     public const string playerAccoladeScholarDescData = @"../../../Data/Accolade/Scholar/Description/";
     public const string playerAccoladeAcolyteDescData = @"../../../Data/Accolade/Acolyte/Description/";
-    
+
     // player race data files
     public const string playerRaceHumanDataF = @"../../../Data/Race/Human/Description/human.txt";
     public const string playerRaceElfDataF = @"../../../Data/Race/Elf/Description/elf.txt";
@@ -471,7 +619,7 @@ public static class GDirectories
     public const string playerClassKnightBegData = @"../../../Data/Class/Knight/Beginning/";
     public const string playerClassSorcererBegData = @"../../../Data/Class/Sorcerer/Beginning/";
     public const string playerClassWarlockBegData = @"../../../Data/Class/Warlock/Beginning/";
-    
+
     public const string playerKnightStoryDataBeginningF = @"../../../Data/Class/Knight/Beginning/beginning.txt";
     public const string playerSorcererStoryDataBeginningF = @"../../../Data/Class/Sorcerer/Beginning/beginning.txt";
     public const string playerWarlockStoryDataBeginningF = @"../../../Data/Class/Warlock/Beginning/beginning.txt";
@@ -487,6 +635,7 @@ public static class GDirectories
     /// </summary>
     // scene paths
     public const string playerKnightScenePath = @"../../../Data/Story/Knight/Scenes/";
+
     public const string playerSorcererScenePath = @"../../../Data/Story/Sorcerer/Scenes";
     public const string playerWarlockScenePath = @"../../../Data/Story/Warlock/Scenes/";
 
@@ -510,10 +659,14 @@ public static class GDirectories
     public const string playerKnightStoryDataSceneThreeF =
         @"../../../Data/Story/Knight/Scenes/Scene_Three/scenethree.txt";
 
-    public const string playerSorcererStoryDataSceneOneF = @"../../../Data/Story/Sorcerer/Scenes/Scene_One/sceneone.txt";
-    public const string playerSorcererStoryDataSceneTwoF = @"../../../Data/Story/Sorcerer/Scenes/Scene_Two/scenetwo.txt";
+    public const string playerSorcererStoryDataSceneOneF =
+        @"../../../Data/Story/Sorcerer/Scenes/Scene_One/sceneone.txt";
 
-    public const string playerSorcererStoryDataSceneThreeF = @"../../../Data/Story/Sorcerer/Scenes/Scene_Three/scenethree.txt";
+    public const string playerSorcererStoryDataSceneTwoF =
+        @"../../../Data/Story/Sorcerer/Scenes/Scene_Two/scenetwo.txt";
+
+    public const string playerSorcererStoryDataSceneThreeF =
+        @"../../../Data/Story/Sorcerer/Scenes/Scene_Three/scenethree.txt";
 
 
     public const string playerWarlockStoryDataSceneOneF = @"../../../Data/Story/Warlock/Scenes/Scene_One/sceneone.txt";
@@ -577,7 +730,7 @@ public static class GDirectories
 
     public const string playerWarlockStoryDataSceneThreeConsequencesF =
         @"../../../Data/Story/Warlock/Scenes/Scene_Three/scenethreeconsequences.txt";
-    
+
     // CUSTOM FILE DIRECTORY
     public const string playerCustomDataPath = @"../../../Data/Custom";
     public const string playerCustomRacePath = @"../../../Data/Custom/Race";
@@ -585,11 +738,14 @@ public static class GDirectories
     public const string playerCustomAccoladePath = @"../../../Data/Custom/Accolade";
     public const string playerCustomStoryPath = @"../../../Data/Custom/Story";
 
-    public const string playerCustomPersDataPath = @"../../../Data_Persistent";
-    public const string playerCustomPersClassDataPath = @"../../../Data_Persistent/Class";
-    public const string playerCustomPersRaceDataPath = @"../../../Data_Persistent/Race";
-    public const string playerCustomPersAccoladeDataPath = @"../../../Data_Persistent/Accolade";
-    
+    public const string playerCustomPersDataPath = @"../../../Data/Custom/Data_Persistent";
+    public const string playerCustomPersClassDataPath = @"../../../Data/Custom/Data_Persistent/Class";
+    public const string playerCustomPersRaceDataPath = @"../../../Data/Custom/Data_Persistent/Race";
+    public const string playerCustomPersAccoladeDataPath = @"../../../Data/Custom/Data_Persistent/Accolade";
+
+    public const string playerCustomStoryValidationPath = @"../../../Data/Custom/Validation/";
+    public const string playerCustomStoryValidationFile = @"../../../Data/Custom/Validation/validation.txt";
+
     public static readonly string[] GDdataFilePaths = new string[]
     {
         GDirectories.playerRaceHumanDataF, GDirectories.playerRaceElfDataF, GDirectories.playerRaceOrcDataF,
