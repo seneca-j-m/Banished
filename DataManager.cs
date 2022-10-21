@@ -76,15 +76,15 @@ public class DataManager
 
         try
         {
-            // check default dir
-            foreach (var filePath in GDirectories.GDdataFilePaths)
+            if (!File.Exists(GDirectories.playerDataValidationFile))
             {
-                if (!File.Exists(filePath))
-                {
-                    defaultFileIntegrityValid = false;
-                    validationArr[0] = false;
-                }
-                else if (new FileInfo(filePath).Length == 0)
+                defaultFileIntegrityValid = false;
+                validationArr[0] = false;
+            }
+            else
+            {
+                // check default validation dir
+                if (new FileInfo(GDirectories.playerDataValidationFile).Length == 0)
                 {
                     defaultFileIntegrityValid = false;
                     validationArr[0] = false;
@@ -94,8 +94,28 @@ public class DataManager
                     defaultFileIntegrityValid = true;
                     validationArr[0] = true;
                 }
+            
+                // check default dir
+                // foreach (var filePath in GDirectories.GDdataFilePaths)
+                // {
+                //     if (!File.Exists(filePath))
+                //     {
+                //         defaultFileIntegrityValid = false;
+                //         validationArr[0] = false;
+                //     }
+                //     else if (new FileInfo(filePath).Length == 0)
+                //     {
+                //         defaultFileIntegrityValid = false;
+                //         validationArr[0] = false;
+                //     }
+                //     else
+                //     {
+                //         defaultFileIntegrityValid = true;
+                //         validationArr[0] = true;
+                //     }
+                // }
             }
-
+            
             // check validation file
             if (new FileInfo(GDirectories.playerCustomStoryValidationFile).Length == 0)
             {
@@ -129,6 +149,9 @@ public class DataManager
         Directory.CreateDirectory(GDirectories.playerRaceData);
         Directory.CreateDirectory(GDirectories.playerClassData);
         Directory.CreateDirectory(GDirectories.playerAccoladeData);
+        
+        // create validation directoy
+        Directory.CreateDirectory(GDirectories.playerDataValidationPath);
 
         // create individual race paths
         Directory.CreateDirectory(GDirectories.playerRaceElfData);
@@ -439,6 +462,58 @@ public class DataManager
         }
     }
 
+    internal static void SaveCustomScene(Scene scene)
+    {
+        
+        string customSceneDir = Path.Join(GDirectories.playerCustomStoryPath, $@"{scene.classAssociated.className}/Scenes/Scene_{scene.sceneName.ToString()}/");
+        string customSceneFile = Path.Join(customSceneDir, @$"scene{scene.sceneNumber.ToString()}.txt");
+        string customSceneConsequenceFile = Path.Join(customSceneDir, $@"scene{scene.sceneNumber.ToString()}consequences.txt");
+
+        Directory.CreateDirectory(customSceneDir);
+        
+        File.Create(customSceneFile).Dispose();
+        File.Create(customSceneConsequenceFile).Dispose();
+        
+        // write template
+        using (StreamWriter sw = new StreamWriter(customSceneFile))
+        {
+            sw.WriteLine($"SCENE{scene.sceneNumber.ToString()}");
+
+            int promptAt = 0;
+            foreach (var prompt in scene.prompts)
+            {
+                sw.WriteLine($"PROMPT{promptAt}");
+                sw.WriteLine(prompt);
+                sw.WriteLine($"PROMPT{promptAt}END");
+
+                promptAt++;
+            }
+            
+            sw.WriteLine($"SCENE{scene.sceneNumber.ToString()}END");
+        }
+
+        using (StreamWriter sw = new StreamWriter(customSceneConsequenceFile))
+        {
+            sw.WriteLine($"SCENE{scene.sceneNumber.ToString()}");
+
+            int consequenceAt = 0;
+
+            foreach (var consequence in scene.consequences)
+            {
+                sw.WriteLine($"CONSEQUENCE{consequenceAt}");
+                sw.WriteLine(consequence);
+                sw.WriteLine($"CONSEQUENCE{consequenceAt}END");
+
+                consequenceAt++;
+            }
+            
+            sw.WriteLine($"SCENE{scene.sceneNumber.ToString()}END");
+        }
+        
+
+
+    }
+
     internal static void EtchStoryValidation()
     {
         Directory.CreateDirectory(GDirectories.playerCustomStoryValidationPath);
@@ -446,6 +521,16 @@ public class DataManager
 
         string validationFile = GDirectories.playerCustomStoryValidationFile;
         // File.Create(validationFile).Dispose();
+        using (StreamWriter sw = new StreamWriter(validationFile))
+        {
+            sw.WriteLine("0");
+        }
+    }
+
+    internal static void EtchDefaultStoryValidation()
+    {
+        string validationFile = GDirectories.playerDataValidationFile;
+
         using (StreamWriter sw = new StreamWriter(validationFile))
         {
             sw.WriteLine("0");
@@ -529,6 +614,8 @@ public class DataManager
                 }
             }
         }
+        
+        EtchDefaultStoryValidation();
     }
 
     internal void PurgeDataDir()
@@ -545,10 +632,35 @@ public class DataManager
             dir.Delete(true);
         }
     }
-
-    internal void WipeSceneFiles()
+    
+    internal void PurgeDefaultSceneDir()
     {
+        DirectoryInfo di = new DirectoryInfo(GDirectories.playerStoryPath);
+        foreach (var file in di.GetFiles())
+        {
+            file.Delete();
+        }
+
+        foreach (var dir in di.GetDirectories())
+        {
+            dir.Delete(true);
+        }
     }
+
+    internal void PurgeCustomSceneDir()
+    {
+        DirectoryInfo di = new DirectoryInfo(GDirectories.playerCustomStoryPath);
+        foreach (var file in di.GetFiles())
+        {
+            file.Delete();
+        }
+
+        foreach (var dir in di.GetDirectories())
+        {
+            dir.Delete(true);
+        }
+    }
+
 }
 
 public static class GDirectories
@@ -570,6 +682,10 @@ public static class GDirectories
     // primary data path
     public const string dataPath = @"../../../Data/";
 
+    // validation path
+    public const string playerDataValidationPath = @"../../../Data/Validation";
+    public const string playerDataValidationFile = @"../../../Data/Validation/validation.txt";
+    
     // player construction data directories
     public const string playerRaceData = @"../../../Data/Race/";
     public const string playerClassData = @"../../../Data/Class/";
@@ -625,6 +741,8 @@ public static class GDirectories
     public const string playerWarlockStoryDataBeginningF = @"../../../Data/Class/Warlock/Beginning/beginning.txt";
 
     // player class STORY data path
+    public const string playerStoryPath = @"../../../Datal/Story";
+    
     public const string playerKnightStoryDataPath = @"../../../Data/Story/Knight";
     public const string playerSorcererStoryDataPath = @"../../../Data/Story/Sorcerer";
     public const string playerWarlockStoryDataPath = @"../../../Data/Story/Warlock";
@@ -748,7 +866,7 @@ public static class GDirectories
 
     public static readonly string[] GDdataFilePaths = new string[]
     {
-        GDirectories.playerRaceHumanDataF, GDirectories.playerRaceElfDataF, GDirectories.playerRaceOrcDataF,
+        GDirectories.playerDataValidationFile, GDirectories.playerRaceHumanDataF, GDirectories.playerRaceElfDataF, GDirectories.playerRaceOrcDataF,
         GDirectories.playerClassKnightDataF, GDirectories.playerClassSorcererDataF,
         GDirectories.playerClassWarlockDataF, GDirectories.playerAccoladeWarriorDataF,
         GDirectories.playerAccoladeScholarDataF, GDirectories.playerAccoladeAcolyteDataF,
@@ -784,6 +902,11 @@ public static class GGlobals
 
     public static bool defaultStoryExists = false;
     public static bool customStoryExists = false;
+    public static bool newStory = false;
 
     public static List<PlayerClass> activeCustomClasses = new List<PlayerClass>();
+    public static List<PlayerRace> activeCustomRaces = new List<PlayerRace>();
+    public static List<PlayerAccolade> activeCustomAccolades = new List<PlayerAccolade>();
+
+
 }

@@ -572,21 +572,24 @@ internal class Program
                         Error.WEMNL("NO VALID INPUT!");
                         break;
                 }
-
             }
-            
         }
         else if (DM.verifyCriticalFiles()[0] && !DM.verifyCriticalFiles()[1])
         {
             Sys.WSMNL("STORY VERIFICATION SUCCESSFUL!! DEFAULT DATA EXISTS!");
+            GGlobals.defaultStoryExists = true;
         }
         else if (!DM.verifyCriticalFiles()[0] && DM.verifyCriticalFiles()[1])
         {
             Sys.WSMNL("STORY VERIFICATION SUCCESSFUL!! CUSTOM DATA EXISTS!");
+            GGlobals.defaultStoryExists = false;
+            GGlobals.customStoryExists = true;
         }
         else
         {
             Sys.WSMNL("STORY VERIFICATION SUCCESSFUL!! CUSTOM AND DEFAULT DATA EXISTS!");
+            GGlobals.defaultStoryExists = true;
+            GGlobals.customStoryExists = true;
         }
     }
 }

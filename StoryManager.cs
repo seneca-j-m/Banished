@@ -1,5 +1,6 @@
 using System.Reflection.Metadata;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 
 namespace BanishedMain;
 
@@ -249,6 +250,8 @@ public class StoryManager
                 Sys.WSMNL(userMadeClass.classDescription);
                 counter++;
             }
+
+            GGlobals.activeCustomClasses = userMadeClasses;
         }
         return userMadeClasses;
     }
@@ -435,6 +438,8 @@ public class StoryManager
                 
                 DataManager.WriteNewAccoladeDescription(newPlayerAccolade.accoladeDescription, null, newPlayerAccolade.accoladeName);
             }
+
+            GGlobals.activeCustomAccolades = userMadeAccolades;
         }
 
         return userMadeAccolades;
@@ -627,7 +632,9 @@ public class StoryManager
                 Sys.WSMNL(userMadeRace.raceDescription);
                 counter++;
             }
-            
+
+            GGlobals.activeCustomRaces = userMadeRaces;
+
         }
         return userMadeRaces;
     }
@@ -741,34 +748,300 @@ public class StoryManager
     {
     }
 
-    public static void CreateScene()
+    public void CreateScenes()
     {
 
+        List<string> userDefPrompts = new List<string>();
+        List<string> userDefConsequences = new List<string>();
+        List<Scene> userDefScenes = new List<Scene>();
+
         CosmeticMenu.writeTitleCosmetics("SCENE CREATOR");
+            
+        Sys.WSMNL("Welcome to scene creator!");
         
+        Sys.WSMNL("Guidlines for creating a new story:");
+        Sys.WSMNL("1. 3 Scenes = short story");
+        Sys.WSMNL("2. 4-5 scenes = medium story");
+        Sys.WSMNL("3. 6 and over scenes = long story");
+        
+        Sys.WSMNL("--------------");
+        Sys.WSMNL("Scenes are each composed of prompts:");
+        Sys.WSMNL("1. 1 prompt = short scene (used for effect)");
+        Sys.WSMNL("2. 2 prompts = medium scene (used for combat)");
+        Sys.WSMNL("3. 3 prompts = long scene (used for plot development)");
+        
+        Sys.WSMNL("Associate scene with class: ");
+
+
+        PlayerClass associatedClass = new PlayerClass();
+        
+        bool userClassSceneSelectionValid = false;
+
+        while (!userClassSceneSelectionValid)
+        {
+            int counter = 0;
+            foreach (var pl_class in GGlobals.activeCustomClasses)
+            {
+                Sys.WSMNL($"{counter}. {pl_class.className}");
+                counter++;
+            }
+        
+            Sys.WSMNL("Select class: ");
+            Sys.WSM("> ");
+
+            string userClassSceneSelection = Console.ReadLine();
+
+            try
+            {
+                int classIndex = int.Parse(userClassSceneSelection);
+                PlayerClass selectedClass = GGlobals.activeCustomClasses[classIndex];
+
+                if (GGlobals.activeCustomClasses.IndexOf(selectedClass) == -1)
+                {
+                    Error.WEMNL("NO VALID CLASS!");
+                }
+                else
+                {
+                    associatedClass = selectedClass;
+                    userClassSceneSelectionValid = true;
+                }
+
+            }
+            catch (Exception e)
+            {
+                Error.WEMNL("NO VALID INPUT!");
+                throw;
+            }
+        }
+        
+        
+        
+        Sys.WSMNL("Enter name of scene: ");
+        
+        string sceneName = Console.ReadLine();
+
+        int userSceneCountFinal = 0;
+        bool sceneCountInputValid = false;
+        while (!sceneCountInputValid)
+        {
+            Sys.WSMNL("Specify the number of scenes to be included: ");
+            Sys.WSM("> ");
+
+            string userSceneCount = Console.ReadLine();
+
+            try
+            {
+                userSceneCountFinal = int.Parse(userSceneCount);
+
+                if (userSceneCountFinal == 0)
+                {
+                    Error.WEMNL("MUST BE AT LEAST ONE Scene");
+                }
+                else
+                {
+                    sceneCountInputValid = true;
+                }
+            }
+            catch (Exception e)
+            {
+                Error.WEMNL("NO VALID INPUT");
+            }
+        }
+
+        for (int i = 0; i < userSceneCountFinal; i++)
+        {
+            int userPromptCountFinal = 0;
+            
+            CosmeticMenu.writeTitleCosmetics($"Scene {i+1} Creation");
+
+            bool promptCountInputValid = false;
+
+            while (!promptCountInputValid)
+            {
+                Sys.WSMNL("Specify number of prompts for scene: ");
+
+                string userPromptCount = Console.ReadLine();
+                
+                try
+                {
+                    userPromptCountFinal = int.Parse(userPromptCount);
+
+                    if (userPromptCountFinal == 0)
+                    {
+                        Error.WEMNL("MUST BE AT LEAST ONE PROMPT");
+                    }
+                    else
+                    {
+                        promptCountInputValid = true;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Error.WEMNL("NO VALID INPUT");
+                }
+            }
+
+            for (int j = 0; j < userPromptCountFinal; j++)
+            {
+                Sys.WSMNL("Write Prompt");
+                Sys.WSMNL("> ");
+                
+                string userDefPrompt = Console.ReadLine();
+
+                bool userConfirmPromptInputValid = false;
+
+                while (!userConfirmPromptInputValid)
+                {
+                    Sys.WSMNL("Confirm prompt [Y/N]?");
+
+                    string userConfirmPromptInput = Console.ReadLine();
+                    
+                    switch (userConfirmPromptInput)
+                    {
+                        case "Y":
+                        case"y":
+                            Sys.WSMNL("prompt confirmed!");
+                            userDefPrompts.Add(userConfirmPromptInput);
+                            userConfirmPromptInputValid = true;
+                            break;
+                        case "N":
+                        case "n":
+                            Sys.WSMNL("prompt dumped! Reseting...");
+                            j = j - 1;
+                            userConfirmPromptInputValid = true;
+                            break;
+                        default:
+                            Error.WEMNL("NO VALID INPUT!");
+                            break;
+                    }
+                }
+            }
+
+            // for consequences
+            for (int j = 0; j < userDefPrompts.Count(); j++)
+            {
+                Sys.WSMNL("Write Consequence");
+
+                Sys.WSMNL("Prompt: ");
+                Sys.WSMNL($@"\'{userDefPrompts[i]}'\");
+
+                Sys.WSMNL("\n");
+                Sys.WSMNL("> ");
+
+                string userDefConsequence = Console.ReadLine();
+
+                bool userConfirmConsqeuenceInputValid = false;
+
+                while (!userConfirmConsqeuenceInputValid)
+                {
+                    Sys.WSMNL("Confirm prompt [Y/N]?");
+
+                    string userConfirmConsequenceInput = Console.ReadLine();
+
+                    switch (userConfirmConsequenceInput)
+                    {
+                        case "Y":
+                        case "y":
+                            Sys.WSMNL("consequence confirmed!");
+                            userDefConsequences.Add(userConfirmConsequenceInput);
+                            userConfirmConsqeuenceInputValid = true;
+                            break;
+                        case "N":
+                        case "n":
+                            Sys.WSMNL("consequence dumped! Reseting...");
+                            j = j - 1;
+                            userConfirmConsqeuenceInputValid = true;
+                            break;
+                        default:
+                            Error.WEMNL("NO VALID INPUT!");
+                            break;
+                    }
+                }
+            }
+
+            Scene newScene = new Scene(sceneName, i, associatedClass, userDefPrompts, userDefConsequences);
+            
+            DataManager.SaveCustomScene(newScene);
+            
+            userDefScenes.Add(newScene);
+            
+        }
+
+
         Sys.WSM(">>> ");
         Console.ReadLine();
+    }
 
+    public static void EditScenes()
+    {
+        
         bool userOverhaulScenesInputValid = false;
 
-        while (!userOverhaulScenesInputValid)
+        if (GGlobals.defaultStoryExists && GGlobals.customStoryExists)
         {
-            Sys.WSMNL("Overhaul scenes [Y/N]? ");
-            string userOverhaulScenesInput = Console.ReadLine();
+            bool userOverhaulBothScenesInputValid = false;
 
-            switch (userOverhaulScenesInput)
+            while (!userOverhaulScenesInputValid)
             {
-                case "Y":
-                case "y":
-                    
-                    break;
-                case "N":
-                case "n":
-                    Sys.WSMNL("Existing scene files will not be wiped!");
-                    break;
-                default:
-                    Error.WEMNL("NO VALID INPUT");
-                    break;
+                Sys.WSMNL("Scene data detected in both custom and story!");
+                Sys.WSMNL("\n");
+
+                Sys.WSMNL("Resolve conflict:");
+                
+                Sys.WSMNL("1. Purge both");
+                Sys.WSMNL("2. Purge default scenes");
+                Sys.WSMNL("3. Purge custom scenes");
+
+                string userOverHaulBothScenesInput = Console.ReadLine();
+                
+                switch (userOverHaulBothScenesInput)
+                {
+                    case "1":
+                        Sys.WSMNL("Conflict resolved: purging both");
+                        break;
+                    case "2":
+                        Sys.WSMNL("Conflict resolved: purging default");
+                        break;
+                    case "3":
+                        Sys.WSMNL("Conflict resolved: purging custom");
+                        break;
+                    default:
+                        Error.WEMNL("NO VALID INPUT!");
+                        break;
+                }                
+            }
+        }
+        else if (GGlobals.defaultStoryExists)
+        { 
+            Sys.WSMNL("Wiping default scene data...");   
+        }
+        else if (GGlobals.customStoryExists)
+        {
+            Sys.WSMNL("Wiping custom scene data");    
+        }
+
+        if (!GGlobals.newStory)
+        {
+            while (!userOverhaulScenesInputValid)
+            {
+                Sys.WSMNL("Overhaul existing scenes [Y/N]? ");
+                string userOverhaulScenesInput = Console.ReadLine();
+
+
+                switch (userOverhaulScenesInput)
+                {
+                    case "Y":
+                    case "y":
+                        Sys.WSMNL("Wiping scenes...");
+                        break;
+                    case "N":
+                    case "n":
+                        Sys.WSMNL("Existing scene files will not be wiped!");
+                        break;
+                    default:
+                        Error.WEMNL("NO VALID INPUT");
+                        break;
+                }
             }
         }
     }
@@ -776,6 +1049,7 @@ public class StoryManager
     public static void CREATESTORY(StoryManager SM, DataManager DM)
     {
         GGlobals.defaultClassesUsed = false;
+        GGlobals.newStory = true;
         
         // scaffold
         SM.CreateRaces();
@@ -784,9 +1058,38 @@ public class StoryManager
         
         // story meat
         SM.CreateBeginning(DM);
-        
-        
+        SM.CreateScenes();
+        // create characters
+
+
         // story creation has succeeded!
         DataManager.EtchStoryValidation();
+    }
+}
+
+public struct Scene
+{
+    public string sceneName;
+    public int sceneNumber;
+    public PlayerClass classAssociated;
+    public List<string> prompts{ get; set; }
+    public List<string> consequences { get; set; }
+
+    public Scene(string _sceneName, int _sceneNumber, PlayerClass _classAssociated, List<string> _prompts, List<string> _consequences)
+    {
+        sceneName = _sceneName;
+        sceneNumber = _sceneNumber;
+        classAssociated = _classAssociated;
+        prompts = _prompts;
+        consequences = _consequences;
+    }
+
+    public Scene(string _sceneName, int _sceneNumber, PlayerClass _classAssociated)
+    {
+        sceneName = _sceneName;
+        sceneNumber = _sceneNumber;
+        classAssociated = _classAssociated;
+        prompts = new List<string>();
+        consequences = new List<string>();
     }
 }
