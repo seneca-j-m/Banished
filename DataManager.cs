@@ -466,8 +466,8 @@ public class DataManager
     {
         
         string customSceneDir = Path.Join(GDirectories.playerCustomStoryPath, $@"{scene.classAssociated.className}/Scenes/Scene_{scene.sceneName.ToString()}/");
-        string customSceneFile = Path.Join(customSceneDir, @$"scene{scene.sceneNumber.ToString()}.txt");
-        string customSceneConsequenceFile = Path.Join(customSceneDir, $@"scene{scene.sceneNumber.ToString()}consequences.txt");
+        string customSceneFile = Path.Join(customSceneDir, @$"scene{scene.sceneName}.txt");
+        string customSceneConsequenceFile = Path.Join(customSceneDir, $@"scene{scene.sceneName}consequences.txt");
 
         Directory.CreateDirectory(customSceneDir);
         
@@ -512,6 +512,87 @@ public class DataManager
         
 
 
+    }
+
+    internal static string[] GetScenes(string className)
+    {
+        string sceneDir = Path.Join(GDirectories.playerCustomStoryPath, @$"{className.ToLower()}/Scenes/");
+
+        string[] dirs = Directory.GetDirectories(sceneDir).Select(Path.GetFileName).ToArray();
+
+        return dirs;
+    }
+
+    internal static void SavePrompt(string className, string sceneName, int promptNumber, string promptString, string consequenceString)
+    {
+        string saveSceneDir =
+            Path.Join(GDirectories.playerCustomStoryPath, $@"{className.ToLower()}/Scenes/{sceneName}/");
+        string saveSceneFile = Path.Join(saveSceneDir, $@"/{sceneName}.txt");
+        string saveSceneConsequenceFile = Path.Join(saveSceneDir, $@"/{sceneName}consequences.txt");
+
+        string[] sceneFileContents = File.ReadAllLines(saveSceneFile);
+        string[] consequenceFileContents = File.ReadAllLines(saveSceneConsequenceFile);
+
+        foreach (var promptTitle in sceneFileContents)
+        {
+            if (promptTitle.Contains(promptNumber.ToString()))
+            {
+                Warn.WWMNL("WARNING: PROMPT AT INDEX ALREADY EXISTS!");
+                Warn.WWMNL("PERFORMING OVERWRITE...");
+
+                //sceneFileContents[Array.IndexOf(sceneFileContents, promptNumber.ToString())] = "";
+                
+                // get conflicting data
+                var conflictingPrompt = sceneFileContents.SkipWhile(s => s != promptTitle).Skip(1).TakeWhile(s => s != $"{promptTitle}END").ToList();
+
+                int i = 0;
+                
+                // overwrite
+                if (promptTitle == conflictingPrompt[i])
+                {
+                    sceneFileContents[Array.IndexOf(sceneFileContents, promptTitle)] = "";
+                    i++;
+                }
+            }
+        }
+        File.WriteAllText(saveSceneFile, string.Empty);
+
+        using (StreamWriter sw = new StreamWriter(saveSceneFile))
+        {
+            sw.WriteLine($"PROMPT{promptNumber}");
+            sw.WriteLine(promptString);
+            sw.WriteLine($"PROMPT{promptNumber}END");
+        }
+
+        foreach (var consequenceTitle in consequenceFileContents)
+        {
+            if (consequenceTitle.Contains(promptNumber.ToString()))
+            {
+                Warn.WWMNL("WARNING: CONSEQUENCE AT INDEX ALREADY EXISTS!");
+                Warn.WWMNL("PERFORMING OVERWRITE...");
+                
+                
+                // get conflicting data
+                var conflictingConsequence = consequenceFileContents.SkipWhile(s => s != consequenceTitle).Skip(1).TakeWhile(s => s != $"{consequenceTitle}END").ToList();
+
+                int i = 0;
+                
+                // overwrite
+                if (consequenceTitle == conflictingConsequence[i])
+                {
+                    consequenceFileContents[Array.IndexOf(consequenceFileContents, consequenceTitle)] = "";
+                    i++;
+                }
+            }
+        }
+        File.WriteAllText(saveSceneConsequenceFile, string.Empty);
+
+        using (StreamWriter sw = new StreamWriter(saveSceneConsequenceFile))
+        {
+            sw.WriteLine($"CONSEQUENCE{promptNumber}");
+            sw.WriteLine(consequenceString);
+            sw.WriteLine($"CONSEQUENCE{promptNumber}END");
+        }
     }
 
     internal static void EtchStoryValidation()

@@ -146,9 +146,8 @@ internal class Program
                     PM.SavePlayer(DB, player); // then -> rerun menu
                     break;
                 case "3":
-                    PM.DeletePlayers(DB);
+                    
                     break;
-                
                 default:
                     Error.WEMNL("NO VALID INPUT!");
                     break;
@@ -369,9 +368,11 @@ internal class Program
                     //TODO:
                     break;
                 case "7":
+                    SM.CreateScenes();
                     //TODO
                     break;
                 case "8":
+                    
                     //TODO
                     break;
                 case "9":

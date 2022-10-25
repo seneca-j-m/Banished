@@ -233,4 +233,7 @@ public static class GameManager
         Sys.WSMNL("S A V E ");
     }
 
+    public static void QUICKSTART()
+    {
+    }
 }

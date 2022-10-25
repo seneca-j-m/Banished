@@ -972,6 +972,176 @@ public class StoryManager
         Console.ReadLine();
     }
 
+    public void CreatePrompt()
+    {
+        CosmeticMenu.writeTitleCosmetics("Prompt Creator");
+
+        string prompt;
+        string consequence;
+        int promptNumber = 0;
+        string selectedScene = "";
+        string promptString = "";
+        string consequenceString = "";
+
+        bool userSelectClassForPromptInputValid = false;
+
+        PlayerClass associatedClass = new PlayerClass();
+        
+        while (!userSelectClassForPromptInputValid)
+        {
+            int counter = 0;
+            foreach (var pl_class in GGlobals.activeCustomClasses)
+            {
+                Sys.WSMNL($"{counter}. {pl_class.className}");
+                counter++;
+            }
+        
+            Sys.WSMNL("Select class: ");
+            Sys.WSM("> ");
+
+            string userClassSelection = Console.ReadLine();
+
+            try
+            {
+                int classIndex = int.Parse(userClassSelection);
+                PlayerClass selectedClass = GGlobals.activeCustomClasses[classIndex];
+
+                if (GGlobals.activeCustomClasses.IndexOf(selectedClass) == -1)
+                {
+                    Error.WEMNL("NO VALID CLASS!");
+                }
+                else
+                {
+                    associatedClass = selectedClass;
+                    userSelectClassForPromptInputValid = true;
+                }
+
+            }
+            catch (Exception e)
+            {
+                Error.WEMNL("NO VALID INPUT!");
+                throw;
+            }
+        }
+        
+        // get scene data
+        string[] classScenes = DataManager.GetScenes(associatedClass.className);
+
+        bool userSceneNumberInputValid = false;
+
+        while (!userSceneNumberInputValid)
+        {
+            int counter = 0;
+            foreach (var scene in classScenes)
+            {
+                Sys.WSMNL($"{counter}. {scene}");
+                counter++;
+            }
+            
+            Sys.WSMNL($"Specify Scene for {associatedClass.className}: ");
+            Sys.WSM("> ");
+            
+            string userSceneNumberInput = Console.ReadLine();
+
+            try
+            {
+                int sceneIndex = int.Parse(userSceneNumberInput);
+                selectedScene = classScenes[sceneIndex];
+                userSceneNumberInputValid = true;
+            }
+            catch (Exception e)
+            {
+                Error.WEMNL("NO VALID INPUT!");
+                throw;
+            }
+        }
+
+        bool userPromptNumberInputValid = false;
+
+        while (!userPromptNumberInputValid)
+        {
+            Sys.WSMNL("Enter prompt number: ");
+            Sys.WSM("> ");
+            string userPromptNumber = Console.ReadLine();
+            
+            try
+            {
+                int classIndex = int.Parse(userPromptNumber);
+                promptNumber = classIndex;
+
+                userPromptNumberInputValid = true;
+            }
+            catch (Exception e)
+            {
+                Error.WEMNL("NO VALID INPUT!");
+                throw;
+            }
+        }
+        
+        bool userConfirmPromptInputValid = false;
+
+        while (!userConfirmPromptInputValid)
+        {
+            Sys.WSMNL("Write Prompt: ");
+            Sys.WSMNL("> ");
+            promptString = Console.ReadLine();
+
+            Sys.WSMNL("Confirm prompt [Y/N]?");
+
+            string userConfirmPromptInput = Console.ReadLine();
+                    
+            switch (userConfirmPromptInput)
+            {
+                case "Y":
+                case"y":
+                    Sys.WSMNL("prompt confirmed!");
+                    prompt = promptString;
+                    userConfirmPromptInputValid = true;
+                    break;
+                case "N":
+                case "n":
+                    Sys.WSMNL("prompt dumped! Reseting...");
+                    break;
+                default:
+                    Error.WEMNL("NO VALID INPUT!");
+                    break;
+            }
+        }
+        
+        bool userConfirmConsqeuenceInputValid = false;
+
+        while (!userConfirmConsqeuenceInputValid)
+        {
+            Sys.WSMNL("Write Consequence: ");
+            Sys.WSMNL("> ");
+            consequenceString = Console.ReadLine();
+            
+            
+            Sys.WSMNL("Confirm Consequence [Y/N]?");
+
+            string userConfirmConsequenceInput = Console.ReadLine();
+
+            switch (userConfirmConsequenceInput)
+            {
+                case "Y":
+                case "y":
+                    Sys.WSMNL("consequence confirmed!");
+                    consequence = consequenceString;
+                    userConfirmConsqeuenceInputValid = true;
+                    break;
+                case "N":
+                case "n":
+                    Sys.WSMNL("consequence dumped! Reseting...");
+                    break;
+                default:
+                    Error.WEMNL("NO VALID INPUT!");
+                    break;
+            }
+        }
+        
+        DataManager.SavePrompt(associatedClass.className, selectedScene, promptNumber, promptString, consequenceString); ///////////////////////////////
+    }
+
     public static void EditScenes()
     {
         
@@ -1089,6 +1259,15 @@ public struct Scene
         sceneName = _sceneName;
         sceneNumber = _sceneNumber;
         classAssociated = _classAssociated;
+        prompts = new List<string>();
+        consequences = new List<string>();
+    }
+
+    public Scene()
+    {
+        sceneName = "";
+        sceneNumber = -1;
+        classAssociated = new PlayerClass();
         prompts = new List<string>();
         consequences = new List<string>();
     }
