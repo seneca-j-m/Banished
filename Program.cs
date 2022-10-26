@@ -18,7 +18,7 @@ internal class Program
         DM.InitFilesystem();
 
         // initial log write //TODO: FIX    
-        // Logger logg = new Logger();
+        // Logger logg = new Logger(); 
         // logg.TemplateLog();
         // logg.TransferLogs();
         
@@ -146,7 +146,8 @@ internal class Program
                     PM.SavePlayer(DB, player); // then -> rerun menu
                     break;
                 case "3":
-                    
+                    GameManager.PreStoryValidate();
+                    GameManager.QUICKSTART();
                     break;
                 default:
                     Error.WEMNL("NO VALID INPUT!");
@@ -294,11 +295,10 @@ internal class Program
             Sys.WSMNL("3. CREATE NEW RACE");
             Sys.WSMNL("4. CREATE NEW CLASS");
             Sys.WSMNL("5. CREATE NEW ACCOLADE");
-            Sys.WSMNL("6. CREATE NEW ITEM");
-            Sys.WSMNL("7. CREATE NEW SCENE");
-            Sys.WSMNL("8. CREATE NEW PROMPT");
-            Sys.WSMNL("9. PURGE STORY");
-            Sys.WSMNL("10. RESET INTEGRITY");
+            Sys.WSMNL("6. CREATE NEW SCENE");
+            Sys.WSMNL("7. CREATE NEW PROMPT");
+            Sys.WSMNL("8. PURGE STORY");
+            Sys.WSMNL("9. RESET INTEGRITY");
 
             Sys.WSM("> ");
 
@@ -365,20 +365,15 @@ internal class Program
                     SM.CreateAccolades();
                     break;
                 case "6":
-                    //TODO:
+                    SM.CreateScenes();
                     break;
                 case "7":
-                    SM.CreateScenes();
-                    //TODO
+                    SM.CreatePrompt();
                     break;
                 case "8":
-                    
-                    //TODO
-                    break;
-                case "9":
                     //TODO:
                     break;
-                case "10":
+                case "9":
                     bool userStoryMenuRestoreStoryInputValid = false;
 
                     while (!userStoryMenuRestoreStoryInputValid)
@@ -410,7 +405,6 @@ internal class Program
                     break;
             }
         }
-
         return mainMenuExit = true;
     }
     static void Title()
@@ -482,7 +476,6 @@ internal class Program
                         Error.WEMNL("NO VALID INPUT!");
                         break;
                 }
-
             }
         }
         // verify files next

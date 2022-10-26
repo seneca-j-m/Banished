@@ -753,6 +753,7 @@ public class StoryManager
 
         List<string> userDefPrompts = new List<string>();
         List<string> userDefConsequences = new List<string>();
+        List<string> userDefOptions = new List<string>();
         List<Scene> userDefScenes = new List<Scene>();
 
         CosmeticMenu.writeTitleCosmetics("SCENE CREATOR");
@@ -920,7 +921,7 @@ public class StoryManager
             // for consequences
             for (int j = 0; j < userDefPrompts.Count(); j++)
             {
-                Sys.WSMNL("Write Consequence");
+                Sys.WSMNL("Write Consequence For: ");
 
                 Sys.WSMNL("Prompt: ");
                 Sys.WSMNL($@"\'{userDefPrompts[i]}'\");
@@ -934,7 +935,7 @@ public class StoryManager
 
                 while (!userConfirmConsqeuenceInputValid)
                 {
-                    Sys.WSMNL("Confirm prompt [Y/N]?");
+                    Sys.WSMNL("Confirm consequence [Y/N]?");
 
                     string userConfirmConsequenceInput = Console.ReadLine();
 
@@ -959,7 +960,48 @@ public class StoryManager
                 }
             }
 
-            Scene newScene = new Scene(sceneName, i, associatedClass, userDefPrompts, userDefConsequences);
+            for (int j = 0; j < userDefPrompts.Count(); j++)
+            {
+                Sys.WSMNL("Write Option For: ");
+                
+                Sys.WSMNL("Prompt: ");
+                Sys.WSMNL($@"\'{userDefPrompts[i]}'\");
+
+                Sys.WSMNL("\n");
+                Sys.WSMNL("> ");
+
+                string userDefOption = Console.ReadLine();
+
+                bool userConfirmOptionInputValid = false;
+
+                while (!userConfirmOptionInputValid)
+                {
+                    Sys.WSMNL("Confirm option [Y/N]?");
+
+                    string userConfirmOptionInput = Console.ReadLine();
+
+                    switch (userConfirmOptionInput)
+                    {
+                        case "Y":
+                        case "y":
+                            Sys.WSMNL("consequence confirmed!");
+                            userDefOptions.Add(userDefOption);
+                            userConfirmOptionInputValid = true;
+                            break;
+                        case "N":
+                        case "n":
+                            Sys.WSMNL("consequence dumped! Reseting...");
+                            j = j - 1;
+                            userConfirmOptionInputValid = true;
+                            break;
+                        default:
+                            Error.WEMNL("NO VALID INPUT!");
+                            break;
+                    }
+                }
+            }
+
+            Scene newScene = new Scene(sceneName, i, associatedClass, userDefPrompts, userDefOptions, userDefConsequences);
             
             DataManager.SaveCustomScene(newScene);
             
@@ -1216,10 +1258,27 @@ public class StoryManager
         }
     }
 
+    public void CreateStoryTitle()
+    {
+        Debug.WDMNL("STORY CREATOR LOADING...");
+        
+        Debug.WDMNL("SPECIFY NAME OF STORY:");
+        Debug.WDM("> ");
+        string storyName = Console.ReadLine();
+
+        DataManager.SaveCustomStoryName(storyName.ToUpper());
+        
+        Debug.WDM("NAME ACCEPTED...");
+        GGlobals.customStoryTitle = storyName;
+    }
+
     public static void CREATESTORY(StoryManager SM, DataManager DM)
     {
         GGlobals.defaultClassesUsed = false;
         GGlobals.newStory = true;
+        
+        // initial
+        SM.CreateStoryTitle();
         
         // scaffold
         SM.CreateRaces();
@@ -1243,14 +1302,16 @@ public struct Scene
     public int sceneNumber;
     public PlayerClass classAssociated;
     public List<string> prompts{ get; set; }
+    public List<string> options { get; set; }
     public List<string> consequences { get; set; }
 
-    public Scene(string _sceneName, int _sceneNumber, PlayerClass _classAssociated, List<string> _prompts, List<string> _consequences)
+    public Scene(string _sceneName, int _sceneNumber, PlayerClass _classAssociated, List<string> _prompts, List<string> _options, List<string> _consequences)
     {
         sceneName = _sceneName;
         sceneNumber = _sceneNumber;
         classAssociated = _classAssociated;
         prompts = _prompts;
+        options = _options;
         consequences = _consequences;
     }
 
@@ -1260,6 +1321,7 @@ public struct Scene
         sceneNumber = _sceneNumber;
         classAssociated = _classAssociated;
         prompts = new List<string>();
+        options = new List<string>();
         consequences = new List<string>();
     }
 
@@ -1269,6 +1331,14 @@ public struct Scene
         sceneNumber = -1;
         classAssociated = new PlayerClass();
         prompts = new List<string>();
+        options = new List<string>();
         consequences = new List<string>();
     }
+}
+
+public enum StoryType
+{
+    EMPTY,
+    DEFAULT,
+    CUSTOM
 }
