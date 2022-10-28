@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace BanishedMain;
 
@@ -122,7 +123,7 @@ public static class GameManager
                 break;
         }
         
-        var optionsContent = fileContent.SkipWhile(s => s != $"PROMPT{promptNumber.ToUpper()}OPTIONS").Skip(1)
+        var optionsContent = fileContent.SkipWhile(s => s != $"SCENE{promptNumber.ToUpper()}OPTIONS").Skip(1)
             .TakeWhile(s => s != $"PROMPT{promptNumber.ToUpper()}OPTIONSEND");
         
         string optionsString = string.Join("\n", optionsContent.ToArray());
@@ -159,8 +160,8 @@ public static class GameManager
                 break;
         }
         
-        var consequencesContent = fileContent.SkipWhile(s => s != $"RESPONSE{responseNumber.ToUpper()}").Skip(1)
-            .TakeWhile(s => s != $"RESPONSE{responseNumber.ToUpper()}END");
+        var consequencesContent = fileContent.SkipWhile(s => s != $"CONSEQUENCE{responseNumber.ToUpper()}").Skip(1)
+            .TakeWhile(s => s != $"CONSEQUENCE{responseNumber.ToUpper()}END");
         
         string consequencesString = string.Join("\n", consequencesContent.ToArray());
 
@@ -188,7 +189,7 @@ public static class GameManager
         string[] fileContent = new String[]{""};
 
 
-        string classBegPath = Path.Join(GDirectories.playerCustomClassPath, $"/{className}/Description/description.txt");
+        string classBegPath = Path.Join(GDirectories.playerCustomClassPath, $"/{className}/Description/{className}.txt");
         fileContent = File.ReadAllLines(classBegPath);
 
         // LINQ query
@@ -204,7 +205,7 @@ public static class GameManager
         string[] fileContent = new string[] { "" };
 
         string scenePath = Path.Join(GDirectories.playerCustomStoryPath,
-            $"/{className}/Scenes/{sceneName}/scene{sceneNumber}.txt");
+            $"/{className}/Scenes/{sceneName}/{sceneName.ToLower()}.txt");
 
         fileContent = File.ReadAllLines(scenePath);
         
@@ -216,75 +217,116 @@ public static class GameManager
         return promptString;
     }
 
-    public static string ReadCustomOption(string className, string sceneName, string sceneNumber, string optionNumber)
+    public static string[] ReadCustomOption(string className, string sceneName, string sceneNumber, string optionNumber)
     {
         string[] fileContent = new String[] { "" };
 
         string classOpPath = Path.Join(GDirectories.playerCustomStoryPath,
-            $"/{className}/Scenes/{sceneName}/scene{sceneNumber}options.txt");
+            $"/{className}/Scenes/{sceneName}/{sceneName}options.txt");
 
         fileContent = File.ReadAllLines(classOpPath);
 
         var optionsContent = fileContent.SkipWhile(s => s != $"OPTION{optionNumber}").Skip(1)
-            .TakeWhile(s => s != $"OPTION{optionNumber}END");
-        
-        string optionsString = string.Join("\n", optionsContent.ToArray());
+            .TakeWhile(s => s != $"OPTION{optionNumber}END").ToArray();
 
-        return optionsString;
+        //string optionsString = string.Join("\n", optionsContent.ToArray());
+
+        return optionsContent;
     }
 
-    public static string ReadCustomConsequence(PlayerClass pl_class, Scene scene, string consequenceNumber)
+    public static string[] ReadCustomConsequence(string className, string sceneName, string sceneNumber, string consequenceNumber)
     {
         string[] fileContent = new string[] { "" };
 
         string consequencePath = Path.Join(GDirectories.playerCustomStoryPath,
-            $"/{pl_class.className}/Scenes/{scene.sceneName}/scene{scene.sceneNumber.ToString()}consequences.txt");
+            $"/{className}/Scenes/{sceneName}/{sceneName}consequences.txt");
 
-        File.ReadAllLines(consequencePath);
+        fileContent = File.ReadAllLines(consequencePath);
+        
 
         var consequencesContent = fileContent.SkipWhile(s => s != $"CONSEQUENCE{consequenceNumber}").Skip(1)
-            .TakeWhile(s => s != $"CONSEQUENCE{consequenceNumber}END");
-        
-        string consequencesString = string.Join("\n", consequencesContent.ToArray());
+            .TakeWhile(s => s != $"CONSEQUENCE{consequenceNumber}END").ToArray();
 
-        return consequencesString;
+        return consequencesContent;
     }
-    
 
-    public static string promptPlayer(string promptString, string optionString)
+    public static string promptPlayerDefault(string promptString, string optionsString)
     {
+        bool promptMenuExit = false;
+
+        while (!promptMenuExit)
+        {
+            Debug.WDMNL(promptString);
+            Debug.WDMNL("\n");
+            Debug.WDM(">>> ");
+            Console.ReadLine();
+            
+            Debug.WDMNL(optionsString);
+            Debug.WDMNL("\n");
+
+            string userOptionInput = Console.ReadLine();
+
+
+        }
+
+        return "";
+    }
+
+    public static string[] promptPlayer(string promptString, string[] options, string[] consequences)
+    {
+        string[] promptOptionAndConsequence = new string[2];
+        
         Debug.WDMNL(promptString);
         Debug.WDMNL("\n");
-
+        Debug.WDMNL(">>> ");
         Console.ReadLine(); // wait for input
 
         bool promptMenuExit = false;
 
         string userResponse = "";
+        string userConsequence = "";
         
         while (!promptMenuExit)
         {
-            // print options
-            Debug.WDMNL(optionString);
-            Debug.WDMNL("\n");
+            int counter = 0;
+            foreach (var option in options)
+            {
+                Debug.WDMNL($"{counter}. {option}");
+                counter++;
+            }
             
+            Debug.WDM(">>> ");
+            Console.ReadLine();
+            Debug.WDM("> ");
+
             userResponse = Console.ReadLine().ToUpper(); // user input
             
-            if (string.Equals(userResponse, "SAVE"))
-            {
-                Sys.WSMNL("SAVE INVOKED! SAVING...");
-                promptMenuExit = true;
-            }
-            else if (!optionString.Contains(userResponse) || userResponse.Length > 1 || string.IsNullOrEmpty(userResponse))
+            
+            if (userResponse.Length > 1 || string.IsNullOrEmpty(userResponse))
             {
                 Error.WEMNL("YOU STAY, CONFUSED. THAT IS NOT AN OPTION");
             }
             else
             {
-                promptMenuExit = true;
+                try
+                {
+                    int userSelectionIndex = int.Parse(userResponse);
+                    userResponse = options[userSelectionIndex];
+                    userConsequence = consequences[userSelectionIndex];
+                    promptMenuExit = true;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    Error.WEMNL("YOU STAY, CONFUSED. THAT IS NOT AN OPTION");
+                }
             }
         }
-        return userResponse;
+        // then, print consequence
+        promptOptionAndConsequence[0] = userResponse;
+        promptOptionAndConsequence[1] = userConsequence;
+        
+        return promptOptionAndConsequence;
     }
 
     public static string convertUserResponse(string userResponse)
@@ -386,19 +428,30 @@ public static class GameManager
         return StoryType.EMPTY;
     }
 
-    public static void QUICKSTART()
+    public static void QUICKSTARTDEFAULT()
+    {
+        Game game = new Game(GGlobals.LoadPlayer);
+        
+        game.Info();
+        game.Start();
+        game.GAME();
+
+
+    }
+    public static void QUICKSTARTCUSTOM()
     {
         List<DefaultPlayerClass> defaultPlayerClasses =
             Enum.GetValues(typeof(DefaultPlayerClass)).Cast<DefaultPlayerClass>().ToList();
 
         // print title
-        Sys.WSMNL(GGlobals.activeStoryTitle);
+        GGlobals.activeStoryTitle = DataManager.ReadCustomStoryTitle();
+        Debug.WDMNL(GGlobals.activeStoryTitle);
             
-        Sys.WSMNL(".............>");
-        Sys.WSMNL("New Game Loading...");
+        Debug.WDMNL(".............>");
+        Debug.WDMNL("New Game Loading...");
         Console.ReadLine();
             
-        Sys.WSMNL("Player: Select Class");
+        Debug.WDMNL("Player: Select Class");
 
         // check which story is active
         if (GGlobals.activeStoryType == StoryType.DEFAULT)
@@ -406,7 +459,7 @@ public static class GameManager
             int counter = 0;
             foreach (var className in defaultPlayerClasses)
             {
-                Sys.WSMNL($"{counter}. {className}");
+                Debug.WDMNL($"{counter}. {className}");
                 counter++;
             }
         }
@@ -418,7 +471,7 @@ public static class GameManager
             int counter = 0;
             foreach (var className in classNames)
             {
-                Sys.WSMNL($"{counter}. {className}");
+                Debug.WDMNL($"{counter}. {className}");
                 counter++;
             }
 
@@ -429,8 +482,8 @@ public static class GameManager
             while (!playerValidClassSelectionInputValid)
             {
                 
-                Sys.WSMNL("Select Class");
-                Sys.WSM("> ");
+                Debug.WDMNL("Select Class");
+                Debug.WDM("> ");
 
                 string userClassSelectionInput = Console.ReadLine(); 
                 
@@ -438,6 +491,7 @@ public static class GameManager
                 {
                     int selectedClassInput = int.Parse(userClassSelectionInput);
                     selectedClassName = classNames[selectedClassInput];
+                    playerValidClassSelectionInputValid = true;
                 }
                 catch (Exception e)
                 {
@@ -452,29 +506,74 @@ public static class GameManager
             string scenePath = Path.Join(GDirectories.playerCustomStoryPath, $"/{selectedClassName}/Scenes");
 ;           string[] scenes = Directory.GetDirectories(scenePath).Select(Path.GetFileName).ToArray();
 
-            int promptCount = 1;
+            int promptCount = 0;
             int sceneCount = 0;
-            int sceneNumber = 1;
+            int sceneNumber = 0;
 
             string prompt = "";
-            string option = "";
+            string[] options = new string[] {""};
+            string[] consequences = new string[]{""};
             
             string beginning = ReadCustomBeginning(selectedClassName);
             string description = ReadCustomDescription(selectedClassName);
-            
-            Debug.WDMNL(description);
-            Debug.WDMNL(beginning);
 
-            
+
             for (int i = 0; i < scenes.Length; i++)
             {
-                prompt = ReadCustomPrompt(selectedClassName, scenes[sceneCount], sceneNumber.ToString(), promptCount.ToString());
-                option = ReadCustomOption(selectedClassName, scenes[sceneCount], sceneNumber.ToString(), promptCount.ToString());
+                try
+                {
+                    prompt = ReadCustomPrompt(selectedClassName, scenes[sceneCount], sceneNumber.ToString(), promptCount.ToString());
+                    options = ReadCustomOption(selectedClassName, scenes[sceneCount], sceneNumber.ToString(), promptCount.ToString());
+                    
+                    consequences = ReadCustomConsequence(selectedClassName, scenes[sceneCount], sceneNumber.ToString(),
+                        promptCount.ToString());
+
+                    string[] promptResult = promptPlayer(prompt, options, consequences);
+                    
+                    Debug.WDMNL(promptResult[1]);
+                    
+                    promptCount++;
+                    sceneCount++;
+                    sceneNumber++;
+
+                }
+                catch (Exception e)
+                {
+                }
+
+                Debug.WDM(">>> ");
+                Console.ReadLine();
                 
-                promptPlayer(prompt, option);
-                promptCount++;
-                sceneCount++;
-                sceneNumber++;
+                bool storyExitInputValid = false;
+
+                while (!storyExitInputValid)
+                {
+                    Debug.WDMNL("FIN");
+                    Debug.WDMNL("Quit Y/N");
+                    Debug.WDM("> ");
+
+                    string userExitInput = Console.ReadLine();
+
+                    switch (userExitInput)
+                    {
+                        case "Y": 
+                        case "y":
+                            Sys.WSMNL("Thanks for playing!");
+                            Sys.WSMNL("Quitting...");
+                            Sys.WSM(">>> ");
+                            Console.ReadLine();
+                            Environment.Exit(0);
+                            storyExitInputValid = true;
+                            break;
+                        case "N":
+                        case "n":
+                            storyExitInputValid = true;
+                            break;
+                        default:
+                            Error.WEMNL("NO VALID INPUT!");
+                            break;
+                    }
+                }
             }
         }
     }

@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using Microsoft.VisualBasic.FileIO;
+using SearchOption = Microsoft.VisualBasic.FileIO.SearchOption;
 
 
 //TODO: ADD WARNING FUNCTION FOR EMPTY FILES, PROMPT USER TO CREATE
@@ -70,7 +71,7 @@ public class DataManager
         }
     }
 
-    internal bool[] verifyCriticalFiles() // TODO: CHECK FOR CUSTOM STORY
+    internal static bool[] verifyCriticalFiles()
     {
         bool defaultFileIntegrityValid = false;
         bool customFileIntegrityValid = false;
@@ -122,15 +123,23 @@ public class DataManager
             }
 
             // check validation file
-            if (new FileInfo(GDirectories.playerCustomStoryValidationFile).Length == 0)
+            try
+            {
+                if (new FileInfo(GDirectories.playerCustomStoryValidationFile).Length == 0)
+                {
+                    customFileIntegrityValid = false;
+                    validationArr[1] = false;
+                }
+                else
+                {
+                    customFileIntegrityValid = true;
+                    validationArr[1] = true;
+                }
+            }
+            catch (Exception e)
             {
                 customFileIntegrityValid = false;
                 validationArr[1] = false;
-            }
-            else
-            {
-                customFileIntegrityValid = true;
-                validationArr[1] = true;
             }
 
             if (!defaultFileIntegrityValid && !customFileIntegrityValid)
@@ -146,6 +155,26 @@ public class DataManager
         }
 
         return validationArr;
+    }
+
+    internal static bool VerifyDefaultStoryStatus()
+    {
+        string validationFile = GDirectories.playerDataValidationFile;
+        string validationLine = "";
+        
+        using (StreamReader sr = new StreamReader(validationFile))
+        {
+            validationLine = sr.ReadLine();
+        }
+
+        if (string.Equals(validationLine, "2"))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     internal void CreateDefaultFiles()
@@ -270,7 +299,13 @@ public class DataManager
         {
             string customClassBegPathF = Path.Join(GDirectories.playerCustomClassPath,
                 @$"{customClassName}/Beginning/beginning.txt");
-            File.WriteAllText(customClassBegPathF, beginningText);
+
+            using (StreamWriter sw = new StreamWriter(customClassBegPathF))
+            {
+                sw.WriteLine("BEGINNING");
+                sw.WriteLine(beginningText);
+                sw.WriteLine("BEGINNINGEND");
+            }
         }
         else if (customClassName == null)
         {
@@ -285,9 +320,15 @@ public class DataManager
     {
         if (defaultClassName == null)
         {
-            string customClassBegPathF = Path.Join(GDirectories.playerCustomClassPath,
+            string customClassDescPathF = Path.Join(GDirectories.playerCustomClassPath,
                 @$"{customClassName.ToLower()}/Description/{customClassName.ToLower()}.txt");
-            File.WriteAllText(customClassBegPathF, descriptionText);
+
+            using (StreamWriter sw = new StreamWriter(customClassDescPathF))
+            {
+                sw.WriteLine("DESCRIPTION");
+                sw.WriteLine(descriptionText);
+                sw.WriteLine("DESCRIPTIONEND");
+            }
         }
         else if (customClassName == null)
         {
@@ -431,17 +472,19 @@ public class DataManager
 
     internal static void SaveCustomAccolade(PlayerAccolade pl_accolade)
     {
+        Console.WriteLine("SAVING::::");
         // create class directory structure
         string customAccoladePath =
             Path.Join(GDirectories.playerCustomAccoladePath, pl_accolade.accoladeName.ToLower());
-        string customAccoladeDescriptionPath = Path.Join(customAccoladePath, @"Description/");
-        string customAccoladeBeginningPath = Path.Join(customAccoladePath, @"Beginning/");
+        string customAccoladeDescriptionPath = Path.Join(customAccoladePath, @"/Description/");
+        string customAccoladeBeginningPath = Path.Join(customAccoladePath, @"/Beginning/");
 
         string customAccoladeDescriptionF =
-            Path.Join(customAccoladeDescriptionPath, @$"{pl_accolade.accoladeName.ToLower()}.txt");
-        string customAccoladeBeginningF = Path.Join(customAccoladePath, $@"beginning.txt");
+            Path.Join(customAccoladeDescriptionPath, @$"/{pl_accolade.accoladeName.ToLower()}.txt");
+        string customAccoladeBeginningF = Path.Join(customAccoladeBeginningPath, $@"beginning.txt");
 
-        Directory.CreateDirectory(GDirectories.playerCustomRacePath);
+        Directory.CreateDirectory(GDirectories.playerCustomAccoladePath);
+        Directory.CreateDirectory(customAccoladePath);
         Directory.CreateDirectory(customAccoladeDescriptionPath);
         Directory.CreateDirectory(customAccoladeBeginningPath);
 
@@ -473,7 +516,7 @@ public class DataManager
     internal static void SaveCustomScene(Scene scene)
     {
         string customSceneDir = Path.Join(GDirectories.playerCustomStoryPath,
-            $@"{scene.classAssociated.className}/Scenes/Scene_{scene.sceneName.ToString()}/");
+            $@"{scene.classAssociated.className.ToLower()}/Scenes/scene{scene.sceneName.ToString()}/");
         string customSceneFile = Path.Join(customSceneDir, @$"scene{scene.sceneName}.txt");
         string customOptionFile = Path.Join(customSceneDir, $@"scene{scene.sceneName}options.txt");
         string customSceneConsequenceFile = Path.Join(customSceneDir, $@"scene{scene.sceneName}consequences.txt");
@@ -515,7 +558,7 @@ public class DataManager
 
                 optionAt++;
             }
-            
+
             sw.WriteLine($"SCENE{scene.sceneNumber.ToString()}END");
         }
 
@@ -630,20 +673,26 @@ public class DataManager
         File.Create(GDirectories.playerCustomStoryValidationFile).Dispose();
 
         string validationFile = GDirectories.playerCustomStoryValidationFile;
-        // File.Create(validationFile).Dispose();
         using (StreamWriter sw = new StreamWriter(validationFile))
-        {
             sw.WriteLine("0");
-        }
     }
 
-    internal static void EtchDefaultStoryValidation()
+    internal static void EtchDefaultStoryValidation(bool firstTimeCreation = false)
     {
         string validationFile = GDirectories.playerDataValidationFile;
-
-        using (StreamWriter sw = new StreamWriter(validationFile))
+        if (firstTimeCreation)
         {
-            sw.WriteLine("0");
+            using (StreamWriter sw = new StreamWriter(validationFile))
+            {
+                sw.WriteLine("2");
+            }
+        }
+        else
+        {
+            using (StreamWriter sw = new StreamWriter(validationFile))
+            {
+                sw.WriteLine("0");
+            }
         }
     }
 
@@ -681,9 +730,9 @@ public class DataManager
                     sw.WriteLine("\n");
                     sw.WriteLine("DESCRIPTIONEND");
                 }
-                else if (filePath.Contains("Knight/beginning.txt") ||
-                         filePath.Contains("Sorcerer/beginning.txt") ||
-                         filePath.Contains("Warlock/beginning.txt"))
+                else if (filePath.Contains("beginning.txt") ||
+                         filePath.Contains("beginning.txt") ||
+                         filePath.Contains("beginning.txt"))
                 {
                     sw.WriteLine("BEGINNING");
                     sw.WriteLine("\n");
@@ -715,17 +764,37 @@ public class DataManager
                 }
                 else if (filePath.Contains("scenetwooptions")) // probably not efficent
                 {
+                    sw.WriteLine("SCENETWOOPTIONS");
+                    sw.WriteLine("SCENETWOOPTIONSEND");
                 }
                 else if (filePath.Contains("scenethreeoptions"))
                 {
+                    sw.WriteLine("SCENETHREEOPTIONS");
+                    sw.WriteLine("SCENETHREEOPTIONSEND");
                 }
                 else if (filePath.Contains("sceneoneconsequences"))
                 {
+                    sw.WriteLine("SCENEONECONSEQUENCES");
+                    sw.WriteLine("SCENEONECONSEQUENCES");
+                }
+                else if (filePath.Contains("scenetwoconsequences"))
+                {
+                    sw.WriteLine("SCENETWOCONSEQUENCES");
+                    sw.WriteLine("SCENEONECONSEQUENCESEND");
+                }
+                else if (filePath.Contains("scenethreeconsequences"))
+                {
+                    sw.WriteLine("SCENETHREECONSEQUENCES");
+                    sw.WriteLine("SCENETHREECONSEQUENCESEND");
+                }
+                else if (filePath.Contains("title"))
+                {
+                    sw.WriteLine("CRYSTAL CRAGGS");
                 }
             }
         }
 
-        EtchDefaultStoryValidation();
+        EtchDefaultStoryValidation(true);
     }
 
     internal void PurgeDataDir()
@@ -757,9 +826,9 @@ public class DataManager
         }
     }
 
-    internal void PurgeCustomSceneDir()
+    internal void PurgeCustomDir()
     {
-        DirectoryInfo di = new DirectoryInfo(GDirectories.playerCustomStoryPath);
+        DirectoryInfo di = new DirectoryInfo(GDirectories.playerCustomDataPath);
         foreach (var file in di.GetFiles())
         {
             file.Delete();
@@ -778,6 +847,77 @@ public class DataManager
         using (StreamWriter sw = new StreamWriter(customStoryTitleFile))
         {
             sw.WriteLine(customStoryTitleFile);
+        }
+    }
+
+    internal static string ReadCustomStoryTitle()
+    {
+        string titleFile = GDirectories.playerCustomStoryTitleFile;
+        string title = "";
+
+        title = File.ReadLines(titleFile).ToArray()[0];
+
+        return title;
+    }
+
+    internal static void PopulateActiveClasses()
+    {
+        // read class data
+        //var customClassData = Directory.GetDirectories(GDirectories.playerCustomPersDataPath, "*",);
+
+        string persClassData = GDirectories.playerCustomPersClassDataPath;
+        string[] classFolders = Directory.GetDirectories(persClassData).Select(Path.GetFileName).ToArray();
+
+        PlayerClass classFromFile = new PlayerClass();
+
+        int counter = 0;
+        foreach (var classFolder in classFolders)
+        {
+            string dataFile = Path.Join(GDirectories.playerCustomPersClassDataPath,
+                $"/{classFolders[counter]}/{classFolders[counter]}_data.txt");
+
+            foreach (var line in File.ReadLines(dataFile))
+            {
+                string[] lineContent = line.Split(":");
+
+                string multiplierTitle = lineContent[0];
+                string multiplierValue = lineContent[1];
+                // Console.WriteLine(multiplierTitle);
+                // Console.WriteLine(multiplierValue);
+
+                switch (multiplierTitle)
+                {
+                    case "NAME":
+                        classFromFile.className = multiplierValue;
+                        break;
+                    case "HEALTH":
+                        int classHealth = int.Parse(multiplierValue);
+                        classFromFile.classHealth = classHealth;
+                        break;
+                    case "FAITH":
+                        int classFaith = int.Parse(multiplierValue);
+                        classFromFile.classFaith = classFaith;
+                        break;
+                    case "AGILITY":
+                        int classAgility = int.Parse(multiplierValue);
+                        classFromFile.classAgility = classAgility;
+                        break;
+                }
+            }
+
+            GGlobals.activeCustomClasses.Add(classFromFile);
+
+            counter++;
+        }
+    }
+    public static void EtchFilledStory()
+    {
+        string validationFile = GDirectories.playerDataValidationFile;
+        File.WriteAllText(validationFile, string.Empty);
+        
+        using (StreamWriter sw = new StreamWriter(validationFile))
+        {
+            sw.WriteLine("0");
         }
     }
 }
@@ -870,10 +1010,6 @@ public static class GDirectories
     public const string playerSorcererStoryDataPath = @"../../../Data/Story/Sorcerer";
     public const string playerWarlockStoryDataPath = @"../../../Data/Story/Warlock";
 
-
-    /// <summary>
-    /// /////////////////////////////TODO: RESTRUCTURE FILE SYSTEM
-    /// </summary>
     // scene paths
     public const string playerKnightScenePath = @"../../../Data/Story/Knight/Scenes/";
 
@@ -894,8 +1030,11 @@ public static class GDirectories
     public const string playerWarlockSceneThreePath = @"../../../Data/Story/Warlock/Scenes/Scene_Three/";
 
     // individual scene files
-    public const string playerKnightStoryDataSceneOneF = @"../../../Data/Story/Knight/Scenes/Scene_One/sceneone.txt";
-    public const string playerKnightStoryDataSceneTwoF = @"../../../Data/Story/Knight/Scenes/Scene_Two/scenetwo.txt";
+    public const string playerKnightStoryDataSceneOneF =
+        @"../../../Data/Story/Knight/Scenes/Scene_One/sceneone.txt";
+
+    public const string playerKnightStoryDataSceneTwoF =
+        @"../../../Data/Story/Knight/Scenes/Scene_Two/scenetwo.txt";
 
     public const string playerKnightStoryDataSceneThreeF =
         @"../../../Data/Story/Knight/Scenes/Scene_Three/scenethree.txt";
@@ -910,8 +1049,11 @@ public static class GDirectories
         @"../../../Data/Story/Sorcerer/Scenes/Scene_Three/scenethree.txt";
 
 
-    public const string playerWarlockStoryDataSceneOneF = @"../../../Data/Story/Warlock/Scenes/Scene_One/sceneone.txt";
-    public const string playerWarlockStoryDataSceneTwoF = @"../../../Data/Story/Warlock/Scenes/Scene_Two/scenetwo.txt";
+    public const string playerWarlockStoryDataSceneOneF =
+        @"../../../Data/Story/Warlock/Scenes/Scene_One/sceneone.txt";
+
+    public const string playerWarlockStoryDataSceneTwoF =
+        @"../../../Data/Story/Warlock/Scenes/Scene_Two/scenetwo.txt";
 
     public const string playerWarlockStoryDataSceneThreeF =
         @"../../../Data/Story/Warlock/Scenes/Scene_Three/scenethree.txt";
@@ -1035,6 +1177,12 @@ public static class GGlobals
     public static string customStoryTitle;
     public static string activeStoryTitle;
     public static StoryType activeStoryType;
+
+    public static int defaultPromptLimit = 3;
+    public static int defaultSceneLimit = 3;
+
+    public static int? defaultCustomPromptLimit = null;
+    public static int? defaultCustomSceneLimit = null;
 
     public static List<PlayerClass> activeCustomClasses = new List<PlayerClass>();
     public static List<PlayerRace> activeCustomRaces = new List<PlayerRace>();

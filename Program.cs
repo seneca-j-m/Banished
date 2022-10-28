@@ -16,7 +16,8 @@ internal class Program
         StoryManager SM = new StoryManager();
         
         DM.InitFilesystem();
-
+        DataManager.PopulateActiveClasses();
+        
         // initial log write //TODO: FIX    
         // Logger logg = new Logger(); 
         // logg.TemplateLog();
@@ -121,7 +122,8 @@ internal class Program
             Sys.WSMNL("0. QUIT");
             Sys.WSMNL("1. PLAYER OPTIONS");
             Sys.WSMNL("2. STORY OPTIONS");
-            Sys.WSMNL("3. QUICKSTART");
+            Sys.WSMNL("3. QUICKSTART DEFAULT");
+            Sys.WSMNL("4. QUICKSTART CUSTOM");
             
             
             Sys.WSM("> ");
@@ -146,8 +148,33 @@ internal class Program
                     PM.SavePlayer(DB, player); // then -> rerun menu
                     break;
                 case "3":
-                    GameManager.PreStoryValidate();
-                    GameManager.QUICKSTART();
+                    if (!SM.VerifyStory())
+                    {
+                        Error.WEMNL("NO DEFAULT STORY DETECTED!");
+                    }
+                    else
+                    {
+                        GGlobals.LoadPlayer = PM.PlayerLogin(DB);
+                        if (!DataManager.VerifyDefaultStoryStatus())
+                        {
+                            Error.WEMNL("DEFAULT STORY IS EMPTY!");
+                        }
+                        else
+                        {
+                            GameManager.QUICKSTARTDEFAULT();   
+                        }
+                    }
+                    break;
+                case "4":
+                    if (!SM.VerifyCustomStory())
+                    {
+                        Error.WEMNL("NO CUSTOM STORY DETECTED!");
+                    }
+                    else
+                    {
+                        GameManager.PreStoryValidate();
+                        GameManager.QUICKSTARTCUSTOM();
+                    }
                     break;
                 default:
                     Error.WEMNL("NO VALID INPUT!");
@@ -291,14 +318,14 @@ internal class Program
             // print options
             Sys.WSMNL("0. RETURN");
             Sys.WSMNL("1. VERIFY STORY");
-            Sys.WSMNL("2. LOAD STORY");
-            Sys.WSMNL("3. CREATE NEW RACE");
-            Sys.WSMNL("4. CREATE NEW CLASS");
-            Sys.WSMNL("5. CREATE NEW ACCOLADE");
-            Sys.WSMNL("6. CREATE NEW SCENE");
-            Sys.WSMNL("7. CREATE NEW PROMPT");
-            Sys.WSMNL("8. PURGE STORY");
-            Sys.WSMNL("9. RESET INTEGRITY");
+            Sys.WSMNL("2. CREATE NEW RACE");
+            Sys.WSMNL("3. CREATE NEW CLASS");
+            Sys.WSMNL("4. CREATE NEW ACCOLADE");
+            Sys.WSMNL("5. CREATE NEW SCENE");
+            Sys.WSMNL("6. PURGE STORY");
+            Sys.WSMNL("7. RESET INTEGRITY");
+            Sys.WSMNL("8. FILL STORY");
+            Sys.WSMNL("9. CREATE CUSTOM STORY");
 
             Sys.WSM("> ");
 
@@ -314,7 +341,7 @@ internal class Program
                     Sys.WSMNL("VERIFYING STORY");
                     Sys.WSMNL(">>> ");
                     Console.ReadLine();
-                    if (!SM.VerifyStory())
+                    if (!SM.VerifyStory() && !SM.VerifyCustomStory())
                     {
                         Error.WEMNL("STORY VERIFICATION FAILED!");
                         
@@ -323,7 +350,31 @@ internal class Program
 
                         while (!userStoryMenuCreateStoryInputValid)
                         {
-                            Sys.WSMNL("CREATE NEW STORY [Y/N]: ");
+                            Sys.WSMNL("CREATE DEFAULT NEW STORY [Y/N]: ");
+                            Sys.WSM("> ");
+                            
+                            string userStoryMenuCreateStoryInput = Console.ReadLine();
+                            switch (userStoryMenuCreateStoryInput)
+                            {
+                                case "Y":
+                                case "y":
+                                    SM.RestoreDefault(DM);
+                                    userStoryMenuCreateStoryInputValid = true;
+                                    break;
+                                case "N":
+                                case "n":
+                                    userStoryMenuCreateStoryInputValid = true;
+                                    break;
+                                default:
+                                    Error.WEMNL("NO VALID INPUT!");
+                                    break;
+                            }
+                        }
+
+                        bool userStoryMenuCreateCustomStoryInputValid = false;
+                        while (!userStoryMenuCreateStoryInputValid)
+                        {
+                            Sys.WSMNL("CREATE CUSTOM NEW STORY [Y/N]: ");
                             Sys.WSM("> ");
                             
                             string userStoryMenuCreateStoryInput = Console.ReadLine();
@@ -344,36 +395,67 @@ internal class Program
                             }
                         }
                     }
+                    else if (SM.VerifyStory() && !SM.VerifyCustomStory())
+                    {
+                        Sys.WSMNL("STORY VERIFICATION SUCEEDED!");
+                        Sys.WSMNL("VALID DEFAULT STORY DETECTED!");
+                    }
+                    
+                    else if (!SM.VerifyStory() && SM.VerifyCustomStory())
+                    {
+                        Sys.WSMNL("STORY VERIFICATION SUCEEDED!");
+                        Sys.WSMNL("VALID CUSTOM STORY DETECTED!");
+                    }
                     else
                     {
                         Sys.WSMNL("STORY VERIFICATION SUCEEDED!");
-                        Sys.WSMNL("VALID STORY DETECTED!");
+                        Sys.WSMNL("VALID CUSTOM AND DEFAULT STORY DETECTED!");
                         Sys.WSM(">>> ");
                         Console.ReadLine();
                     }
                     break;
                 case "2":
-                    //TODO:
-                    break;
-                case "3":
                     SM.CreateRaces();
                     break;
-                case "4":
+                case "3":
                     SM.CreateClasses();
                     break;
-                case "5":
+                case "4":
                     SM.CreateAccolades();
                     break;
-                case "6":
+                case "5":
                     SM.CreateScenes();
                     break;
+                case "6":
+                    bool userStoryMenuPurgeStoryInputValid = false;
+
+                    while (!userStoryMenuPurgeStoryInputValid)
+                    {
+                        Warn.WWMNL("WARN: THIS WILL PURGE ALL STORY DATA CONTINUE [Y/N]");
+                        Warn.WWM("> ");
+                            
+                        string userStoryMenuRestoreStoryInput = Console.ReadLine();
+                        switch (userStoryMenuRestoreStoryInput)
+                        {
+                            case "Y":
+                            case "y":
+                                DM.PurgeCustomDir();
+                                DM.PurgeDataDir();
+                                DM.InitFilesystem();
+                                userStoryMenuPurgeStoryInputValid = true;
+                                break;
+                            case "N":
+                            case "n":
+                                Warn.WWMNL("PURGE CANCELLED!"); 
+                                userStoryMenuPurgeStoryInputValid = true;
+                                break;
+                            default:
+                                Error.WEMNL("NO VALID INPUT!");
+                                break;
+                        }
+                    }
+                    break;
                 case "7":
-                    SM.CreatePrompt();
-                    break;
-                case "8":
-                    //TODO:
-                    break;
-                case "9":
                     bool userStoryMenuRestoreStoryInputValid = false;
 
                     while (!userStoryMenuRestoreStoryInputValid)
@@ -399,6 +481,20 @@ internal class Program
                                 break;
                         }
                     }
+                    break;
+                case "8":
+                    DM.CreateDefaultFiles();
+                    DM.WriteDefaultData();
+
+                    SM.FILLSTORY();
+                    // SM.FILLBEGINNING();
+                    // SM.FILLCLASSDESCRIPTION();
+                    // SM.FILLRACEDESCRIPTION();
+                    // SM.FILLACCOLADEDESCRIPTION();
+                    // DataManager.EtchFilledStory();
+                    break;
+                case "9":
+                    StoryManager.CREATESTORY(SM, DM);
                     break;
                 default:
                     Error.WEMNL("NO VALID INPUT!");
@@ -479,7 +575,7 @@ internal class Program
             }
         }
         // verify files next
-        if (!DM.verifyCriticalFiles()[0] && !DM.verifyCriticalFiles()[1])
+        if (!DataManager.verifyCriticalFiles()[0] && !DataManager.verifyCriticalFiles()[1])
         {
             GGlobals.defaultStoryExists = false;
             GGlobals.customStoryExists = false;
@@ -555,8 +651,8 @@ internal class Program
                         // SM.CreateBeginning(DM); // TODO: WATCH
                         // playerFileInputValid = true;
                         // break;
-                        DM.PurgeDataDir();
                         StoryManager.CREATESTORY(SM, DM);
+                        playerFileInputValid = true;
                         break;
                     case "N":
                     case "n": // just for clarity
@@ -568,12 +664,12 @@ internal class Program
                 }
             }
         }
-        else if (DM.verifyCriticalFiles()[0] && !DM.verifyCriticalFiles()[1])
+        else if (DataManager.verifyCriticalFiles()[0] && !DataManager.verifyCriticalFiles()[1])
         {
             Sys.WSMNL("STORY VERIFICATION SUCCESSFUL!! DEFAULT DATA EXISTS!");
             GGlobals.defaultStoryExists = true;
         }
-        else if (!DM.verifyCriticalFiles()[0] && DM.verifyCriticalFiles()[1])
+        else if (!DataManager.verifyCriticalFiles()[0] && DataManager.verifyCriticalFiles()[1])
         {
             Sys.WSMNL("STORY VERIFICATION SUCCESSFUL!! CUSTOM DATA EXISTS!");
             GGlobals.defaultStoryExists = false;

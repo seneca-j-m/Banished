@@ -103,11 +103,11 @@ public enum DefaultPlayerAccolade
 
 public struct PlayerClass
 {
-    public string className { get; }
-    public int classHealth { get; }
-    public int classFaith { get; }
-    public int classAgility { get; }
-    public string classDescription { get; }
+    public string className { get; set; }
+    public int classHealth { get; set; }
+    public int classFaith { get; set; }
+    public int classAgility { get; set; }
+    public string classDescription { get; set; }
     
 
     public PlayerClass(string _className, int _classHealth, int _classFaith, int _classAgility, string _classDescription)
