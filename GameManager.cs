@@ -63,27 +63,60 @@ public static class GameManager
     {
         string[] fileContent = new string[] { "" };
 
+        Console.WriteLine(promptNumber);
+        
         switch (pl_class)
         {
             case DefaultPlayerClass.KNIGHT:
-                if (string.Equals(sceneNumber, "ONE"))
+                switch (promptNumber)
                 {
-                    fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneOneF);
-                }
-                else if (string.Equals(sceneNumber, "TWO"))
-                {
-                    fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneTwoF);
-                }
-                else
-                {
-                    fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneThreeF);
+                    case "1":
+                        promptNumber = "ONE";
+                        fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneOneF);
+                        break;
+                    case "2":
+                        promptNumber = "TWO";
+                        fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneTwoF);
+                        break;
+                    case "3":
+                        promptNumber = "THREE";
+                        fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneThreeF);
+                        break;
                 }
                 break;
             case DefaultPlayerClass.SORCERER:
-                fileContent = File.ReadAllLines(GDirectories.playerSorcererStoryDataSceneOneOptionsF);
+                switch (promptNumber)
+                {
+                    case "1":
+                        promptNumber = "ONE";
+                        fileContent = File.ReadAllLines(GDirectories.playerSorcererStoryDataSceneOneF);
+                        break;
+                    case "2":
+                        promptNumber = "TWO";
+                        fileContent = File.ReadAllLines(GDirectories.playerSorcererStoryDataSceneTwoF);
+                        break;
+                    case "3":
+                        promptNumber = "THREE";
+                        fileContent = File.ReadAllLines(GDirectories.playerSorcererStoryDataSceneThreeF);
+                        break;
+                }
                 break;
             case DefaultPlayerClass.WARLOCK:
-                fileContent = File.ReadAllLines(GDirectories.playerWarlockStoryDataSceneOneOptionsF);
+                switch (promptNumber)
+                {
+                    case "1":
+                        promptNumber = "ONE";
+                        fileContent = File.ReadAllLines(GDirectories.playerWarlockStoryDataSceneOneF);
+                        break;
+                    case "2":
+                        promptNumber = "TWO";
+                        fileContent = File.ReadAllLines(GDirectories.playerWarlockStoryDataSceneTwoF);
+                        break;
+                    case "3":
+                        promptNumber = "THREE";
+                        fileContent = File.ReadAllLines(GDirectories.playerWarlockStoryDataSceneThreeF);
+                        break;
+                }
                 break;
         }
         
@@ -95,43 +128,72 @@ public static class GameManager
         return promptString;
     }
 
-    public static string readOptions(DefaultPlayerClass pl_class, string sceneNumber, string promptNumber)
+    public static string[] readOptions(DefaultPlayerClass pl_class, string promptNumber)
     {
         string[] fileContent = new string[] { "" };
 
         switch (pl_class)
         {
             case DefaultPlayerClass.KNIGHT:
-                if (string.Equals(sceneNumber, "ONE"))
+                switch (promptNumber)
                 {
-                    fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneOneOptionsF);
-                }
-                else if (string.Equals(sceneNumber, "TWO"))
-                {
-                    fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneTwoOptionsF);
-                }
-                else
-                {
-                    fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneThreeOptionsF);
+                    case "1":
+                        promptNumber = "ONE";
+                        fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneOneOptionsF);
+                        break;
+                    case "2":
+                        promptNumber = "TWO";
+                        fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneTwoOptionsF);
+                        break;
+                    case "3":
+                        promptNumber = "THREE";
+                        fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneThreeOptionsF);
+                        break;
                 }
                 break;
             case DefaultPlayerClass.SORCERER:
-                fileContent = File.ReadAllLines(GDirectories.playerSorcererStoryDataSceneOneOptionsF);
+                switch (promptNumber)
+                {
+                    case "1":
+                        promptNumber = "ONE";
+                        fileContent = File.ReadAllLines(GDirectories.playerSorcererStoryDataSceneOneOptionsF);
+                        break;
+                    case "2":
+                        promptNumber = "TWO";
+                        fileContent = File.ReadAllLines(GDirectories.playerSorcererStoryDataSceneTwoOptionsF);
+                        break;
+                    case "3":
+                        promptNumber = "THREE";
+                        fileContent = File.ReadAllLines(GDirectories.playerSorcererStoryDataSceneThreeOptionsF);
+                        break;
+                }
                 break;
             case DefaultPlayerClass.WARLOCK:
-                fileContent = File.ReadAllLines(GDirectories.playerWarlockStoryDataSceneOneOptionsF);
+                switch (promptNumber)
+                {
+                    case "1":
+                        promptNumber = "ONE";
+                        fileContent = File.ReadAllLines(GDirectories.playerWarlockStoryDataSceneOneOptionsF);
+                        break;
+                    case "2":
+                        promptNumber = "TWO";
+                        fileContent = File.ReadAllLines(GDirectories.playerWarlockStoryDataSceneTwoOptionsF);
+                        break;
+                    case "3":
+                        promptNumber = "THREE";
+                        fileContent = File.ReadAllLines(GDirectories.playerWarlockStoryDataSceneThreeOptionsF);
+                        break;
+                }
                 break;
         }
         
-        var optionsContent = fileContent.SkipWhile(s => s != $"SCENE{promptNumber.ToUpper()}OPTIONS").Skip(1)
-            .TakeWhile(s => s != $"PROMPT{promptNumber.ToUpper()}OPTIONSEND");
-        
-        string optionsString = string.Join("\n", optionsContent.ToArray());
+        var optionsContent = fileContent.SkipWhile(s => s != $"PROMPT{promptNumber.ToUpper()}OPTIONS").Skip(1)
+            .TakeWhile(s => s != $"PROMPT{promptNumber.ToUpper()}OPTIONSEND").ToArray();
 
-        return optionsString;
+        return optionsContent;
     }
 
-    public static string readConsequences(DefaultPlayerClass pl_class, string sceneNumber, string responseNumber)
+    public static string[] readConsequences(DefaultPlayerClass pl_class, string promptNumber)
     {
         
         string[] fileContent = new string[] { "" };
@@ -139,33 +201,62 @@ public static class GameManager
         switch (pl_class)
         {
             case DefaultPlayerClass.KNIGHT:
-                if (string.Equals(sceneNumber, "ONE"))
+                switch (promptNumber)
                 {
-                    fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneOneConsequencesF);
-                }
-                else if (string.Equals(sceneNumber, "TWO"))
-                {
-                    fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneTwoConsequencesF);
-                }
-                else
-                {
-                    fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneThreeConsequencesF);
+                    case "1":
+                        promptNumber = "ONE";
+                        fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneOneConsequencesF);
+                        break;
+                    case "2":
+                        promptNumber = "TWO";
+                        fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneTwoConsequencesF);
+                        break;
+                    case "3":
+                        promptNumber = "THREE";
+                        fileContent = File.ReadAllLines(GDirectories.playerKnightStoryDataSceneThreeConsequencesF);
+                        break;
                 }
                 break;
             case DefaultPlayerClass.SORCERER:
-                fileContent = File.ReadAllLines(GDirectories.playerSorcererStoryDataSceneOneConsequencesF);
+                switch (promptNumber)
+                {
+                    case "1":
+                        promptNumber = "ONE";
+                        fileContent = File.ReadAllLines(GDirectories.playerSorcererStoryDataSceneOneConsequencesF);
+                        break;
+                    case "2":
+                        promptNumber = "TWO";
+                        fileContent = File.ReadAllLines(GDirectories.playerSorcererStoryDataSceneTwoConsequencesF);
+                        break;
+                    case "3":
+                        promptNumber = "THREE";
+                        fileContent = File.ReadAllLines(GDirectories.playerSorcererStoryDataSceneThreeConsequencesF);
+                        break;
+                }
                 break;
             case DefaultPlayerClass.WARLOCK:
-                fileContent = File.ReadAllLines(GDirectories.playerWarlockStoryDataSceneOneConsequencesF);
+                switch (promptNumber)
+                {
+                    case "1":
+                        promptNumber = "ONE";
+                        fileContent = File.ReadAllLines(GDirectories.playerWarlockStoryDataSceneOneConsequencesF);
+                        break;
+                    case "2":
+                        promptNumber = "TWO";
+                        fileContent = File.ReadAllLines(GDirectories.playerWarlockStoryDataSceneTwoConsequencesF);
+                        break;
+                    case "3":
+                        promptNumber = "THREE";
+                        fileContent = File.ReadAllLines(GDirectories.playerWarlockStoryDataSceneThreeConsequencesF);
+                        break;
+                }
                 break;
         }
         
-        var consequencesContent = fileContent.SkipWhile(s => s != $"CONSEQUENCE{responseNumber.ToUpper()}").Skip(1)
-            .TakeWhile(s => s != $"CONSEQUENCE{responseNumber.ToUpper()}END");
-        
-        string consequencesString = string.Join("\n", consequencesContent.ToArray());
+        var consequencesContent = fileContent.SkipWhile(s => s != $"PROMPT{promptNumber.ToUpper()}CONSEQUENCES").Skip(1)
+            .TakeWhile(s => s != $"PROMPT{promptNumber.ToUpper()}CONSEQUENCESEND").ToArray();
 
-        return consequencesString;
+        return consequencesContent;
     }
 
     public static string ReadCustomBeginning(string className)
@@ -200,7 +291,7 @@ public static class GameManager
         return descriptionString;
     }
 
-    public static string ReadCustomPrompt(string className, string sceneName, string sceneNumber, string promptNumber)
+    public static string ReadCustomPrompt(string className, string sceneName, string promptNumber)
     {
         string[] fileContent = new string[] { "" };
 
@@ -217,7 +308,7 @@ public static class GameManager
         return promptString;
     }
 
-    public static string[] ReadCustomOption(string className, string sceneName, string sceneNumber, string optionNumber)
+    public static string[] ReadCustomOption(string className, string sceneName, string optionNumber)
     {
         string[] fileContent = new String[] { "" };
 
@@ -234,7 +325,7 @@ public static class GameManager
         return optionsContent;
     }
 
-    public static string[] ReadCustomConsequence(string className, string sceneName, string sceneNumber, string consequenceNumber)
+    public static string[] ReadCustomConsequence(string className, string sceneName, string consequenceNumber)
     {
         string[] fileContent = new string[] { "" };
 
@@ -250,26 +341,61 @@ public static class GameManager
         return consequencesContent;
     }
 
-    public static string promptPlayerDefault(string promptString, string optionsString)
+    public static string[] promptPlayerDefault(string promptString, string[] options, string[] consequences)
     {
+        string[] promptOptionAndConsequence = new string[2];
+        
+        Debug.WDMNL(promptString);
+        Debug.WDMNL("\n");
+        Debug.WDMNL(">>> ");
+        Console.ReadLine(); // wait for input
+
         bool promptMenuExit = false;
 
+        string userResponse = "";
+        string userConsequence = "";
+        
         while (!promptMenuExit)
         {
-            Debug.WDMNL(promptString);
-            Debug.WDMNL("\n");
+            int counter = 0;
+            foreach (var option in options)
+            {
+                Debug.WDMNL($"{counter}. {option}");
+                counter++;
+            }
+            
             Debug.WDM(">>> ");
             Console.ReadLine();
+            Debug.WDM("> ");
+
+            userResponse = Console.ReadLine().ToUpper(); // user input
             
-            Debug.WDMNL(optionsString);
-            Debug.WDMNL("\n");
-
-            string userOptionInput = Console.ReadLine();
-
-
+            
+            if (userResponse.Length > 1 || string.IsNullOrEmpty(userResponse))
+            {
+                Error.WEMNL("YOU STAY, CONFUSED. THAT IS NOT AN OPTION");
+            }
+            else
+            {
+                try
+                {
+                    int userSelectionIndex = int.Parse(userResponse);
+                    userResponse = options[userSelectionIndex];
+                    userConsequence = consequences[userSelectionIndex];
+                    promptMenuExit = true;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    Error.WEMNL("YOU STAY, CONFUSED. THAT IS NOT AN OPTION");
+                }
+            }
         }
-
-        return "";
+        // then, print consequence
+        promptOptionAndConsequence[0] = userResponse;
+        promptOptionAndConsequence[1] = userConsequence;
+        
+        return promptOptionAndConsequence;
     }
 
     public static string[] promptPlayer(string promptString, string[] options, string[] consequences)
@@ -522,10 +648,10 @@ public static class GameManager
             {
                 try
                 {
-                    prompt = ReadCustomPrompt(selectedClassName, scenes[sceneCount], sceneNumber.ToString(), promptCount.ToString());
-                    options = ReadCustomOption(selectedClassName, scenes[sceneCount], sceneNumber.ToString(), promptCount.ToString());
+                    prompt = ReadCustomPrompt(selectedClassName, scenes[sceneCount], promptCount.ToString());
+                    options = ReadCustomOption(selectedClassName, scenes[sceneCount], promptCount.ToString());
                     
-                    consequences = ReadCustomConsequence(selectedClassName, scenes[sceneCount], sceneNumber.ToString(),
+                    consequences = ReadCustomConsequence(selectedClassName, scenes[sceneCount],
                         promptCount.ToString());
 
                     string[] promptResult = promptPlayer(prompt, options, consequences);

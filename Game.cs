@@ -102,21 +102,26 @@ public static class KNIGHT_SCENE
 
     public static void K_SCENE()
     {
-        for (int i = 0; i < GGlobals.defaultSceneLimit; i++)
+        int promptCount = 1;
+        int sceneCount = 0;
+        int sceneNumber = 1;
+            
+        for (int j = 0; j < 3; j++)
         {
-            string[] dataCounts = new string[] { "ONE", "TWO", "THREE" };
+            
+            string prompt = GameManager.readPrompt(DefaultPlayerClass.KNIGHT, sceneNumber.ToString(), promptCount.ToString());
+            string[] options = GameManager.readOptions(DefaultPlayerClass.KNIGHT, promptCount.ToString());
+            string[] consequences =
+                GameManager.readConsequences(DefaultPlayerClass.KNIGHT, promptCount.ToString());
+            string[] response = GameManager.promptPlayerDefault(prompt, options, consequences);
 
-            string prompt = GameManager.readPrompt(DefaultPlayerClass.KNIGHT, dataCounts[i], dataCounts[i]);
-            string option = GameManager.readOptions(DefaultPlayerClass.KNIGHT, dataCounts[i], dataCounts[i]);
-            string response = GameManager.promptPlayerDefault(prompt, option);
-            string userResponseActual = GameManager.convertUserResponse(response);
-            string consequence =
-                GameManager.readConsequences(DefaultPlayerClass.KNIGHT, dataCounts[i], userResponseActual);
-
-            Debug.WDMNL(consequence);
-
+            Debug.WDMNL(response[1]);  
+                
             Debug.WDM(">>> ");
             Console.ReadLine();
+
+            promptCount++;
+            sceneNumber++;
         }
     }
 }
@@ -136,6 +141,27 @@ public static class SORCERER_SCENE //TODO: FINISH THESE BAD BOYS
 
     public static void S_SCENE()
     {
+        int promptCount = 1;
+        int sceneCount = 0;
+        int sceneNumber = 1;
+            
+        for (int j = 0; j < 3; j++)
+        {
+            
+            string prompt = GameManager.readPrompt(DefaultPlayerClass.SORCERER, sceneNumber.ToString(), promptCount.ToString());
+            string[] options = GameManager.readOptions(DefaultPlayerClass.SORCERER, promptCount.ToString());
+            string[] consequences =
+                GameManager.readConsequences(DefaultPlayerClass.SORCERER, promptCount.ToString());
+            string[] response = GameManager.promptPlayerDefault(prompt, options, consequences);
+
+            Debug.WDMNL(response[1]);  
+                
+            Debug.WDM(">>> ");
+            Console.ReadLine();
+
+            promptCount++;
+            sceneNumber++;
+        }
     }
 }
 
@@ -154,5 +180,26 @@ public static class WARLOCK_SCENE
 
     public static void W_SCENE()
     {
+        int promptCount = 1;
+        int sceneCount = 0;
+        int sceneNumber = 1;
+            
+        for (int j = 0; j < 3; j++)
+        {
+            
+            string prompt = GameManager.readPrompt(DefaultPlayerClass.WARLOCK, sceneNumber.ToString(), promptCount.ToString());
+            string[] options = GameManager.readOptions(DefaultPlayerClass.WARLOCK, promptCount.ToString());
+            string[] consequences =
+                GameManager.readConsequences(DefaultPlayerClass.WARLOCK, promptCount.ToString());
+            string[] response = GameManager.promptPlayerDefault(prompt, options, consequences);
+
+            Debug.WDMNL(response[1]);  
+                
+            Debug.WDM(">>> ");
+            Console.ReadLine();
+
+            promptCount++;
+            sceneNumber++;
+        }
     }
 }

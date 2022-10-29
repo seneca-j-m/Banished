@@ -1292,25 +1292,19 @@ public class StoryManager
         bool sorcererSceneWritten = false;
         bool warlockSceneWritten = false;
 
-        DefaultPlayerClass pl_class = DefaultPlayerClass.EMPTY;
-        List<DefaultPlayerClass> activeClasses = new List<DefaultPlayerClass>();
-        activeClasses.Add(DefaultPlayerClass.KNIGHT);
-        activeClasses.Add(DefaultPlayerClass.SORCERER);
-        activeClasses.Add(DefaultPlayerClass.WARLOCK);
-        
         // KNIGHT
         for (int i = 1; i < 4; i++)
         {
             Sys.WSMNL($"Write Prompt For Knight - scene {i}: ");
             WriteDefaultPrompt(DefaultPlayerClass.KNIGHT, i);
         }
-
+        
         for (int i = 1; i < 4; i++)
         {
             Sys.WSMNL($"Write option for Knight - scene {i}");
             WriteDefaultOption(DefaultPlayerClass.KNIGHT, i);
         }
-
+        
         for (int i = 1; i < 4; i++)
         {
             Sys.WSMNL($"Write consequence for Knight - scene {i}");
@@ -1323,13 +1317,13 @@ public class StoryManager
             Sys.WSMNL($"Write Prompt For Sorcerer - scene {i}: ");
             WriteDefaultPrompt(DefaultPlayerClass.SORCERER, i);
         }
-
+        
         for (int i = 1; i < 4; i++)
         {
             Sys.WSMNL($"Write option for Sorcerer - scene {i}");
             WriteDefaultOption(DefaultPlayerClass.SORCERER, i);
         }
-
+        
         for (int i = 1; i < 4; i++)
         {
             Sys.WSMNL($"Write consequence for Sorcerer - scene {i}");
@@ -1341,7 +1335,7 @@ public class StoryManager
             Sys.WSMNL($"Write Prompt For Warlock - scene {i}: ");
             WriteDefaultPrompt(DefaultPlayerClass.WARLOCK, i);
         }
-
+        
         for (int i = 1; i < 4; i++)
         {
             Sys.WSMNL($"Write option for Warlock - scene {i}");
@@ -1367,94 +1361,11 @@ public class StoryManager
 
         bool knightBeginningWritten = false;
         bool sorcererBeginningWritten = false;
-        bool warlockBeginningWritten = false;
-
-        DefaultPlayerClass pl_class = DefaultPlayerClass.EMPTY;
-        List<DefaultPlayerClass> activeClasses = new List<DefaultPlayerClass>();
-        activeClasses.Add(DefaultPlayerClass.KNIGHT);
-        activeClasses.Add(DefaultPlayerClass.SORCERER);
-        activeClasses.Add(DefaultPlayerClass.WARLOCK);
+        bool warlockBeginningWritten = false; ;
         
-        for (int i = 0; i < 3; i++)
-        {
-            // if (knightBeginningWritten)
-            // {
-            //     Sys.WSMNL("Knight Beginning: WRITTEN");
-            //     try
-            //     {
-            //         activeClasses.Remove(DefaultPlayerClass.KNIGHT);
-            //     }
-            //     catch (Exception e)
-            //     {
-            //     }
-            // }
-            //
-            // if (sorcererBeginningWritten)
-            // {
-            //     Sys.WSMNL("Sorcerer Beginning: WRITTEN");
-            //     try
-            //     {
-            //         activeClasses.Remove(DefaultPlayerClass.SORCERER);
-            //     }
-            //     catch (Exception e)
-            //     {
-            //     }
-            // }
-            //
-            // if (warlockBeginningWritten)
-            // {
-            //     Sys.WSMNL("Warlock Beginning: WRITTEN");
-            //     try
-            //     {
-            //         activeClasses.Remove(DefaultPlayerClass.WARLOCK);
-            //     }
-            //     catch (Exception e)
-            //     {
-            //     }
-            // }
-
-            bool userSelectClassForFillInputValid = false;
-            
-            while (!userSelectClassForFillInputValid)
-            {
-                Sys.WSMNL("Select Class: ");
-
-                int counter = 0;
-                foreach (var playerClass in activeClasses)
-                {
-                    Sys.WSMNL($"{counter}. {playerClass.ToString()}");
-                    counter++;
-                }
-                Sys.WSM("> ");
-                string userSelectedClassInput = Console.ReadLine();
-
-                try
-                {
-                    Enum.TryParse(userSelectedClassInput, out pl_class);
-
-                    WriteDefaultBeginning(pl_class);
-                    
-                    switch (pl_class)
-                    {
-                        case DefaultPlayerClass.KNIGHT:
-                            knightBeginningWritten = true;
-                            break;
-                        case DefaultPlayerClass.SORCERER:
-                            sorcererBeginningWritten = true;
-                            break;
-                        case DefaultPlayerClass.WARLOCK:
-                            warlockBeginningWritten = true;
-                            break;
-                    }
-                    
-                    userSelectClassForFillInputValid = true;
-                }
-                catch (Exception e)
-                {
-                    Error.WEMNL("NO VALID INPUT");
-                }
-            }
-        }
+        WriteDefaultBeginning(DefaultPlayerClass.KNIGHT);
+        WriteDefaultBeginning(DefaultPlayerClass.SORCERER);
+        WriteDefaultBeginning(DefaultPlayerClass.WARLOCK);
     }
     
     public void FILLCLASSDESCRIPTION()
@@ -1466,97 +1377,11 @@ public class StoryManager
         Sys.WSMNL("Prompts: 3");
         Sys.WSMNL("Scenes: 3 ");
         Sys.WSMNL("Classes: 3 ");
-
-        bool knightDescriptionWritten = false;
-        bool sorcererDescriptionWritten = false;
-        bool warlockDescriptionWritten = false;
-
-        DefaultPlayerClass pl_class = DefaultPlayerClass.EMPTY;
-        List<DefaultPlayerClass> activeClasses = new List<DefaultPlayerClass>();
-        activeClasses.Add(DefaultPlayerClass.KNIGHT);
-        activeClasses.Add(DefaultPlayerClass.SORCERER);
-        activeClasses.Add(DefaultPlayerClass.WARLOCK);
         
-        for (int i = 0; i < 3; i++)
-        {
-            // if (knightDescriptionWritten)
-            // {
-            //     Sys.WSMNL("Knight Description: WRITTEN");
-            //     try
-            //     {
-            //         activeClasses.Remove(DefaultPlayerClass.KNIGHT);
-            //     }
-            //     catch (Exception e)
-            //     {
-            //     }
-            // }
-            //
-            // if (sorcererDescriptionWritten)
-            // {
-            //     Sys.WSMNL("Sorcerer Description: WRITTEN");
-            //     try
-            //     {
-            //         activeClasses.Remove(DefaultPlayerClass.SORCERER);
-            //     }
-            //     catch (Exception e)
-            //     {
-            //     }
-            // }
-            //
-            // if (warlockDescriptionWritten)
-            // {
-            //     Sys.WSMNL("Warlock Description: WRITTEN");
-            //     try
-            //     {
-            //         activeClasses.Remove(DefaultPlayerClass.WARLOCK);
-            //     }
-            //     catch (Exception e)
-            //     {
-            //     }
-            // }
+        WriteClassDescription(DefaultPlayerClass.KNIGHT);
+        WriteClassDescription(DefaultPlayerClass.SORCERER);
+        WriteClassDescription(DefaultPlayerClass.WARLOCK);
 
-            bool userSelectClassForFillInputValid = false;
-            
-            while (!userSelectClassForFillInputValid)
-            {
-                Sys.WSMNL("Select Class: ");
-
-                int counter = 0;
-                foreach (var playerClass in activeClasses)
-                {
-                    Sys.WSMNL($"{counter}. {playerClass.ToString()}");
-                    counter++;
-                }
-                Sys.WSM("> ");
-                string userSelectedClassInput = Console.ReadLine();
-
-                try
-                {
-                    Enum.TryParse(userSelectedClassInput, out pl_class);
-
-                    WriteClassDescription(pl_class);
-                    
-                    switch (pl_class)
-                    {
-                        case DefaultPlayerClass.KNIGHT:
-                            knightDescriptionWritten = true;
-                            break;
-                        case DefaultPlayerClass.SORCERER:
-                            sorcererDescriptionWritten = true;
-                            break;
-                        case DefaultPlayerClass.WARLOCK:
-                            warlockDescriptionWritten = true;
-                            break;
-                    }
-                    
-                    userSelectClassForFillInputValid = true;
-                }
-                catch (Exception e)
-                {
-                    Error.WEMNL("NO VALID INPUT");
-                }
-            }
-        }
     }
 
     public void FILLRACEDESCRIPTION()
@@ -1568,97 +1393,11 @@ public class StoryManager
         Sys.WSMNL("Prompts: 3");
         Sys.WSMNL("Scenes: 3 ");
         Sys.WSMNL("Classes: 3 ");
-
-        bool elfDescriptionWritten = false;
-        bool humanDescriptionWritten = false;
-        bool orcDescriptionWritten = false;
-
-        DefaultPlayerRace pl_race = DefaultPlayerRace.EMPTY;
-        List<DefaultPlayerRace> activeRaces = new List<DefaultPlayerRace>();
-        activeRaces.Add(DefaultPlayerRace.ELF);
-        activeRaces.Add(DefaultPlayerRace.HUMAN);
-        activeRaces.Add(DefaultPlayerRace.ORC);
-
-        for (int i = 0; i < 3; i++)
-        {
-            // if (elfDescriptionWritten)
-            // {
-            //     Sys.WSMNL("Elf Description: WRITTEN");
-            //     try
-            //     {
-            //         activeRaces.Remove(DefaultPlayerRace.ELF);
-            //     }
-            //     catch (Exception e)
-            //     {
-            //     }
-            // }
-            //
-            // if (humanDescriptionWritten)
-            // {
-            //     Sys.WSMNL("Human Description: WRITTEN");
-            //     try
-            //     {
-            //         activeRaces.Remove(DefaultPlayerRace.HUMAN);
-            //     }
-            //     catch (Exception e)
-            //     {
-            //     }
-            // }
-            //
-            // if (orcDescriptionWritten)
-            // {
-            //     Sys.WSMNL("Orc Description: WRITTEN");
-            //     try
-            //     {
-            //         activeRaces.Remove(DefaultPlayerRace.ORC);
-            //     }
-            //     catch (Exception e)
-            //     {
-            //     }
-            // }
-
-            bool userSelectRaceForFillInputValid = false;
-            
-            while (!userSelectRaceForFillInputValid)
-            {
-                Sys.WSMNL("Select Race: ");
-
-                int counter = 0;
-                foreach (var playerRace in activeRaces)
-                {
-                    Sys.WSMNL($"{counter}. {playerRace.ToString()}");
-                    counter++;
-                }
-                Sys.WSM("> ");
-                string userSelectedClassInput = Console.ReadLine();
-
-                try
-                {
-                    Enum.TryParse(userSelectedClassInput, out pl_race);
-
-                    WriteRaceDescription(pl_race);
-                    
-                    switch (pl_race)
-                    {
-                        case DefaultPlayerRace.ELF:
-                            elfDescriptionWritten = true;
-                            break;
-                        case DefaultPlayerRace.HUMAN:
-                            humanDescriptionWritten = true;
-                            break;
-                        case DefaultPlayerRace.ORC:
-                            orcDescriptionWritten = true;
-                            break;
-                    }
-                    
-                    userSelectRaceForFillInputValid = true;
-                }
-                catch (Exception e)
-                {
-                    Error.WEMNL("NO VALID INPUT");
-                }
-            }
-        }
+        
+        WriteRaceDescription(DefaultPlayerRace.ELF);
+        WriteRaceDescription(DefaultPlayerRace.HUMAN);
+        WriteRaceDescription(DefaultPlayerRace.ORC);
+        
     }
 
     public void FILLACCOLADEDESCRIPTION()
@@ -1671,97 +1410,9 @@ public class StoryManager
         Sys.WSMNL("Scenes: 3 ");
         Sys.WSMNL("Classes: 3 ");
 
-        bool warriorDescriptionWritten = false;
-        bool scholarDescriptionWritten = false;
-        bool acolyteDescriptionWritten = false;
-
-        DefaultPlayerAccolade pl_accolade = DefaultPlayerAccolade.EMPTY;
-        List<DefaultPlayerAccolade> activeAccolades = new List<DefaultPlayerAccolade>();
-        activeAccolades.Add(DefaultPlayerAccolade.WARRIOR);
-        activeAccolades.Add(DefaultPlayerAccolade.SCHOLAR);
-        activeAccolades.Add(DefaultPlayerAccolade.ACOLYTE);
-
-
-        for (int i = 0; i < 3; i++)
-        {
-            // if (warriorDescriptionWritten)
-            // {
-            //     Sys.WSMNL("Warrior Description: WRITTEN");
-            //     try
-            //     {
-            //         activeAccolades.Remove(DefaultPlayerAccolade.WARRIOR);
-            //     }
-            //     catch (Exception e)
-            //     {
-            //     }
-            // }
-            //
-            // if (scholarDescriptionWritten)
-            // {
-            //     Sys.WSMNL("Scholar Description: WRITTEN");
-            //     try
-            //     {
-            //         activeAccolades.Remove(DefaultPlayerAccolade.SCHOLAR);
-            //     }
-            //     catch (Exception e)
-            //     {
-            //     }
-            // }
-            //
-            // if (acolyteDescriptionWritten)
-            // {
-            //     Sys.WSMNL("Acolyte Description: WRITTEN");
-            //     try
-            //     {
-            //         activeAccolades.Remove(DefaultPlayerAccolade.ACOLYTE);
-            //     }
-            //     catch (Exception e)
-            //     {
-            //     }
-            // }
-
-            bool userSelectRaceForFillInputValid = false;
-            
-            while (!userSelectRaceForFillInputValid)
-            {
-                Sys.WSMNL("Select Race: ");
-
-                int counter = 0;
-                foreach (var playerRace in activeAccolades)
-                {
-                    Sys.WSMNL($"{counter}. {playerRace.ToString()}");
-                    counter++;
-                }
-                Sys.WSM("> ");
-                string userSelectedClassInput = Console.ReadLine();
-
-                try
-                {
-                    Enum.TryParse(userSelectedClassInput, out pl_accolade);
-
-                    WriteAccoladeDescription(pl_accolade);
-                    
-                    switch (pl_accolade)
-                    {
-                        case DefaultPlayerAccolade.WARRIOR:
-                            warriorDescriptionWritten = true;
-                            break;
-                        case DefaultPlayerAccolade.SCHOLAR:
-                            scholarDescriptionWritten = true;
-                            break;
-                        case DefaultPlayerAccolade.ACOLYTE:
-                            acolyteDescriptionWritten = true;
-                            break;
-                    }
-                    
-                    userSelectRaceForFillInputValid = true;
-                }
-                catch (Exception e)
-                {
-                    Error.WEMNL("NO VALID INPUT");
-                }
-            }
-        }
+        WriteAccoladeDescription(DefaultPlayerAccolade.WARRIOR);
+        WriteAccoladeDescription(DefaultPlayerAccolade.SCHOLAR);
+        WriteAccoladeDescription(DefaultPlayerAccolade.ACOLYTE);
     }
 
     public void WriteDefaultPrompt(DefaultPlayerClass pl_class, int sceneNumber)
@@ -2462,7 +2113,7 @@ public class StoryManager
 
     public void WriteDefaultBeginning(DefaultPlayerClass pl_class)
     {
-        Sys.WSMNL("Enter Beginning: ");
+        Sys.WSMNL($"Enter Beginning for {pl_class.ToString()}: ");
         Sys.WSM("> ");
 
         string beginning = Console.ReadLine();
@@ -2502,7 +2153,7 @@ public class StoryManager
 
     public void WriteClassDescription(DefaultPlayerClass pl_class)
     {
-        Sys.WSMNL("Enter Description: ");
+        Sys.WSMNL($"Enter Description for {pl_class.ToString()}: ");
         Sys.WSM("> ");
 
         string description = Console.ReadLine();
@@ -2530,7 +2181,7 @@ public class StoryManager
                 break;
             case DefaultPlayerClass.WARLOCK:
                 File.WriteAllText(GDirectories.playerClassWarlockDataF, string.Empty);
-                using (StreamWriter sw = new StreamWriter(GDirectories.playerClassWarlockData))
+                using (StreamWriter sw = new StreamWriter(GDirectories.playerClassWarlockDataF))
                 {
                     sw.WriteLine("DESCRIPTION");
                     sw.WriteLine(description);
@@ -2542,7 +2193,7 @@ public class StoryManager
 
     public void WriteRaceDescription(DefaultPlayerRace pl_race)
     {
-        Sys.WSMNL("Enter Description: ");
+        Sys.WSMNL($"Enter Description for {pl_race.ToString()}: ");
         Sys.WSM("> ");
 
         string description = Console.ReadLine();
@@ -2582,7 +2233,7 @@ public class StoryManager
     public void WriteAccoladeDescription(DefaultPlayerAccolade pl_accolade)
     {
                 
-        Sys.WSMNL("Enter Description: ");
+        Sys.WSMNL($"Enter Description for {pl_accolade.ToString()}: ");
         Sys.WSM("> ");
 
         string description = Console.ReadLine();

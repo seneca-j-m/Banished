@@ -487,11 +487,11 @@ internal class Program
                     DM.WriteDefaultData();
 
                     SM.FILLSTORY();
-                    // SM.FILLBEGINNING();
-                    // SM.FILLCLASSDESCRIPTION();
-                    // SM.FILLRACEDESCRIPTION();
-                    // SM.FILLACCOLADEDESCRIPTION();
-                    // DataManager.EtchFilledStory();
+                    SM.FILLBEGINNING();
+                    SM.FILLCLASSDESCRIPTION();
+                    SM.FILLRACEDESCRIPTION();
+                    SM.FILLACCOLADEDESCRIPTION();
+                    DataManager.EtchFilledStory();
                     break;
                 case "9":
                     StoryManager.CREATESTORY(SM, DM);
